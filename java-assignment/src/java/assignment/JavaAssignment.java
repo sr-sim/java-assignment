@@ -14,7 +14,7 @@ public class JavaAssignment {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        System.out.println("hi");
+        System.out.println("ccccc");
     }
     
 }
