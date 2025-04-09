@@ -13,6 +13,6 @@ public class Administrator extends User{
         super(userId, username, password, "Administrator");
     }
     public void manageuser(){
-        System.out.println("maange user lo");
+        System.out.println("manage user lodfgdfgdfgdfgdfgdfgdfgdfgdfgdfgdfgdfggdfg");
     }
 }
