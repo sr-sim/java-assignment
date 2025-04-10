@@ -24,7 +24,7 @@ import javax.swing.JOptionPane;
  * @author User
  */
 public class Login extends javax.swing.JFrame {
-     private static final String FILE_PATH = "src/java_assignment2025/user.txt";
+     private static final String FILE_PATH = "java-assignment/src/java_assignment2025/user.txt";
 
     /**
      * Creates new form Login
