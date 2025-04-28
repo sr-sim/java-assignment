@@ -11,5 +11,6 @@ package java_assignment2025;
 public class PurchaseManager extends User{
     public PurchaseManager(String userId, String username, String password) {
         super(userId, username, password, "Purchase Manager");
+        
     }
 }
