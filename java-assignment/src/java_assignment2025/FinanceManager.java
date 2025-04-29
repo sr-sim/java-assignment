@@ -9,8 +9,8 @@ package java_assignment2025;
  * @author User
  */
 public class FinanceManager extends User{
-    public FinanceManager(String userId, String username, String password) {
-        super(userId, username, password, "Finance Manager");
+    public FinanceManager(String userId, String username, String password, String contact) {
+        super(userId, username, password,contact, "Finance Manager");
     }
     public void managefinance(){
          System.out.println("maange finance ehhh");

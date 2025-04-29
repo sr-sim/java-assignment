@@ -1,6 +1,6 @@
-SM0001,Macy Ng,456,Sales Manager
-PM0001,Hew Ng,macy123,Purchase Manager
-A0001,Kel Ng,344,Administrator
-IM0001,Max Ng,111,Inventory Manager
-FM0001,Ryan Ng,222,Finance Manager
-FM0002,Iz Ng,223,Finance Manager
+SM0001,SR,1,555,Sales Manager
+PM0001,Hew Ng,macy123,5444,Purchase Manager
+A0001,Kel Ng,344,5677,Administrator
+IM0001,Max Ng,111,6868,Inventory Manager
+FM0001,Ryan Ng,222,67868,Finance Manager
+FM0002,Iz Ng,223,6786,Finance Manager
