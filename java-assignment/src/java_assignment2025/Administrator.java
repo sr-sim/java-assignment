@@ -9,8 +9,8 @@ package java_assignment2025;
  * @author User
  */
 public class Administrator extends User{
-    public Administrator(String userId, String username, String password) {
-        super(userId, username, password, "Administrator");
+    public Administrator(String userId, String username, String password, String contact) {
+        super(userId, username, password,contact, "Administrator");
     }
     public void manageuser(){
         System.out.println("manage user lodfgdfgdfgdfgdfgdfgdfgdfgdfgdfgdfgdfggdfg");

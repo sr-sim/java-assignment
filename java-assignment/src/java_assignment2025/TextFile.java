@@ -19,8 +19,12 @@ import java.util.Scanner;
 public class TextFile {
     public static void appendTo(String fileName, String appendWord){
         try {
-            FileWriter myWriter = new FileWriter(fileName, true);
-            myWriter.write(System.lineSeparator());
+            File file = new File(fileName);
+            boolean isempty = file.length() == 0;
+            FileWriter myWriter = new FileWriter(file, true);
+            if (!isempty){
+                 myWriter.write(System.lineSeparator());
+            }
             myWriter.write(appendWord);
             myWriter.close();
         } catch (IOException e) {
@@ -31,6 +35,10 @@ public class TextFile {
     public static List<String> readFile(String fileName) {
         List<String> list = new ArrayList<>();
         File data = new File(fileName);
+        if(!data.exists()){
+            System.out.println("file does not exist");
+            return list;
+        }
         try {
             Scanner lines = new Scanner(data);
             while (lines.hasNextLine()){

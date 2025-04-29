@@ -203,28 +203,29 @@ public static User authenticate(String inputUsername, String inputPassword) {
         for (String line : lines) {
             String[] userData = line.split(",");
 
-            if (userData.length == 4) {
+            if (userData.length == 5) {
                 String userId = userData[0].trim();
                 String username = userData[1].trim();
                 String password = userData[2].trim();
-                String role = userData[3].trim();
+                String contact = userData[3].trim();
+                String role = userData[4].trim();
 
                 if (username.equals(inputUsername)){
                     if(password.equals(inputPassword)){
                         // Return the appropriate subclass based on the role
                         switch (role) {
                             case "Administrator":
-                                return new Administrator(userId, username, password);
+                                return new Administrator(userId, username, contact, password);
                             case "Sales Manager":
-                                return new SalesManager(userId, username, password);
+                                return new SalesManager(userId, username, contact, password);
                             case "Finance Manager":
-                                return new FinanceManager(userId, username, password);
+                                return new FinanceManager(userId, username, contact, password);
                             case "Inventory Manager":
-                                return new InventoryManager(userId, username, password);
+                                return new InventoryManager(userId, username, contact, password);
                             case "Purchase Manager":
-                                return new PurchaseManager(userId, username, password);
+                                return new PurchaseManager(userId, username, contact, password);
                             default:
-                                return new User(userId, username, password, role); // Default to User if role is unknown
+                                return new User(userId, username, password,contact, role); // Default to User if role is unknown
                         }
                     }
                 }
@@ -270,7 +271,7 @@ public void openHomePage(User user) {
             new AdminHome((Administrator) user).setVisible(true); //By casting (Administrator) user, you're telling the program, "I know this user object is actually an instance of Administrator, so please treat it as such."
             break;
         case "Sales Manager":
-            new SalesManagerHome((SalesManager) user).setVisible(true);
+            new SM_MainPage((SalesManager) user).setVisible(true);
             break;
         case "Finance Manager":
             new FinanceManagerHome((FinanceManager) user).setVisible(true);

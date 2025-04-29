@@ -1,0 +1,6 @@
+SUP001,Bobane,0123456789,lala@gmai.com,bukitjalil,this supplier want to supplier Apple from taiwan not from china,true
+SUP002,labubu,damansara,0189222222,bubu@gmail.com,this supplier want to supplier labubu,true
+SUP003,mama,0137238292,shh@gmail.com,johor,this uspplier want to supplies water,true
+SUP004,FAFA,kotak,01923734445,fafa@gmail.com,supplies mamak,false
+SUP005,1,11111,11,111,11111111111,false
+SUP006,AAAA,AAAAA,AAAAAA,AAA,AAAAAA,false
