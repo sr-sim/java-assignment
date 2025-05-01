@@ -18,6 +18,9 @@ import javax.swing.table.DefaultTableModel;
 public class SM_SupplierEntry extends javax.swing.JFrame {
     private SalesManager salesmanager;
     private SupplierDataManager supplierdatamanager;
+    private InventoryDataManager inventorydatamanager = new InventoryDataManager();
+    private PurchaseRequisitionManager prmanager = new PurchaseRequisitionManager();
+    
     
     public SM_SupplierEntry(SalesManager salesmanager, SupplierDataManager supplierdatamanager) {
         initComponents();
@@ -420,7 +423,7 @@ public class SM_SupplierEntry extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        InventoryDataManager inventorydatamanager = new InventoryDataManager();
+
         new SM_ItemEntry(salesmanager,inventorydatamanager,supplierdatamanager).setVisible(true);
         this.dispose();
     }//GEN-LAST:event_jButton6ActionPerformed
@@ -436,7 +439,8 @@ public class SM_SupplierEntry extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
-
+        new SM_PurchaseRequisition(salesmanager, prmanager, inventorydatamanager).setVisible(true);
+        this.dispose();  
     }//GEN-LAST:event_jButton9ActionPerformed
 
     private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed

@@ -20,6 +20,7 @@ public class SM_ItemEntry extends javax.swing.JFrame {
     private SalesManager salesmanager;
     private InventoryDataManager inventorydatamanager;
     private SupplierDataManager supplierdatamanager;
+    private PurchaseRequisitionManager prmanager = new PurchaseRequisitionManager();
 
     /**
      * Creates new form SM_ItemEntry
@@ -403,9 +404,9 @@ public class SM_ItemEntry extends javax.swing.JFrame {
                         Supplier newsupplier = new Supplier(
                             oldsupplier.getSupplierid(),
                             oldsupplier.getSuppliername(),
+                            oldsupplier.getAddress(),
                             oldsupplier.getContact(),
                             oldsupplier.getEmail(),
-                            oldsupplier.getAddress(),
                             oldsupplier.getItemdescription(),
                             newStatus
                         );
@@ -764,13 +765,12 @@ public class SM_ItemEntry extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton10ActionPerformed
 
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
-        //        new SM_PurchaseRequisition(salesmanager).setVisible(true);
-        //        this.dispose();
+        new SM_PurchaseRequisition(salesmanager, prmanager, inventorydatamanager).setVisible(true);
+        this.dispose();;
     }//GEN-LAST:event_jButton9ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-        //        new SM_DailySalesEntry(salesmanager).setVisible(true);
-        //        this.dispose();
+  
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
@@ -779,8 +779,8 @@ public class SM_ItemEntry extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        //        new SM_ItemEntry(salesmanager).setVisible(true);
-        //        this.dispose();
+        new SM_ItemEntry(salesmanager,inventorydatamanager,supplierdatamanager).setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
