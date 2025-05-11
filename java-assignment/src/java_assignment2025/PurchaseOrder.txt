@@ -1,3 +1,4 @@
-order_id|request_id|user_id|item_id|quantity|unit_price|amount|supplier_id|order_date|order_status 
-O001|R001|U001|I001|10|3.5|35.0|SU001|01052025|Approved
-O002|R002|U003|I001|20|4.5|90.0|SU002|06042025|Pending
+PO001,PR001,SR,I002,8,40.00,SUP001,2025-05-02,ordered,paid
+PO002,PR002,HEW,I003,34,238.00,SUP003,2025-05-03,pending,processing
+PO003,PR003,HEW,I001,34,238.00,SUP001,2025-05-04,pending,unpaid
+PO006,PR010,SR,I003,5,35.00,SUP002,25-05-11,pending,unpaid
