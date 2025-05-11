@@ -142,7 +142,7 @@ public class PurchaseRequisition {
     
     @Override
     public String toString(){
-        return prid + "," + String.join(" | ", itemids) + "," + userid + "," + String.join(" | ", quantities) +"," + total+ "," + requestdate + "," + expecteddeliverydate + "," + approvestatus + "," + note;
+        return prid + "," + String.join("|", itemids) + "," + userid + "," + String.join("|", quantities) +"," + total+ "," + requestdate + "," + expecteddeliverydate + "," + approvestatus + "," + note;
     } 
 
 }
