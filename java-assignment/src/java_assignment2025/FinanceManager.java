@@ -13,6 +13,6 @@ public class FinanceManager extends User{
         super(userId, username, password,contact, "Finance Manager");
     }
     public void managefinance(){
-         System.out.println("maange finance ehhh");
+         System.out.println("maange finance niceeeeee");
     }
 }
