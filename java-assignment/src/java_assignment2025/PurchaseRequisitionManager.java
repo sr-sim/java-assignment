@@ -15,7 +15,7 @@ import java.util.List;
 public class PurchaseRequisitionManager {
    private final List<PurchaseRequisition>prlist;
     private final TextFile textfile;
-    private final String prfilepath = "C:\\JPL9\\java-assignment\\java-assignment\\src\\java_assignment2025\\purchaserequisition.txt";
+    private final String prfilepath = "C:\\Users\\Isaac\\OneDrive - Asia Pacific University\\Documents\\NetBeansProjects\\java-assignment\\java-assignment\\src\\java_assignment2025\\purchaserequisition.txt";
     
     public PurchaseRequisitionManager() {
         this.prlist = new ArrayList<>();

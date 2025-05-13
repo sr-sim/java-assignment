@@ -39,9 +39,9 @@ public class PurchaseOrder {
         this.quantities = quantities;
         this.amount = amount;
         this.supplierIds = supplierIds;
-        this.orderDate = getCurrentDate();
-        this.orderStatus = "pending";
-        this.paymentStatus = "unpaid";
+        this.orderDate = orderDate;
+        this.orderStatus = orderStatus;
+        this.paymentStatus = paymentStatus;
     }
     
 
@@ -104,7 +104,7 @@ public class PurchaseOrder {
     
     
     public static String getNextOrderId() {
-        String filePath = "C:\\JPL9\\java-assignment\\java-assignment\\src\\java_assignment2025\\PurchaseOrder.txt";
+        String filePath = "C:\\Users\\Isaac\\OneDrive - Asia Pacific University\\Documents\\NetBeansProjects\\java-assignment\\java-assignment\\src\\java_assignment2025\\PurchaseOrder.txt";
         List<String> lines = TextFile.readFile(filePath);
         int maxId = 0;
 

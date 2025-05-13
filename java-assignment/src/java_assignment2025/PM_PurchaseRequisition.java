@@ -462,7 +462,7 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
             String[] amounts = jTable1.getValueAt(selectedRow, 4).toString().split(",");
 
             // Read existing PO records from file
-            List<String> existingPOs = TextFile.readFile("C:\\JPL9\\java-assignment\\java-assignment\\src\\java_assignment2025\\PurchaseOrder.txt");
+            List<String> existingPOs = TextFile.readFile("C:\\Users\\Isaac\\OneDrive - Asia Pacific University\\Documents\\NetBeansProjects\\java-assignment\\java-assignment\\src\\java_assignment2025\\PurchaseOrder.txt");
             //StringBuilder supplierIdBuilder = new StringBuilder(); // To collect supplier IDs
             for (int i = 0; i < itemIdList.length; i++) {
                 String itemId = itemIdList[i].trim();
@@ -503,8 +503,8 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
                     amount,
                     Arrays.asList(supplierId),
                     PurchaseOrder.getCurrentDate(),
-                    "Pending",
-                    "Unpaid"
+                    "pending",
+                    "unpaid"
                 );
 
                 // Prepare line and write to file
@@ -522,7 +522,7 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
                 );
                 
                     //String concatenatedSupplierIds = supplierIdBuilder.toString();
-                    TextFile.appendTo("C:\\JPL9\\java-assignment\\java-assignment\\src\\java_assignment2025\\PurchaseOrder.txt", poLine);
+                    TextFile.appendTo("C:\\Users\\Isaac\\OneDrive - Asia Pacific University\\Documents\\NetBeansProjects\\java-assignment\\java-assignment\\src\\java_assignment2025\\PurchaseOrder.txt", poLine);
                     
                     JOptionPane.showMessageDialog(null, "Purchase Order(s) generated successfully.");
                 }

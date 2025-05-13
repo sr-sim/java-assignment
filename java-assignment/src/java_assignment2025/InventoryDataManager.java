@@ -14,7 +14,7 @@ import java.util.List;
 public class InventoryDataManager {
     private final List<Item>itemlist;
     private final TextFile textfile;
-    private final String inventoryfilepath = "C:\\JPL9\\java-assignment\\java-assignment\\src\\java_assignment2025\\inventory.txt";
+    private final String inventoryfilepath = "C:\\Users\\Isaac\\OneDrive - Asia Pacific University\\Documents\\NetBeansProjects\\java-assignment\\java-assignment\\src\\java_assignment2025\\inventory.txt";
     
     
     public InventoryDataManager() {
@@ -111,6 +111,12 @@ public class InventoryDataManager {
         }
         return null;
     }
+    
+    public String findItemNameById(String itemid) {
+    Item item = finditemid(itemid);
+    return (item != null) ? item.getItemname() : "Unknown";
+}
+
     
     
 }

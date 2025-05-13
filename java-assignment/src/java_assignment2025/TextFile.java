@@ -73,6 +73,8 @@ public class TextFile {
         } catch (IOException e) {
             System.out.println("Error");
         }
+        System.out.println("Wrote to absolute path: " + new File(fileName).getAbsolutePath());
+
 
     }
 
@@ -96,4 +98,44 @@ public class TextFile {
             System.out.println("Error wrriting to file");
         }
     }
+    public static void replaceLineByPOId(String fileName, String orderId, String newLine) {
+    try {
+        List<String> lines = readFile(fileName);
+        List<String> updatedLines = new ArrayList<>();
+        boolean replaced = false;
+        
+
+        for (String line : lines) {
+            String trimmedLine = line.trim();
+
+            if (trimmedLine.startsWith(orderId + ",")) {
+                System.out.println("found PO id: " + orderId);
+                updatedLines.add(newLine);
+                replaced = true;
+            } else {
+                updatedLines.add(line);
+            }
+        }
+
+        // Write updated list back to file
+        FileWriter writer = new FileWriter(fileName, false);
+        for (String line : updatedLines) {
+            writer.write(line + System.lineSeparator());
+        }
+        writer.close();
+
+        if (!replaced) {
+            System.out.println("No PO ID: " + orderId);
+        } else {
+            System.out.println("file updated.");
+        }
+
+    } catch (IOException e) {
+        System.out.println("file write error:");
+        e.printStackTrace();
+    }
+    }
+
+
+
 }
