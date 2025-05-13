@@ -27,8 +27,8 @@ public class PurchaseOrderManager {
          
         List<String> lines = textfile.readFile(pofilepath);
         for (String line : lines) {
-            String[] parts = line.split(",", 10);
-            if (parts.length == 10) {
+            String[] parts = line.split(",", 11);
+            if (parts.length == 11) {
                 List<String> itemids = Arrays.asList(parts[3].trim().split("\\|"));
                 List<String> quantities = Arrays.asList(parts[4].trim().split("\\|"));
                 List<String> supplierids = Arrays.asList(parts[6].trim().split("\\|"));
@@ -42,7 +42,8 @@ public class PurchaseOrderManager {
                         supplierids,
                         parts[7].trim(),
                         parts[8].trim(),
-                        parts[9].trim())
+                        parts[9].trim(),
+                        parts[10].trim())
                        
                 );
             }
