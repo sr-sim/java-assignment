@@ -98,7 +98,6 @@ public class TextFile {
             System.out.println("Error wrriting to file");
         }
     }
-<<<<<<< HEAD
     public static void replaceLineByPOId(String fileName, String orderId, String newLine) {
     try {
         List<String> lines = readFile(fileName);
@@ -138,8 +137,6 @@ public class TextFile {
     }
 
 
-
-=======
     public void rewriteFile(String fileName, List<?> objectList) {
         try {
             FileWriter myWriter = new FileWriter(fileName);
@@ -157,5 +154,4 @@ public class TextFile {
         }
     }
 
->>>>>>> origin/master
 }
