@@ -24,6 +24,7 @@ public class PurchaseOrder {
     private List<String> supplierIds;
     private String orderDate;
     private String orderStatus;
+    private String verifyStatus;
     private String paymentStatus;
    
     
@@ -31,7 +32,7 @@ public class PurchaseOrder {
     // Constructor
     public PurchaseOrder(String orderId, String requestId, String userId,List<String> itemIds ,
                          List<String> quantities, double amount,List<String>  supplierIds,
-                         String orderDate, String orderStatus, String paymentStatus) {
+                         String orderDate, String orderStatus, String verifyStatus, String paymentStatus) {
         this.orderId = orderId;
         this.requestId = requestId;
         this.userId = userId;
@@ -39,8 +40,9 @@ public class PurchaseOrder {
         this.quantities = quantities;
         this.amount = amount;
         this.supplierIds = supplierIds;
-        this.orderDate = orderDate;
+        this.orderDate = getCurrentDate();
         this.orderStatus = orderStatus;
+        this.verifyStatus = verifyStatus;
         this.paymentStatus = paymentStatus;
     }
     
@@ -86,6 +88,9 @@ public class PurchaseOrder {
         this.orderStatus = orderStatus;
     }
 
+    public String getVerifyStatus() {
+        return verifyStatus;
+    }
     public String getPaymentStatus() {
         return paymentStatus;
     }
@@ -135,7 +140,7 @@ public class PurchaseOrder {
                String.join("|", quantities) + "," +
                String.format("%.2f", amount) + "," +
                String.join("|", supplierIds) + "," +
-               orderDate + "," + orderStatus + "," + paymentStatus;
+               orderDate + "," + orderStatus + "," + verifyStatus+","+ paymentStatus;
 }
 
 }

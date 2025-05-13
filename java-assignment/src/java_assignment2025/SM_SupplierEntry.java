@@ -20,6 +20,7 @@ public class SM_SupplierEntry extends javax.swing.JFrame {
     private SupplierDataManager supplierdatamanager;
     private InventoryDataManager inventorydatamanager = new InventoryDataManager();
     private PurchaseRequisitionManager prmanager = new PurchaseRequisitionManager();
+    private SalesDataManager salesdatamanager = new SalesDataManager();
     
     
     public SM_SupplierEntry(SalesManager salesmanager, SupplierDataManager supplierdatamanager) {
@@ -434,8 +435,8 @@ public class SM_SupplierEntry extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-//        new SM_DailySalesEntry(supplierdatamanager).setVisible(true);
-//        this.dispose();
+        new SM_DailySalesEntry(salesmanager, salesdatamanager, inventorydatamanager).setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
@@ -518,14 +519,14 @@ public class SM_SupplierEntry extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "Address must be more than 5 characters", "Input Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            Supplier oldsupplier = supplierdatamanager.findsupplierid(supplierid);
-            if (oldsupplier == null){
+            Supplier existingSupplier = supplierdatamanager.findsupplierid(supplierid);
+            if (existingSupplier == null){
                 JOptionPane.showMessageDialog(this, "old supplier not found" , "Error",JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            boolean readDescrptionStatus = oldsupplier.getReadDescrptionStatus();
-            Supplier newsupplier = new Supplier(supplierid, suppliername , contact, email, address, itemdesc, readDescrptionStatus);
-            supplierdatamanager.updateSupplier(oldsupplier, newsupplier);
+            boolean readDescrptionStatus = existingSupplier.getReadDescrptionStatus();
+
+            supplierdatamanager.updateSupplier(supplierid, suppliername , contact, email, address, itemdesc, readDescrptionStatus);
      
             fillTableFromTxtFile();
             clearTextField();

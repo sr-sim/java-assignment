@@ -394,7 +394,7 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
                 );
                 
                 if (confirm == JOptionPane.YES_OPTION) {
-                    PurchaseRequisition newpr = new PurchaseRequisition(
+                    prmanager.updatepr(
                         oldpr.getPrid(),
                         oldpr.getItemids(),
                         oldpr.getUserid(),
@@ -405,8 +405,6 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
                         PurchaseRequisition.ApproveStatus.fromString(updatedStatus),
                         oldpr.getNote()
                     );
-
-                    prmanager.updatepr(oldpr, newpr);
                     savedChanges = true;
                 } else {
                     // Revert change visually if cancelled
@@ -454,81 +452,69 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
         }
         
        // Extract PR row data
-            String requestId = jTable1.getValueAt(selectedRow, 0).toString();
-            String itemIds = jTable1.getValueAt(selectedRow, 1).toString();
-            String userId = jTable1.getValueAt(selectedRow, 7).toString();
-            String[] itemIdList = itemIds.split(",");
-            String[] quantities = jTable1.getValueAt(selectedRow, 3).toString().split(",");
-            String[] amounts = jTable1.getValueAt(selectedRow, 4).toString().split(",");
+        String requestId = jTable1.getValueAt(selectedRow, 0).toString();
+        String itemIdsRaw = jTable1.getValueAt(selectedRow, 1).toString(); // Comma or pipe separated
+        String userId = jTable1.getValueAt(selectedRow, 7).toString();
+        String quantitiesRaw = jTable1.getValueAt(selectedRow, 3).toString();
+        double amount = Double.parseDouble(jTable1.getValueAt(selectedRow, 4).toString());
 
-            // Read existing PO records from file
-            List<String> existingPOs = TextFile.readFile("C:\\Users\\Isaac\\OneDrive - Asia Pacific University\\Documents\\NetBeansProjects\\java-assignment\\java-assignment\\src\\java_assignment2025\\PurchaseOrder.txt");
-            //StringBuilder supplierIdBuilder = new StringBuilder(); // To collect supplier IDs
-            for (int i = 0; i < itemIdList.length; i++) {
-                String itemId = itemIdList[i].trim();
-                int quantity = Integer.parseInt(quantities[i].trim());
-                double amount = Double.parseDouble(amounts[i].trim());
+        String[] itemIdList = itemIdsRaw.contains("|") ? itemIdsRaw.split("\\|") : itemIdsRaw.split(",");
+        String[] quantityList = quantitiesRaw.contains("|") ? quantitiesRaw.split("\\|") : quantitiesRaw.split(",");
 
-                // Check for duplicate PO (based on requestId and itemId)
-                boolean isDuplicate = existingPOs.stream().anyMatch(line -> {
-                    String[] parts = line.split(",");
-                    return parts.length >= 4 && parts[1].equals(requestId) && parts[3].equals(itemId);
-                });
+        List<String> validItemIds = new ArrayList<>();
+        List<String> validQuantities = new ArrayList<>();
+        List<String> supplierIds = new ArrayList<>();
+        
+        List<String> existingPOs = TextFile.readFile("C:\\Users\\Isaac\\OneDrive - Asia Pacific University\\Documents\\NetBeansProjects\\java-assignment\\java-assignment\\src\\java_assignment2025\\PurchaseOrder.txt");
 
-                if (isDuplicate) {
-                    JOptionPane.showMessageDialog(null, "PO for Request ID " + requestId + " and Item ID " + itemId + " already exists. Skipping...");
-                    continue; // Skip this item
-                }
-                
-                String nextPoId=PurchaseOrder.getNextOrderId();
-                
-                // Find supplier ID
-                Item item = inventorydatamanager.finditemid(itemId);
-                String supplierId = (item != null) ? item.getSupplierid() : "Unknown";
-               
+        for (int i = 0; i < itemIdList.length; i++) {
+            String itemId = itemIdList[i].trim();
+            String quantity = quantityList[i].trim();
+            // Check for duplicate PO (based on requestId and itemId)
+            boolean isDuplicate = existingPOs.stream().anyMatch(line -> {
+                String[] parts = line.split(",");
+                return parts.length >= 4 && parts[1].equals(requestId) && Arrays.asList(parts[3].split("\\|")).contains(itemId);
+            });
 
+            if (isDuplicate) {
+                JOptionPane.showMessageDialog(null, "PO for Request ID " + requestId + " and Item ID " + itemId + " already exists. Skipping this item...");
+                return;
+            }
 
-                 // Append the supplier ID to the builder with "\\|" delimiter
-                /**if (i > 0) {
-                    supplierIdBuilder.append("\\|");
-                }
-                supplierIdBuilder.append(supplierId);**/
-                // Create new PO
-                PurchaseOrder po = new PurchaseOrder(
-                    nextPoId,
-                    requestId,
-                    userId,
-                    Arrays.asList(itemId),
-                    Arrays.asList(String.valueOf(quantity)),
-                    amount,
-                    Arrays.asList(supplierId),
-                    PurchaseOrder.getCurrentDate(),
-                    "pending",
-                    "unpaid"
-                );
+            // Find supplier ID
+            Item item = inventorydatamanager.finditemid(itemId);
+            String supplierId = (item != null) ? item.getSupplierid() : "Unknown";
 
-                // Prepare line and write to file
-                String poLine = String.join(",",
-                    po.getOrderId(),
-                    po.getRequestId(),
-                    po.getUserId(),
-                    String.join("|", po.getItemIds()!= null ? po.getItemIds() : Collections.emptyList()),           // Join item IDs with "|"
-                    String.join("|", po.getQuantities()!= null ? po.getQuantities() : Collections.emptyList()),
-                    String.format("%.2f", po.getAmount()),
-                    String.join("|", po.getSupplierIds()!= null ? po.getSupplierIds() : Collections.emptyList()),
-                    po.getOrderDate(),
-                    po.getOrderStatus(),
-                    po.getPaymentStatus()
-                );
-                
-                    //String concatenatedSupplierIds = supplierIdBuilder.toString();
-                    TextFile.appendTo("C:\\Users\\Isaac\\OneDrive - Asia Pacific University\\Documents\\NetBeansProjects\\java-assignment\\java-assignment\\src\\java_assignment2025\\PurchaseOrder.txt", poLine);
-                    
-                    JOptionPane.showMessageDialog(null, "Purchase Order(s) generated successfully.");
-                }
+            validItemIds.add(itemId);
+            validQuantities.add(quantity);
+            supplierIds.add(supplierId);
+        }
 
-                
+        // Only create PO if there are valid items
+        if (!validItemIds.isEmpty()) {
+            String nextPoId = PurchaseOrder.getNextOrderId();
+            PurchaseOrder po = new PurchaseOrder(
+                nextPoId,
+                requestId,
+                userId,
+                validItemIds,
+                validQuantities,
+                amount,  
+                supplierIds,
+                PurchaseOrder.getCurrentDate(),
+                "Pending",
+                "Pending",
+                "Unpaid"
+            );
 
+            // Write to file
+            String poLine = po.toString();  
+            TextFile.appendTo("C:\\JPL9\\java-assignment\\java-assignment\\src\\java_assignment2025\\PurchaseOrder.txt", poLine);
+            JOptionPane.showMessageDialog(null, "Purchase Order generated successfully.");
+             new PMPurchaseOrder().setVisible(true);
+        } else {
+            JOptionPane.showMessageDialog(null, "No valid items to generate PO. All were duplicates.");
+        }
 
     }//GEN-LAST:event_createPurchaseOrderActionPerformed
 

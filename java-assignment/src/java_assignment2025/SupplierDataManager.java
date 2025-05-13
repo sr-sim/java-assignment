@@ -84,17 +84,23 @@ public class SupplierDataManager {
                 System.out.println("supplier not found");
             } 
     }
-    public void updateSupplier(Supplier oldsupplier, Supplier newsupplier){
-        if(supplierlist.contains(oldsupplier)){
-            supplierlist.remove(oldsupplier);
-            supplierlist.add(newsupplier);
-            textfile.replaceLine(supplierfilepath, oldsupplier.toString(), newsupplier.toString());
-            System.out.println("successful edit");
-        }else{
-            System.out.println("failed to edit");
+    public void updateSupplier(String supplierId, String supplierName, String address, String contact, String email, String itemDesc, boolean readDescriptionStatus) {
+        Supplier existingsupplier = findsupplierid(supplierId);
+        if (existingsupplier != null) {
+            existingsupplier.setSupplierid(supplierId);
+            existingsupplier.setSuppliername(supplierName);
+            existingsupplier.setContact(contact);
+            existingsupplier.setEmail(email);
+            existingsupplier.setAddress(address);
+            existingsupplier.setItemdescription(itemDesc);
+            existingsupplier.setReadDescrptionStatus(readDescriptionStatus);
+            textfile.rewriteFile(supplierfilepath, supplierlist);
+            System.out.println("Supplier updated successfully.");
+        } else {
+            System.out.println("Supplier not found.");
         }
     }
-    
+//    supplierid, suppliername , contact, email, address, itemdesc, readDescrptionStatus
     private boolean duplicatedsupplier(Supplier supplier){
         for (Supplier existsupplier : supplierlist){
             if (existsupplier.getSupplierid().equals(supplier.getSupplierid())){
