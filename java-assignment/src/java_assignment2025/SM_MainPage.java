@@ -13,7 +13,7 @@ public class SM_MainPage extends javax.swing.JFrame {
     private SupplierDataManager supplierdatamanager;
     private InventoryDataManager inventorydatamanager;
     private PurchaseRequisitionManager prmanager;
-
+    private SalesDataManager salesdatamanager;
     /**
      * Creates new form SM_MainPage
      */
@@ -22,6 +22,7 @@ public class SM_MainPage extends javax.swing.JFrame {
         this.supplierdatamanager = new SupplierDataManager();
         this.inventorydatamanager = new InventoryDataManager();
         this.prmanager = new PurchaseRequisitionManager();
+        this.salesdatamanager = new SalesDataManager();
         initComponents();
     }
 
@@ -191,8 +192,8 @@ public class SM_MainPage extends javax.swing.JFrame {
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
         // TODO add your handling code here:
-//        new SM_DailySalesEntry(salesmanager).setVisible(true);
-//        this.dispose();
+        new SM_DailySalesEntry(salesmanager, salesdatamanager, inventorydatamanager).setVisible(true);
+        this.dispose();  
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed

@@ -394,7 +394,7 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
                 );
                 
                 if (confirm == JOptionPane.YES_OPTION) {
-                    PurchaseRequisition newpr = new PurchaseRequisition(
+                    prmanager.updatepr(
                         oldpr.getPrid(),
                         oldpr.getItemids(),
                         oldpr.getUserid(),
@@ -405,8 +405,6 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
                         PurchaseRequisition.ApproveStatus.fromString(updatedStatus),
                         oldpr.getNote()
                     );
-
-                    prmanager.updatepr(oldpr, newpr);
                     savedChanges = true;
                 } else {
                     // Revert change visually if cancelled

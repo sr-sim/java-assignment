@@ -15,7 +15,7 @@ import java.util.List;
 public class PurchaseOrderManager {
     private final List<PurchaseOrder>polist;
     private final TextFile textfile;
-    private final String pofilepath = "C:\\JPL9\\java-assignment\\java-assignment\\src\\java_assignment2025\\PurchaseOrder.txt";
+    private final String pofilepath = "C:\\Users\\User\\OneDrive\\Documents\\NetBeansProjects\\java-assignment\\java-assignment\\src\\java_assignment2025\\PurchaseOrder.txt";
     
     public PurchaseOrderManager() {
         this.polist = new ArrayList<>();
@@ -57,7 +57,7 @@ public class PurchaseOrderManager {
     }
     
     public static String findSupplierNameById(String supplierId) {
-    String supplierFilePath = "C:\\JPL9\\java-assignment\\java-assignment\\src\\java_assignment2025\\Supplier.txt";
+    String supplierFilePath = "C:\\Users\\User\\OneDrive\\Documents\\NetBeansProjects\\java-assignment\\java-assignment\\src\\java_assignment2025\\Supplier.txt";
     List<String> lines = TextFile.readFile(supplierFilePath);
     
     for (String line : lines) {
