@@ -23,8 +23,8 @@ import javax.swing.JOptionPane;
  *
  * @author User
  */
-public class Login extends javax.swing.JFrame {
-     private static final String FILE_PATH = "src/java_assignment2025/user.txt";
+public class Login extends javax.swing.JFrame { 
+     private static final String FILE_PATH = "C:\\Users\\hew\\OneDrive - Asia Pacific University\\Documents\\NetBeansProjects\\java-assignment\\java-assignment\\src\\java_assignment2025\\user.txt";
 
     /**
      * Creates new form Login
@@ -277,7 +277,7 @@ public void openHomePage(User user) {
             new FinanceManagerHome((FinanceManager) user).setVisible(true);
             break;
         case "Inventory Manager":
-            new InventoryManagerHome((InventoryManager) user).setVisible(true);
+            new IM_MainPage((InventoryManager) user).setVisible(true);
             break;
         case "Purchase Manager":
             new PurchaseManagerHome((PurchaseManager) user).setVisible(true);

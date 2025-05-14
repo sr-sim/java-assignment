@@ -19,7 +19,7 @@ import java_assignment2025.TextFile;
 public class SupplierDataManager {
     private final List<Supplier>supplierlist;
     private final TextFile textfile;
-    private final String supplierfilepath = "C:\\Users\\User\\OneDrive\\Documents\\NetBeansProjects\\java-assignment\\java-assignment\\src\\java_assignment2025\\supplier.txt";
+    private final String supplierfilepath = "C:\\Users\\hew\\OneDrive - Asia Pacific University\\Documents\\NetBeansProjects\\java-assignment\\java-assignment\\src\\java_assignment2025\\supplier.txt";
     
     public SupplierDataManager() {
         this.supplierlist = new ArrayList<>();

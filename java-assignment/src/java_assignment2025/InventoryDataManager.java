@@ -14,7 +14,7 @@ import java.util.List;
 public class InventoryDataManager {
     private final List<Item>itemlist;
     private final TextFile textfile;
-    private final String inventoryfilepath = "C:\\Users\\User\\OneDrive\\Documents\\NetBeansProjects\\java-assignment\\java-assignment\\src\\java_assignment2025\\inventory.txt";
+    private final String inventoryfilepath = "C:\\Users\\hew\\OneDrive - Asia Pacific University\\Documents\\NetBeansProjects\\java-assignment\\java-assignment\\src\\java_assignment2025\\inventory.txt";
     
     
     public InventoryDataManager() {

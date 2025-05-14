@@ -13,6 +13,7 @@ import java.util.List;
  *
  * @author Macy Khoo
  */
+
 public class PurchaseOrder {
     
     private String orderId;
@@ -26,6 +27,8 @@ public class PurchaseOrder {
     private String orderStatus;
     private String verifyStatus;
     private String paymentStatus;
+    private ReceiveStatus receiveStatus;
+
    
     
     public PurchaseOrder(){}
@@ -99,6 +102,30 @@ public class PurchaseOrder {
         this.paymentStatus = paymentStatus;
     }
 
+    public enum ReceiveStatus {
+        NOT_RECEIVED(0),
+        HALF_RECEIVED(1),
+        RECEIVED(2);
+
+        private final int value;
+
+        ReceiveStatus(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
+
+        public static ReceiveStatus fromValue(int value) {
+            for (ReceiveStatus status : ReceiveStatus.values()) {
+                if (status.getValue() == value) {
+                    return status;
+                }
+            }
+            throw new IllegalArgumentException("Invalid receive status: " + value);
+        }
+    }
    
 
      public static String getCurrentDate() {
