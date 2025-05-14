@@ -96,4 +96,21 @@ public class TextFile {
             System.out.println("Error wrriting to file");
         }
     }
+    public void rewriteFile(String fileName, List<?> objectList) {
+        try {
+            FileWriter myWriter = new FileWriter(fileName);
+            for (int i = 0; i < objectList.size(); i++) {
+                Object obj = objectList.get(i);
+                myWriter.write(obj.toString());
+                if (i < objectList.size() - 1) {
+                    myWriter.write(System.lineSeparator());
+                }
+            }
+            myWriter.close();
+            System.out.println("File successfully rewritten with updated data.");
+        } catch (IOException e) {
+            System.out.println("Error writing file: " + e.getMessage());
+        }
+    }
+
 }

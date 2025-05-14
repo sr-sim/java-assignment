@@ -15,7 +15,7 @@ import java.util.List;
 public class PurchaseRequisitionManager {
    private final List<PurchaseRequisition>prlist;
     private final TextFile textfile;
-    private final String prfilepath = "C:\\JPL9\\java-assignment\\java-assignment\\src\\java_assignment2025\\purchaserequisition.txt";
+    private final String prfilepath = "C:\\Users\\User\\OneDrive\\Documents\\NetBeansProjects\\java-assignment\\java-assignment\\src\\java_assignment2025\\purchaserequisition.txt";
     
     public PurchaseRequisitionManager() {
         this.prlist = new ArrayList<>();
@@ -87,17 +87,35 @@ public class PurchaseRequisitionManager {
                 System.out.println("pr not found");
             } 
     }
-    public void updatepr(PurchaseRequisition oldpr, PurchaseRequisition newpr){
-        if(prlist.contains(oldpr)){
-            prlist.remove(oldpr);
-            prlist.add(newpr);
-            textfile.replaceLine(prfilepath, oldpr.toString(), newpr.toString());
-            System.out.println("successful edit");
-        }else{
-            System.out.println("failed to edit");
+    public void updatepr(String prid, List<String> itemids, String userid, List<String> quantities, String total,String requestdate,String expecteddeliverydate,PurchaseRequisition.ApproveStatus status,String note) {
+        PurchaseRequisition existingpr= findprid(prid);
+        if (existingpr != null) {
+            existingpr.setPrid(prid);
+            existingpr.setItemids(itemids);
+            existingpr.setUserid(userid);
+            existingpr.setQuantitiesList(quantities);
+            existingpr.setTotal(total);
+            existingpr.setRequestdate(requestdate);
+            existingpr.setExpecteddeliverydate(expecteddeliverydate);
+            existingpr.setApprovestatus(status);
+            existingpr.setNote(note);
+            textfile.rewriteFile(prfilepath, prlist);
+            System.out.println("Supplier updated successfully.");
+        } else {
+            System.out.println("Supplier not found.");
         }
     }
     
+//        private String prid;
+//    private List<String> itemids;
+//    private String userid;
+//    private List<String> quantities;
+//    private String total;
+//    private String requestdate;
+//    private String expecteddeliverydate;
+//    private ApproveStatus approvestatus;
+//    private String note;
+//    
     private boolean duplicatedpr(PurchaseRequisition pr){
         for (PurchaseRequisition existpr : prlist){
             if (existpr.getPrid().equals(pr.getPrid())){
