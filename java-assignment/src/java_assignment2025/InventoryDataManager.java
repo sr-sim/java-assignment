@@ -25,12 +25,12 @@ public class InventoryDataManager {
     public List<Item> getinventorylist(){
         return itemlist;
     }
-    public void loadAllinventoryfromtxtfile(){
+    public void loadAllinventoryfromtxtfile(){  
         List<String> lines = textfile.readFile(inventoryfilepath);
         for(String line : lines){
-            String[] parts = line.split(",", 10);
-            if(parts.length == 10){
-                itemlist.add(new Item( // one by one add to list
+            String[] parts = line.split(",", 11);
+            if(parts.length == 11){
+                    itemlist.add(new Item( // one by one add to list
                         parts[0].trim(),
                         parts[1].trim(),
                         parts[2].trim(),
@@ -40,7 +40,8 @@ public class InventoryDataManager {
                         parts[6].trim(),
                         parts[7].trim(),
                         parts[8].trim(),
-                        parts[9].trim()
+                        parts[9].trim(),
+                        Boolean.parseBoolean(parts[10].trim())
                 ));
             }
         }
@@ -71,18 +72,18 @@ public class InventoryDataManager {
             System.out.println("item exist already ya");
         }
     }
-    public void deleteItem(String itemid){
+    public void markitemasDeleted(String itemid){
         Item item = finditemid(itemid);
             if (item != null){
-                itemlist.remove(item);
-                textfile.deleteLine(inventoryfilepath, item.toString());
+                item.setDeleted(true);
+                textfile.rewriteFile(inventoryfilepath, itemlist);
                 System.out.println("delete successful");
                 return;
             }else{
                 System.out.println("item not found");
             } 
     }
-    public void updateItem(String itemid, String itemname, String itemdesc, String supplierid, String unitprice, String retailprice,String instockquantity,String reorderlevel,String reorderstatus,String lastmodifieddate) {
+    public void updateItem(String itemid, String itemname, String itemdesc, String supplierid, String unitprice, String retailprice,String instockquantity,String reorderlevel,String reorderstatus,String lastmodifieddate,boolean deleted) {
         Item existingitem = finditemid(itemid);
         if (existingitem != null) {
             existingitem.setItemid(itemid);
@@ -95,6 +96,7 @@ public class InventoryDataManager {
             existingitem.setReorderlevel(reorderlevel);
             existingitem.setReorderstatus(reorderstatus);
             existingitem.setLastmodifieddate(lastmodifieddate);
+            existingitem.setDeleted(deleted);
             textfile.rewriteFile(inventoryfilepath, itemlist);
             System.out.println("Supplier updated successfully.");
         } else {

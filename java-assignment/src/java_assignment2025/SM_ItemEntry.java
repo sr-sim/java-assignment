@@ -46,33 +46,38 @@ public class SM_ItemEntry extends javax.swing.JFrame {
     
     private void fillComboBoxFromSupplierList() {
     for (Supplier supplier : supplierdatamanager.getsupplierlist()) {
-        String comboBoxItem = supplier.getSupplierid() + " - " + supplier.getSuppliername();
-        jComboBox1.addItem(comboBoxItem);
-        }
+         if(!supplier.isDeleted()){
+            String comboBoxItem = supplier.getSupplierid() + " - " + supplier.getSuppliername();
+            jComboBox1.addItem(comboBoxItem);
+         }
+      }
     }
 
     public void fillTable1FromTxtFile() {
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
         model.setRowCount(0); 
         for (Item item : inventorydatamanager.getinventorylist()) {
-            String itemId = item.getItemid();
-            String itemName = item.getItemname();
-            String itemDescription = item.getItemdesc();
-            String supplierId = item.getSupplierid();
-            String inStockQty = item.getInstockquantity();
-            String unitPrice = item.getUnitprice();
-            String retailPrice = item.getRetailprice();
-            String lastModifiedDate = item.getLastmodifieddate();
+            if(!item.isDeleted()){ //is deleted is false
+                String itemId = item.getItemid();
+                String itemName = item.getItemname();
+                String itemDescription = item.getItemdesc();
+                String supplierId = item.getSupplierid();
+                String inStockQty = item.getInstockquantity();
+                String unitPrice = item.getUnitprice();
+                String retailPrice = item.getRetailprice();
+                String lastModifiedDate = item.getLastmodifieddate();
 
-            Supplier supplier = supplierdatamanager.findsupplierid(supplierId);
-            String supplierName = (supplier != null) ? supplier.getSuppliername() : "Unknown Supplier";
+                Supplier supplier = supplierdatamanager.findsupplierid(supplierId);
+                String supplierName = (supplier != null) ? supplier.getSuppliername() : "Unknown Supplier";
 
-            model.addRow(new Object[]{
-                itemId, itemName, itemDescription,
-                supplierId, supplierName,
-                inStockQty, unitPrice, retailPrice,
-                lastModifiedDate
-            });
+                model.addRow(new Object[]{
+                    itemId, itemName, itemDescription,
+                    supplierId, supplierName,
+                    inStockQty, unitPrice, retailPrice,
+                    lastModifiedDate
+                });
+            }
+
         }
     }
 
@@ -389,30 +394,14 @@ public class SM_ItemEntry extends javax.swing.JFrame {
                     int column = e.getColumn();
 
                     if (column == 3) {
-                        String supplierId = model.getValueAt(row, 0).toString();
+                        String supplierid = model.getValueAt(row, 0).toString();
                         Boolean newStatusObj = (Boolean) model.getValueAt(row, column);
 
                         if (newStatusObj == null) return;
-
                         boolean newStatus = newStatusObj;
 
-                        Supplier existingSupplier = supplierdatamanager.findsupplierid(supplierId);
-                        if (existingSupplier == null) {
-                            JOptionPane.showMessageDialog(null, "Supplier not found", "Error", JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
+                        supplierdatamanager.marknewsupplierinitemasRead(supplierid, newStatus);
 
-                        // Create a new Supplier object with updated read status
-                        supplierdatamanager.updateSupplier(
-                            existingSupplier.getSupplierid(),
-                            existingSupplier.getSuppliername(),
-                            existingSupplier.getAddress(),
-                            existingSupplier.getContact(),
-                            existingSupplier.getEmail(),
-                            existingSupplier.getItemdescription(),
-                            newStatus
-                        );
-                        System.out.println("Updated read status for " + supplierId + " to " + newStatus);
                         filterTable2FromSupplierList(newStatus);
                     }
                 }
@@ -668,7 +657,7 @@ public class SM_ItemEntry extends javax.swing.JFrame {
             int YesOrNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this item?" + itemid , "Confirm Delete", JOptionPane.YES_NO_OPTION);
             
             if (YesOrNo == JOptionPane.YES_OPTION){
-                inventorydatamanager.deleteItem(itemid);
+                inventorydatamanager.markitemasDeleted(itemid);
                 fillTable1FromTxtFile();
                 clearTextField();
                 JOptionPane.showMessageDialog(null, "This item Deleted successfully");
@@ -702,7 +691,8 @@ public class SM_ItemEntry extends javax.swing.JFrame {
             String lastmodifieddate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             String reorderlevel = olditem.getReorderlevel();
             String reorderstatus = olditem.getReorderstatus();
-            inventorydatamanager.updateItem(itemid, itemname, itemdesc, supplierid, unitprice, retailprice, instockquantity, reorderlevel, reorderstatus, lastmodifieddate);
+            boolean deleted = olditem.isDeleted();
+            inventorydatamanager.updateItem(itemid, itemname, itemdesc, supplierid, unitprice, retailprice, instockquantity, reorderlevel, reorderstatus, lastmodifieddate, deleted);
             fillTable1FromTxtFile();
             clearTextField();
             JOptionPane.showMessageDialog(this, "Update Successfully!");
@@ -725,6 +715,7 @@ public class SM_ItemEntry extends javax.swing.JFrame {
         String lastmodifieddate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         String reorderlevel = "0";
         String reorderstatus = null;
+        boolean deleted = false;
         
         
         if (itemname.isEmpty()|| supplierid.isEmpty() || unitprice.isEmpty() || retailprice.isEmpty()|| itemdesc.isEmpty()) {
@@ -733,7 +724,7 @@ public class SM_ItemEntry extends javax.swing.JFrame {
         }
         
         try {
-            Item item = new Item(itemid, itemname, itemdesc, supplierid, unitprice, retailprice, instockquantity, reorderlevel, reorderstatus, lastmodifieddate);
+            Item item = new Item(itemid, itemname, itemdesc, supplierid, unitprice, retailprice, instockquantity, reorderlevel, reorderstatus, lastmodifieddate,deleted);
             inventorydatamanager.addItem(item);
    
             JOptionPane.showMessageDialog(null, "Success","Information", JOptionPane.INFORMATION_MESSAGE);
