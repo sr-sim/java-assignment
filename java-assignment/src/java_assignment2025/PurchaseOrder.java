@@ -24,6 +24,7 @@ public class PurchaseOrder {
     private List<String> supplierIds;
     private String orderDate;
     private String orderStatus;
+    private String verifyStatus;
     private String paymentStatus;
    
     
@@ -31,7 +32,7 @@ public class PurchaseOrder {
     // Constructor
     public PurchaseOrder(String orderId, String requestId, String userId,List<String> itemIds ,
                          List<String> quantities, double amount,List<String>  supplierIds,
-                         String orderDate, String orderStatus, String paymentStatus) {
+                         String orderDate, String orderStatus, String verifyStatus, String paymentStatus) {
         this.orderId = orderId;
         this.requestId = requestId;
         this.userId = userId;
@@ -41,6 +42,7 @@ public class PurchaseOrder {
         this.supplierIds = supplierIds;
         this.orderDate = getCurrentDate();
         this.orderStatus = "pending";
+        this.verifyStatus = "pending";
         this.paymentStatus = "unpaid";
     }
     
@@ -86,6 +88,9 @@ public class PurchaseOrder {
         this.orderStatus = orderStatus;
     }
 
+    public String getVerifyStatus() {
+        return verifyStatus;
+    }
     public String getPaymentStatus() {
         return paymentStatus;
     }
@@ -104,7 +109,7 @@ public class PurchaseOrder {
     
     
     public static String getNextOrderId() {
-        String filePath = "C:\\JPL9\\java-assignment\\java-assignment\\src\\java_assignment2025\\PurchaseOrder.txt";
+        String filePath = "C:\\Users\\User\\OneDrive\\Documents\\NetBeansProjects\\java-assignment\\java-assignment\\src\\java_assignment2025\\PurchaseOrder.txt";
         List<String> lines = TextFile.readFile(filePath);
         int maxId = 0;
 
@@ -135,7 +140,7 @@ public class PurchaseOrder {
                String.join("|", quantities) + "," +
                String.format("%.2f", amount) + "," +
                String.join("|", supplierIds) + "," +
-               orderDate + "," + orderStatus + "," + paymentStatus;
+               orderDate + "," + orderStatus + "," + verifyStatus+","+ paymentStatus;
 }
 
 }

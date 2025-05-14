@@ -6,9 +6,14 @@ package java_assignment2025;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import java_assignment2025.PRformMode;
+import javax.swing.RowFilter;
+import javax.swing.table.TableRowSorter;
 
 /**
+ * 
  *
  * @author User
  */
@@ -17,6 +22,7 @@ public class SM_PurchaseRequisition extends javax.swing.JFrame {
     private PurchaseRequisitionManager prmanager;
     private InventoryDataManager inventorydatamanager;
     private SupplierDataManager supplierdatamanager = new SupplierDataManager();
+    private SalesDataManager salesdatamanager = new SalesDataManager();
     /**
      * Creates new form SM_PurchaseRequisition
      */
@@ -26,6 +32,13 @@ public class SM_PurchaseRequisition extends javax.swing.JFrame {
         this.prmanager = prmanager;
         this.inventorydatamanager = inventorydatamanager;
         fillTableFromTxtFile();
+    }
+    public void search(String str){
+       DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+       TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
+       jTable1.setRowSorter(sorter);
+       sorter.setRowFilter(RowFilter.regexFilter("(?i)" + str));
+
     }
 
     /**
@@ -63,6 +76,15 @@ public class SM_PurchaseRequisition extends javax.swing.JFrame {
                 status
             });
         }
+    }
+    private PurchaseRequisition getselectedPR(){
+        int selectedRow = jTable1.getSelectedRow();
+        if(selectedRow == -1){
+            JOptionPane.showMessageDialog(null, "Please select a row" , "Selection Error", JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+        String prid = (String)jTable1.getValueAt(selectedRow, 0);
+        return prmanager.findprid(prid);
     }
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -213,6 +235,11 @@ public class SM_PurchaseRequisition extends javax.swing.JFrame {
                 jTextField1ActionPerformed(evt);
             }
         });
+        jTextField1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jTextField1KeyReleased(evt);
+            }
+        });
 
         jButton1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jButton1.setText("Create a PR");
@@ -321,8 +348,8 @@ public class SM_PurchaseRequisition extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-//        new SM_DailySalesEntry(salesmanager).setVisible(true);
-//        this.dispose();
+        new SM_DailySalesEntry(salesmanager, salesdatamanager, inventorydatamanager).setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
@@ -340,21 +367,52 @@ public class SM_PurchaseRequisition extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField1ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        new SM_Create_Purchase_Requisition(salesmanager,prmanager,inventorydatamanager).setVisible(true);
+        new SM_Create_Purchase_Requisition(salesmanager,prmanager,inventorydatamanager,PRformMode.create,null).setVisible(true);
         this.dispose();  
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
+        PurchaseRequisition selectedpr = getselectedPR();
+        if (selectedpr != null){
+            new SM_Create_Purchase_Requisition(salesmanager,prmanager,inventorydatamanager,PRformMode.view,selectedpr).setVisible(true);
+        }
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // TODO add your handling code here:
+        PurchaseRequisition selectedpr = getselectedPR();
+        if (selectedpr != null){
+            if (selectedpr.getApprovestatus() == PurchaseRequisition.ApproveStatus.approved){
+                JOptionPane.showMessageDialog(null, "Cannot edit an approved PR");
+                return;
+            }else if (selectedpr.getApprovestatus() == PurchaseRequisition.ApproveStatus.reject){
+                JOptionPane.showMessageDialog(null, "Cannot edit an rejected PR");
+                return;
+            }
+            new SM_Create_Purchase_Requisition(salesmanager,prmanager,inventorydatamanager,PRformMode.edit,selectedpr).setVisible(true);
+        }
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        // TODO add your handling code here:
+        int selectedrow = jTable1.getSelectedRow();
+        if (selectedrow != -1){
+            String prid = jTable1.getValueAt(selectedrow, 0).toString();
+            
+            int YesOrNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this purchase requisition?" + prid , "Confirm Delete", JOptionPane.YES_NO_OPTION);
+            
+            if (YesOrNo == JOptionPane.YES_OPTION){
+                prmanager.deletepr(prid);
+                fillTableFromTxtFile();
+                JOptionPane.showMessageDialog(null, "This purchase requisition deleted successfully");
+            }
+        }else{
+                JOptionPane.showMessageDialog(null, "Please select a purchase requisition from the table");
+            } 
     }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jTextField1KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField1KeyReleased
+        String searchString = jTextField1.getText();
+        search(searchString);
+    }//GEN-LAST:event_jTextField1KeyReleased
 
     /**
 //     * @param args the command line arguments
