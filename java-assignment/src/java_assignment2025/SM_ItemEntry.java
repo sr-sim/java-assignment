@@ -21,6 +21,7 @@ public class SM_ItemEntry extends javax.swing.JFrame {
     private InventoryDataManager inventorydatamanager;
     private SupplierDataManager supplierdatamanager;
     private PurchaseRequisitionManager prmanager = new PurchaseRequisitionManager();
+    private SalesDataManager salesdatamanager = new SalesDataManager();
 
     /**
      * Creates new form SM_ItemEntry
@@ -395,23 +396,22 @@ public class SM_ItemEntry extends javax.swing.JFrame {
 
                         boolean newStatus = newStatusObj;
 
-                        Supplier oldsupplier = supplierdatamanager.findsupplierid(supplierId);
-                        if (oldsupplier == null) {
-                            JOptionPane.showMessageDialog(null, "Old supplier not found", "Error", JOptionPane.ERROR_MESSAGE);
+                        Supplier existingSupplier = supplierdatamanager.findsupplierid(supplierId);
+                        if (existingSupplier == null) {
+                            JOptionPane.showMessageDialog(null, "Supplier not found", "Error", JOptionPane.ERROR_MESSAGE);
                             return;
                         }
 
-                        Supplier newsupplier = new Supplier(
-                            oldsupplier.getSupplierid(),
-                            oldsupplier.getSuppliername(),
-                            oldsupplier.getAddress(),
-                            oldsupplier.getContact(),
-                            oldsupplier.getEmail(),
-                            oldsupplier.getItemdescription(),
+                        // Create a new Supplier object with updated read status
+                        supplierdatamanager.updateSupplier(
+                            existingSupplier.getSupplierid(),
+                            existingSupplier.getSuppliername(),
+                            existingSupplier.getAddress(),
+                            existingSupplier.getContact(),
+                            existingSupplier.getEmail(),
+                            existingSupplier.getItemdescription(),
                             newStatus
                         );
-
-                        supplierdatamanager.updateSupplier(oldsupplier, newsupplier);
                         System.out.println("Updated read status for " + supplierId + " to " + newStatus);
                         filterTable2FromSupplierList(newStatus);
                     }
@@ -469,6 +469,11 @@ public class SM_ItemEntry extends javax.swing.JFrame {
         jLabel14.setText("Description :");
 
         jComboBox1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jComboBox1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBox1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -697,10 +702,7 @@ public class SM_ItemEntry extends javax.swing.JFrame {
             String lastmodifieddate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             String reorderlevel = olditem.getReorderlevel();
             String reorderstatus = olditem.getReorderstatus();
-            Item newitem = new Item(itemid, itemname, itemdesc, supplierid, unitprice, retailprice, instockquantity, reorderlevel, reorderstatus, lastmodifieddate);
-            inventorydatamanager.updateItem(olditem, newitem);
-    
-      System.out.println("Item updated: " + newitem);
+            inventorydatamanager.updateItem(itemid, itemname, itemdesc, supplierid, unitprice, retailprice, instockquantity, reorderlevel, reorderstatus, lastmodifieddate);
             fillTable1FromTxtFile();
             clearTextField();
             JOptionPane.showMessageDialog(this, "Update Successfully!");
@@ -766,11 +768,12 @@ public class SM_ItemEntry extends javax.swing.JFrame {
 
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
         new SM_PurchaseRequisition(salesmanager, prmanager, inventorydatamanager).setVisible(true);
-        this.dispose();;
+        this.dispose();
     }//GEN-LAST:event_jButton9ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-  
+        new SM_DailySalesEntry(salesmanager, salesdatamanager, inventorydatamanager).setVisible(true);
+        this.dispose();  
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
@@ -821,6 +824,10 @@ public class SM_ItemEntry extends javax.swing.JFrame {
     private void ReadButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ReadButtonActionPerformed
         filterTable2FromSupplierList(true);
     }//GEN-LAST:event_ReadButtonActionPerformed
+
+    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jComboBox1ActionPerformed
 
     /**
 //     * @param args the command line arguments

@@ -14,7 +14,7 @@ import java.util.List;
 public class InventoryDataManager {
     private final List<Item>itemlist;
     private final TextFile textfile;
-    private final String inventoryfilepath = "C:\\JPL9\\java-assignment\\java-assignment\\src\\java_assignment2025\\inventory.txt";
+    private final String inventoryfilepath = "C:\\Users\\User\\OneDrive\\Documents\\NetBeansProjects\\java-assignment\\java-assignment\\src\\java_assignment2025\\inventory.txt";
     
     
     public InventoryDataManager() {
@@ -82,18 +82,35 @@ public class InventoryDataManager {
                 System.out.println("item not found");
             } 
     }
-    public void updateItem(Item olditem, Item newitem){
-        if(itemlist.contains(olditem)){
-            itemlist.remove(olditem);
-            itemlist.add(newitem);
-            textfile.replaceLine(inventoryfilepath, olditem.toString(), newitem.toString());
-            System.out.println("Updating item: " + olditem.getItemid() + " to " + newitem.getItemid());
-
-            System.out.println("successful edit");
-        }else{
-            System.out.println("failed to edit");
+    public void updateItem(String itemid, String itemname, String itemdesc, String supplierid, String unitprice, String retailprice,String instockquantity,String reorderlevel,String reorderstatus,String lastmodifieddate) {
+        Item existingitem = finditemid(itemid);
+        if (existingitem != null) {
+            existingitem.setItemid(itemid);
+            existingitem.setItemname(itemname);
+            existingitem.setItemdesc(itemdesc);
+            existingitem.setSupplierid(supplierid);
+            existingitem.setUnitprice(unitprice);
+            existingitem.setInstockquantity(instockquantity);
+            existingitem.setRetailprice(retailprice);
+            existingitem.setReorderlevel(reorderlevel);
+            existingitem.setReorderstatus(reorderstatus);
+            existingitem.setLastmodifieddate(lastmodifieddate);
+            textfile.rewriteFile(inventoryfilepath, itemlist);
+            System.out.println("Supplier updated successfully.");
+        } else {
+            System.out.println("Supplier not found.");
         }
     }
+//        private String itemid;
+//    private String itemname;
+//    private String itemdesc;
+//    private String supplierid;
+//    private String unitprice;
+//    private String instockquantity;
+//    private String retailprice;
+//    private String reorderlevel;
+//    private String reorderstatus;
+//    private String lastmodifieddate;
     
     private boolean duplicateditem(Item item){
         for (Item existitem : itemlist){
