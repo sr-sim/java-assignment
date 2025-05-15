@@ -26,20 +26,22 @@ public class PurchaseRequisitionManager {
     public void loadAllprfromtxtfile() {
         List<String> lines = textfile.readFile(prfilepath);
         for (String line : lines) {
-            String[] parts = line.split(",", 9);
-            if (parts.length == 9) {
+            String[] parts = line.split(",", 10);
+            if (parts.length == 10) {
                 List<String> itemids = Arrays.asList(parts[1].trim().split("\\|"));
                 List<String> quantities = Arrays.asList(parts[3].trim().split("\\|"));
+                List<String> unitprices = Arrays.asList(parts[4].trim().split("\\|"));
                 prlist.add(new PurchaseRequisition(
                         parts[0].trim(),
                         itemids, // new ArrayList<>(itemids),
                         parts[2].trim(),
                         quantities,
-                        parts[4].trim(),
+                        unitprices,
                         parts[5].trim(),
                         parts[6].trim(),
-                        PurchaseRequisition.ApproveStatus.fromString(parts[7].trim()),
-                        parts[8].trim()
+                        parts[7].trim(),
+                        PurchaseRequisition.ApproveStatus.fromString(parts[8].trim()),
+                        parts[9].trim()
                 ));
             }
         }
@@ -87,22 +89,23 @@ public class PurchaseRequisitionManager {
                 System.out.println("pr not found");
             } 
     }
-    public void updatepr(String prid, List<String> itemids, String userid, List<String> quantities, String total,String requestdate,String expecteddeliverydate,PurchaseRequisition.ApproveStatus status,String note) {
+    public void updatepr(String prid, List<String> itemids, String userid, List<String> quantities,List<String> unitprices, String total,String requestdate,String expecteddeliverydate,PurchaseRequisition.ApproveStatus status,String note) {
         PurchaseRequisition existingpr= findprid(prid);
         if (existingpr != null) {
             existingpr.setPrid(prid);
             existingpr.setItemids(itemids);
             existingpr.setUserid(userid);
             existingpr.setQuantitiesList(quantities);
+            existingpr.setUnitprice(unitprices);
             existingpr.setTotal(total);
             existingpr.setRequestdate(requestdate);
             existingpr.setExpecteddeliverydate(expecteddeliverydate);
             existingpr.setApprovestatus(status);
             existingpr.setNote(note);
             textfile.rewriteFile(prfilepath, prlist);
-            System.out.println("Supplier updated successfully.");
+            System.out.println("updated successfully.");
         } else {
-            System.out.println("Supplier not found.");
+            System.out.println("not found.");
         }
     }
     
@@ -124,16 +127,26 @@ public class PurchaseRequisitionManager {
         }
         return false;
     }
-public PurchaseRequisition findprid(String prid) {
-    for (PurchaseRequisition pr : prlist) {
-        if (pr.getPrid().equals(prid)) {
-            return pr;
+    public PurchaseRequisition findprid(String prid) {
+        for (PurchaseRequisition pr : prlist) {
+            if (pr.getPrid().equals(prid)) {
+                return pr;
+            }
         }
+        return null;
     }
-    return null;
-}
 
-    
+   public double calculatetotalprice(List<PRItem> pritemlist){
+        double totalprice = 0.0;
+        for (PRItem pritem : pritemlist){
+            try{
+                totalprice += Double.parseDouble(pritem.getTotalprice());
+            }catch(NumberFormatException e){
+                System.out.println("invalid price format in PRitem");
+            }
+        }
+        return totalprice;
+    }
     
 }
 

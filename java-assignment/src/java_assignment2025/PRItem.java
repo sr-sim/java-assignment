@@ -11,11 +11,13 @@ package java_assignment2025;
 public class PRItem {
     private Item item;
     private String quantity;
+    private String unitprice;
     private String totalprice;
     
-    public PRItem(Item item,String quantity, String totalprice){
+    public PRItem(Item item,String quantity,String unitprice,String totalprice){
         this.item = item;
         this.quantity = quantity;
+        this.unitprice = unitprice;
         this.totalprice = totalprice;
     }
     
@@ -50,6 +52,16 @@ public class PRItem {
     
     @Override
     public String toString(){
-        return item.getItemid() + ","+quantity +","+totalprice;
+        return item.getItemid() + ","+quantity +","+unitprice+","+totalprice;
+    }
+
+
+    public String getUnitprice() {
+        return unitprice;
+    }
+
+
+    public void setUnitprice(String unitprice) {
+        this.unitprice = unitprice;
     }
 }

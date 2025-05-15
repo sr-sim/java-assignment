@@ -41,9 +41,9 @@ public class PurchaseOrder {
         this.amount = amount;
         this.supplierIds = supplierIds;
         this.orderDate = getCurrentDate();
-        this.orderStatus = "pending";
-        this.verifyStatus = "pending";
-        this.paymentStatus = "unpaid";
+        this.orderStatus = orderStatus;
+        this.verifyStatus = verifyStatus;
+        this.paymentStatus = paymentStatus;
     }
     
 
