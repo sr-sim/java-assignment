@@ -14,6 +14,7 @@ import javax.swing.JDialog;
 import javax.swing.table.DefaultTableModel;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -21,6 +22,22 @@ import java.util.List;
 import java.util.Calendar;
 import java.util.Locale;
 import java.io.IOException;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+//import static java_assignment2025.FinanceReport.exportJTableToJasper;
+
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.view.JasperViewer;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -71,6 +88,7 @@ public class FinanceGReport extends javax.swing.JFrame {
             po.getOrderStatus(),
             po.getPaymentStatus()
         });
+        resizeColumnWidths(jTable1);
     }
     
     
@@ -83,6 +101,42 @@ public class FinanceGReport extends javax.swing.JFrame {
         showReportPopup(filtered, "paid pos - week" + currentWeek);
         
     }
+    private void exportJTableToJasperReport() {
+    try {
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        List<PurchaseOrderReportEntry> reportList = new ArrayList<>();
+
+        for (int i = 0; i < model.getRowCount(); i++) {
+            String poid = model.getValueAt(i, 0).toString();       // PO Id
+            String itemIds = model.getValueAt(i, 3).toString();    // Item Id
+            String itemNames = model.getValueAt(i, 4).toString();  // Item Name
+            String quantities = model.getValueAt(i, 5).toString(); // Quantity
+            String amount = model.getValueAt(i, 6).toString();     // Amount
+            String orderDate = model.getValueAt(i, 8).toString();  // Order Date
+
+            reportList.add(new PurchaseOrderReportEntry(poid, itemIds, itemNames, quantities, orderDate, amount));
+        }
+
+        // Load .jrxml or .jasper file (compiled)
+        JasperReport report = JasperCompileManager.compileReport("C:\\Users\\Isaac\\JaspersoftWorkspace\\MyReports\\FinanceReportTemplate.jrxml");
+
+        JRBeanCollectionDataSource ds = new JRBeanCollectionDataSource(reportList);
+
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("ReportTitle", "Purchase Order Financial Report");
+
+        JasperPrint print = JasperFillManager.fillReport(report, parameters, ds);
+        JasperViewer.viewReport(print, false);
+        JasperExportManager.exportReportToPdfFile(print, "PO_Table_Report_" + System.currentTimeMillis() + ".pdf");
+
+        JOptionPane.showMessageDialog(this, "PDF Exported Successfully!");
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Error generating report: " + e.getMessage());
+    }
+}
+
     
     private void showReportPopup(List<PurchaseOrder> poList, String title){
         
@@ -140,54 +194,107 @@ public class FinanceGReport extends javax.swing.JFrame {
 
         PDPageContentStream content = new PDPageContentStream(document, page);
         PDFont font = PDType1Font.HELVETICA;
+        PDFont boldFont = PDType1Font.HELVETICA_BOLD;
 
         float margin = 50;
-        float y = page.getMediaBox().getHeight() - margin;
-        float leading = 15f;
+        float yStart = page.getMediaBox().getHeight() - margin;
+        float y = yStart;
+        float tableWidth = page.getMediaBox().getWidth() - 2 * margin;
+        float rowHeight = 20;
+        float tableBottomY = 100;
 
-        content.setFont(font, 12);
+        content.setFont(boldFont, 18);
         content.beginText();
         content.newLineAtOffset(margin, y);
-
         content.showText(title);
-        content.newLineAtOffset(0, -leading * 2);
+        content.endText();
+        y -= 30;
 
-        // Print headers
-        String header = String.format("%-12s %-28s %-15s %-12s %-10s", "PO ID", "Amount", "Order Date", "Supplier", "Status");
-        content.showText(header);
-        content.newLineAtOffset(0, -15);
+    // Draw header
+        content.setFont(boldFont, 12);
+        content.beginText();
+        content.newLineAtOffset(margin, y);
+        content.showText("PO ID      Amount               Order Date        Supplier       Status");
+        content.endText();
 
+        y -= rowHeight;
+        content.setStrokingColor(0, 0, 0); // black line
+
+        // Draw header bottom line
+        content.moveTo(margin, y);
+        content.lineTo(margin + tableWidth, y);
+        content.stroke();
+
+        content.setFont(font, 11);
+
+        // Table body
         for (int row = 0; row < table.getRowCount(); row++) {
+            if (y < tableBottomY) break; // avoid writing off page
+
+            y -= rowHeight;
             String poId = table.getValueAt(row, 0).toString();
             String amount = table.getValueAt(row, 1).toString();
             String date = table.getValueAt(row, 2).toString();
             String supplier = table.getValueAt(row, 3).toString();
             String status = table.getValueAt(row, 4).toString();
 
-            String line = String.format("%-10s %-25s %-15s %-10s %-10s", poId, amount, date, supplier, status);
-            content.showText(line);
-            content.newLineAtOffset(0, -15);
+            content.beginText();
+            content.newLineAtOffset(margin, y);
+            content.showText(String.format("%-10s %-20s %-15s %-12s %-10s", poId, amount, date, supplier, status));
+            content.endText();
+
+            // Draw horizontal line below row
+            content.moveTo(margin, y - 5);
+            content.lineTo(margin + tableWidth, y - 5);
+            content.stroke();
         }
+
+        // Total amount
         double totalAmount = 0;
         for (int row = 0; row < table.getRowCount(); row++) {
             String amountStr = table.getValueAt(row, 1).toString().replace("RM", "").trim();
-            totalAmount += Double.parseDouble(amountStr);
+            try {
+                totalAmount += Double.parseDouble(amountStr);
+            } catch (NumberFormatException ignored) {}
         }
-        
-        content.newLineAtOffset(0, -30); // leave some space
+
+        y -= 40;
+        content.setFont(boldFont, 12);
+        content.beginText();
+        content.newLineAtOffset(margin, y);
         content.showText("Total Amount Spent: RM " + String.format("%.2f", totalAmount));
-
-
-
         content.endText();
+
         content.close();
 
         String fileName = "FinanceReport_" + System.currentTimeMillis() + ".pdf";
         document.save(fileName);
         document.close();
 
-        JOptionPane.showMessageDialog(this, "PDF saved as " + fileName);
+        JOptionPane.showMessageDialog(null, "PDF saved as " + fileName);
+}
+    private void resizeColumnWidths(JTable table) {
+    for (int column = 0; column < table.getColumnCount(); column++) {
+        TableColumn tableColumn = table.getColumnModel().getColumn(column);
+        int preferredWidth = 75;
+        int maxWidth = 300;
+
+        TableCellRenderer headerRenderer = table.getTableHeader().getDefaultRenderer();
+        Component headerComp = headerRenderer.getTableCellRendererComponent(table, tableColumn.getHeaderValue(), false, false, 0, column);
+        preferredWidth = Math.max(preferredWidth, headerComp.getPreferredSize().width);
+
+        for (int row = 0; row < table.getRowCount(); row++) {
+            TableCellRenderer cellRenderer = table.getCellRenderer(row, column);
+            Component c = table.prepareRenderer(cellRenderer, row, column);
+            int width = c.getPreferredSize().width + table.getIntercellSpacing().width;
+            preferredWidth = Math.max(preferredWidth, width);
+        }
+
+        preferredWidth = Math.min(preferredWidth, maxWidth);
+        tableColumn.setPreferredWidth(preferredWidth);
     }
+}
+
 
 
     /**
@@ -217,6 +324,7 @@ public class FinanceGReport extends javax.swing.JFrame {
         jTextField1 = new javax.swing.JTextField();
         rejectBtn = new javax.swing.JButton();
         jComboBox2 = new javax.swing.JComboBox<>();
+        genpdf = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -236,6 +344,7 @@ public class FinanceGReport extends javax.swing.JFrame {
         }
 
     );
+    jTable1.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
     jTable1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
     jScrollPane1.setViewportView(jTable1);
 
@@ -371,6 +480,14 @@ public class FinanceGReport extends javax.swing.JFrame {
 
     jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" }));
 
+    genpdf.setFont(new java.awt.Font("Segoe UI Black", 1, 13)); // NOI18N
+    genpdf.setText("Generate pdf");
+    genpdf.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            genpdfActionPerformed(evt);
+        }
+    });
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
@@ -399,7 +516,9 @@ public class FinanceGReport extends javax.swing.JFrame {
                     .addGap(121, 121, 121)
                     .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGap(18, 18, 18)
-                    .addComponent(donDeleteMe)))
+                    .addComponent(donDeleteMe)
+                    .addGap(64, 64, 64)
+                    .addComponent(genpdf)))
             .addContainerGap(330, Short.MAX_VALUE))
     );
     layout.setVerticalGroup(
@@ -410,19 +529,20 @@ public class FinanceGReport extends javax.swing.JFrame {
         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
             .addGap(40, 40, 40)
             .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 15, Short.MAX_VALUE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                 .addComponent(jLabel1)
                 .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addComponent(jLabel13))
-            .addGap(18, 18, 18)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 364, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addGap(30, 30, 30)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                 .addComponent(donDeleteMe)
                 .addComponent(rejectBtn)
-                .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addGap(103, 103, 103))
+                .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(genpdf))
+            .addGap(102, 102, 102))
     );
 
     pack();
@@ -474,6 +594,10 @@ public class FinanceGReport extends javax.swing.JFrame {
         generateWeeklyReport();
     }//GEN-LAST:event_rejectBtnActionPerformed
 
+    private void genpdfActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_genpdfActionPerformed
+//        exportJTableToJasper(jTable1);
+    }//GEN-LAST:event_genpdfActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -511,6 +635,7 @@ public class FinanceGReport extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton donDeleteMe;
+    private javax.swing.JButton genpdf;
     private javax.swing.JButton jButton10;
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;

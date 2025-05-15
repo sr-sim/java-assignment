@@ -8,6 +8,98 @@ package java_assignment2025;
  *
  * @author Isaac
  */
+import javax.swing.*;
+import java.io.*;
+import java.nio.file.*;
+import java.util.*;
+
 public class FinancePayment {
-    
+
+    public void markAsPaid(String poId) throws IOException {
+        File poFile = new File("PurchaseOrder.txt");
+        List<String> lines = Files.readAllLines(poFile.toPath());
+        List<String> updatedLines = new ArrayList<>();
+
+        for (String line : lines) {
+            String[] parts = line.split(",");
+            if (parts[0].equals(poId)) {
+                parts[10] = "paid"; // update paymentStatus
+                updatedLines.add(String.join(",", parts));
+            } else {
+                updatedLines.add(line);
+            }
+        }
+
+        Files.write(poFile.toPath(), updatedLines, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
+    }
+
+    public void createPaymentEntry(String poId) throws IOException {
+    File poFile = new File("PurchaseOrder.txt");
+    File paymentFile = new File("payment.txt");
+
+    List<String> poLines = Files.readAllLines(poFile.toPath());
+    List<String> paymentLines = paymentFile.exists() ? Files.readAllLines(paymentFile.toPath()) : new ArrayList<>();
+
+    int nextId = paymentLines.size() + 1;
+    String paymentId = String.format("P%02d", nextId);
+
+    for (String line : poLines) {
+        String[] parts = line.split(",");
+        if (parts[0].equals(poId)) {
+            // ✅ Check if "verified" before proceeding
+            if (!parts[10].equalsIgnoreCase("verified")) {
+                JOptionPane.showMessageDialog(null,
+                        "Payment cannot proceed. Status is not 'verified' for PO: " + poId);
+                return;
+            }
+
+            String itemIds = parts[3];        // I002|I003|I004
+            String unitPrices = parts[4];     // 2.5|3.0|5.0
+            String quantities = parts[5];     // 2|3|5
+
+            String[] qtyArr = quantities.split("\\|");
+            String[] priceArr = unitPrices.split("\\|");
+
+            if (qtyArr.length != priceArr.length) {
+                JOptionPane.showMessageDialog(null,
+                        "Mismatch between quantities and unit prices for PO: " + poId);
+                return;
+            }
+
+            double totalAmount = 0;
+
+            for (int i = 0; i < qtyArr.length; i++) {
+                int qty = Integer.parseInt(qtyArr[i]);
+                double price = Double.parseDouble(priceArr[i]);
+                totalAmount += qty * price;
+            }
+
+            String paymentEntry = paymentId + "," + poId + "," +
+                    itemIds + "," +
+                    unitPrices + "," +
+                    quantities + "," +
+                    String.format("%.2f", totalAmount);
+
+            Files.write(paymentFile.toPath(),
+                    Collections.singletonList(paymentEntry),
+                    StandardOpenOption.CREATE,
+                    StandardOpenOption.APPEND);
+            return;
+        }
+    }
 }
+
+
+    public void processPayment(String poId) {
+        try {
+            markAsPaid(poId);
+            createPaymentEntry(poId);
+            JOptionPane.showMessageDialog(null, "Payment recorded for " + poId);
+        } catch (IOException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Failed to process payment");
+        }
+    }
+}
+
+
