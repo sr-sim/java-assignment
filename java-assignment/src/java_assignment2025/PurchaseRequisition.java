@@ -17,7 +17,7 @@ public class PurchaseRequisition {
     private List<String> itemids;
     private String userid;
     private List<String> quantities;
-    private List<String> unitprice;
+    private List<String> unitPrices;
     private String total;
     private String requestdate;
     private String expecteddeliverydate;
@@ -41,12 +41,12 @@ public class PurchaseRequisition {
     }
 }
 
-    public PurchaseRequisition(String prid, List<String> itemids, String userid,List<String> quantities,List<String> unitprice,String total,String requestdate, String expecteddeliverydate, ApproveStatus approvestatus, String note){
+    public PurchaseRequisition(String prid, List<String> itemids, String userid,List<String> quantities,List<String> unitPrices,String total,String requestdate, String expecteddeliverydate, ApproveStatus approvestatus, String note){
         this.prid = prid;
         this.itemids = itemids;
         this.userid = userid;
         this.quantities = quantities;
-        this.unitprice = unitprice;
+        this.unitPrices=unitPrices;
         this.total = total;
         this.requestdate = requestdate;
         this.expecteddeliverydate = expecteddeliverydate;
@@ -99,7 +99,7 @@ public class PurchaseRequisition {
         this.quantities = quantities;
     }
 
-
+    
     public String getTotal() {
         return total;
     }
@@ -144,16 +144,20 @@ public class PurchaseRequisition {
     
     @Override
     public String toString(){
-        return prid + "," + String.join("|", itemids) + "," + userid + "," + String.join("|", quantities) +"," + String.join("|", unitprice) +"," + total+ "," + requestdate + "," + expecteddeliverydate + "," + approvestatus + "," + note;
+        return prid + "," + String.join("|", itemids) + "," + userid + "," + String.join("|", quantities) +","+ String.join("|",unitPrices)+"," + total+ "," + requestdate + "," + expecteddeliverydate + "," + approvestatus + "," + note;
     } 
 
-
-    public List<String> getUnitprice() {
-        return unitprice;
+    
+    public List<String> getUnitPrices() {
+        return unitPrices;
     }
 
-    public void setUnitprice(List<String> unitprice) {
-        this.unitprice = unitprice;
+   
+    public void setUnitPrices(List<String> unitPrices) {
+        this.unitPrices = unitPrices;
     }
+
+    
+   
 
 }

@@ -1,3 +1,1 @@
-PO001,MACY,PR001,SR,I002,5,8,40.00,SUP001,2025-05-15,approved,pending,paid
-PO003,MACY,PR003,HEW,I001,10,34,238.00,SUP001,2025-05-15,pending,pending,unpaid
-PO007,MACY,PR013,SR,I002,10,6,50.00,SUP001,2025-05-15,pending,pending,unpaid
+PO001,MACY,PR001,SR,I001|I001,9|4,10.0|8.0,122.00,Unknown|Unknown,2025-05-16,pending,pending,unpaid

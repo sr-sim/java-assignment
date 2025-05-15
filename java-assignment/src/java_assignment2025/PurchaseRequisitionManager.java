@@ -15,8 +15,7 @@ import java.util.List;
 public class PurchaseRequisitionManager {
    private final List<PurchaseRequisition>prlist;
     private final TextFile textfile;
-    private final String prfilepath = "C:\\Users\\User\\OneDrive\\Documents\\NetBeansProjects\\java-assignment\\java-assignment\\src\\java_assignment2025\\purchaserequisition.txt";
-    
+    private final String prfilepath = "C:\\JPL9\\java-assignment\\java-assignment\\src\\java_assignment2025\\purchaserequisition.txt";
     public PurchaseRequisitionManager() {
         this.prlist = new ArrayList<>();
         this.textfile = new TextFile();
@@ -30,13 +29,13 @@ public class PurchaseRequisitionManager {
             if (parts.length == 10) {
                 List<String> itemids = Arrays.asList(parts[1].trim().split("\\|"));
                 List<String> quantities = Arrays.asList(parts[3].trim().split("\\|"));
-                List<String> unitprices = Arrays.asList(parts[4].trim().split("\\|"));
+                List<String> unitPrices = Arrays.asList(parts[4].trim().split("\\|"));
                 prlist.add(new PurchaseRequisition(
                         parts[0].trim(),
                         itemids, // new ArrayList<>(itemids),
                         parts[2].trim(),
+                        unitPrices,
                         quantities,
-                        unitprices,
                         parts[5].trim(),
                         parts[6].trim(),
                         parts[7].trim(),
@@ -96,7 +95,7 @@ public class PurchaseRequisitionManager {
             existingpr.setItemids(itemids);
             existingpr.setUserid(userid);
             existingpr.setQuantitiesList(quantities);
-            existingpr.setUnitprice(unitprices);
+            existingpr.setUnitPrices(unitprices);
             existingpr.setTotal(total);
             existingpr.setRequestdate(requestdate);
             existingpr.setExpecteddeliverydate(expecteddeliverydate);
