@@ -32,7 +32,7 @@ public class FMPurchaseOrder extends javax.swing.JFrame {
         initComponents();
         jScrollPane1.setHorizontalScrollBarPolicy(
         javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        jTable1.getColumnModel().getColumn(11).setPreferredWidth(100);
+        jTable1.getColumnModel().getColumn(10).setPreferredWidth(120);
         poManager = new PurchaseOrderManager();
         inventoryManager = new InventoryDataManager();
         loadPOsIntoTable();
@@ -49,7 +49,7 @@ public class FMPurchaseOrder extends javax.swing.JFrame {
             itemNames += inventoryManager.findItemNameById(itemId) + " | ";
         }
         itemNames = itemNames.replaceAll(" \\| $", ""); // Remove trailing "|"
-        
+
         List<String> supplierIds = po.getSupplierIds();
             List<String> supplierNamesList = new ArrayList<>();
             for (String supplierId : supplierIds) {
@@ -58,15 +58,14 @@ public class FMPurchaseOrder extends javax.swing.JFrame {
             }
             String supplierNames = String.join(",", supplierNamesList);
 
-
         model.addRow(new Object[] {
             po.getOrderId(),
-//            po.getRequestId(),
+            po.getRequestId(),
             po.getUserId(),
-            String.join(" | ", po.getItemIds()),
+            String.join("|", po.getItemIds()),
             itemNames,
-//            String.join("|", po.getUnitPerPrice()),
-            String.join(" | ", po.getQuantities()),
+//            String.join("|", po.getunitprice),
+            String.join("|", po.getQuantities()),
             po.getAmount(),
             supplierNames,
             po.getOrderDate(),
@@ -121,13 +120,13 @@ public class FMPurchaseOrder extends javax.swing.JFrame {
         loadPOsIntoTable();
 
     }
-    
+
     private void resizeColumnWidths(JTable table) {
     for (int column = 0; column < table.getColumnCount(); column++) {
         TableColumn tableColumn = table.getColumnModel().getColumn(column);
         int preferredWidth = 75;
         int maxWidth = 300;
-
+    
         TableCellRenderer headerRenderer = table.getTableHeader().getDefaultRenderer();
         Component headerComp = headerRenderer.getTableCellRendererComponent(table, tableColumn.getHeaderValue(), false, false, 0, column);
         preferredWidth = Math.max(preferredWidth, headerComp.getPreferredSize().width);
@@ -181,7 +180,7 @@ public class FMPurchaseOrder extends javax.swing.JFrame {
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {},
             new String [] {
-                "PO Id",/*"PR Id",*/"Created by", "Item Id", "Item Name","Unit Per Price", "Quantity", "Amount", "Supplier Name", "Order Date", "Status", "Received", "Payment Status"
+                "PO Id","PR Id","Created by", "Item Id", "Item Name","Unit Per Price" ,"Quantity", "Amount", "Supplier Name", "Order Date", "Status", "Payment Status", "Received?"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -196,7 +195,6 @@ public class FMPurchaseOrder extends javax.swing.JFrame {
     );
     jTable1.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
     jTable1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-    jTable1.getTableHeader().setReorderingAllowed(false);
     jScrollPane1.setViewportView(jTable1);
 
     jLabel11.setFont(new java.awt.Font("Algerian", 0, 24)); // NOI18N
@@ -292,7 +290,7 @@ public class FMPurchaseOrder extends javax.swing.JFrame {
             .addComponent(jButton9)
             .addGap(18, 18, 18)
             .addComponent(jButton10)
-            .addContainerGap(192, Short.MAX_VALUE))
+            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
     donDeleteMe.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -342,23 +340,11 @@ public class FMPurchaseOrder extends javax.swing.JFrame {
     layout.setHorizontalGroup(
         layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
         .addGroup(layout.createSequentialGroup()
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addGap(553, 553, 553)
-                    .addComponent(approveBtn)
-                    .addGap(196, 196, 196)
-                    .addComponent(rejectBtn))
-                .addGroup(layout.createSequentialGroup()
-                    .addGap(279, 279, 279)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 964, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(233, 233, 233)
-                            .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-            .addContainerGap(19, Short.MAX_VALUE))
+            .addGap(553, 553, 553)
+            .addComponent(approveBtn)
+            .addGap(196, 196, 196)
+            .addComponent(rejectBtn)
+            .addContainerGap(342, Short.MAX_VALUE))
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
@@ -368,21 +354,23 @@ public class FMPurchaseOrder extends javax.swing.JFrame {
                         .addGap(410, 410, 410)
                         .addComponent(jLabel11))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 947, Short.MAX_VALUE)
-                        .addComponent(donDeleteMe)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 63, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(donDeleteMe, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(235, 235, 235)
+                                    .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 946, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addContainerGap()))
     );
     layout.setVerticalGroup(
         layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
         .addGroup(layout.createSequentialGroup()
-            .addGap(112, 112, 112)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                .addComponent(jLabel1)
-                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addComponent(jLabel13))
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 7, Short.MAX_VALUE)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 364, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addGap(18, 18, 18)
+            .addContainerGap(523, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                 .addComponent(approveBtn)
                 .addComponent(rejectBtn))
@@ -395,7 +383,19 @@ public class FMPurchaseOrder extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(27, 27, 27)
                         .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(62, 62, 62)
+                                .addComponent(jLabel13)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel1)
+                                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(13, 13, 13)))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 364, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
                         .addComponent(donDeleteMe)))
                 .addContainerGap()))
     );

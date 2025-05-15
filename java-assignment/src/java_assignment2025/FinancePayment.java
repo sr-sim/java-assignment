@@ -14,7 +14,7 @@ import java.nio.file.*;
 import java.util.*;
 
 public class FinancePayment {
-
+    
     public void markAsPaid(String poId) throws IOException {
         File poFile = new File("PurchaseOrder.txt");
         List<String> lines = Files.readAllLines(poFile.toPath());
@@ -27,7 +27,7 @@ public class FinancePayment {
                 updatedLines.add(String.join(",", parts));
             } else {
                 updatedLines.add(line);
-            }
+}
         }
 
         Files.write(poFile.toPath(), updatedLines, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
@@ -47,9 +47,9 @@ public class FinancePayment {
         String[] parts = line.split(",");
         if (parts[0].equals(poId)) {
             // ✅ Check if "verified" before proceeding
-            if (!parts[10].equalsIgnoreCase("verified")) {
+            if (!parts[10].equalsIgnoreCase("received")) {
                 JOptionPane.showMessageDialog(null,
-                        "Payment cannot proceed. Status is not 'verified' for PO: " + poId);
+                        "Payment cannot proceed. Status is not 'received' for PO: " + poId);
                 return;
             }
 

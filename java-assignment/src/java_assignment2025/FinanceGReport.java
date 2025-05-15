@@ -27,17 +27,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import static java_assignment2025.PurchaseOrderManager.findSupplierNameById;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 //import static java_assignment2025.FinanceReport.exportJTableToJasper;
 
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperCompileManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import net.sf.jasperreports.view.JasperViewer;
+//import net.sf.jasperreports.engine.JasperReport;
+//import net.sf.jasperreports.engine.JasperPrint;
+//import net.sf.jasperreports.engine.JasperCompileManager;
+//import net.sf.jasperreports.engine.JasperFillManager;
+//import net.sf.jasperreports.engine.JasperExportManager;
+//import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+//import net.sf.jasperreports.view.JasperViewer;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -73,6 +74,14 @@ public class FinanceGReport extends javax.swing.JFrame {
             itemNames += inventoryManager.findItemNameById(itemId) + " | ";
         }
         itemNames = itemNames.replaceAll(" \\| $", ""); // Remove trailing "|"
+        
+        List<String> supplierIds = po.getSupplierIds();
+            List<String> supplierNamesList = new ArrayList<>();
+            for (String supplierId : supplierIds) {
+                String name = findSupplierNameById(supplierId); // No file path here
+                supplierNamesList.add(name);
+            }
+            String supplierNames = String.join(",", supplierNamesList);
 
 
         model.addRow(new Object[] {
@@ -83,9 +92,10 @@ public class FinanceGReport extends javax.swing.JFrame {
             itemNames,
             String.join("|", po.getQuantities()),
             po.getAmount(),
-            String.join("|", po.getSupplierIds()),
+            supplierNames,
             po.getOrderDate(),
             po.getOrderStatus(),
+            po.getVerifyStatus(),
             po.getPaymentStatus()
         });
         resizeColumnWidths(jTable1);
@@ -101,41 +111,41 @@ public class FinanceGReport extends javax.swing.JFrame {
         showReportPopup(filtered, "paid pos - week" + currentWeek);
         
     }
-    private void exportJTableToJasperReport() {
-    try {
-        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-        List<PurchaseOrderReportEntry> reportList = new ArrayList<>();
-
-        for (int i = 0; i < model.getRowCount(); i++) {
-            String poid = model.getValueAt(i, 0).toString();       // PO Id
-            String itemIds = model.getValueAt(i, 3).toString();    // Item Id
-            String itemNames = model.getValueAt(i, 4).toString();  // Item Name
-            String quantities = model.getValueAt(i, 5).toString(); // Quantity
-            String amount = model.getValueAt(i, 6).toString();     // Amount
-            String orderDate = model.getValueAt(i, 8).toString();  // Order Date
-
-            reportList.add(new PurchaseOrderReportEntry(poid, itemIds, itemNames, quantities, orderDate, amount));
-        }
-
-        // Load .jrxml or .jasper file (compiled)
-        JasperReport report = JasperCompileManager.compileReport("C:\\Users\\Isaac\\JaspersoftWorkspace\\MyReports\\FinanceReportTemplate.jrxml");
-
-        JRBeanCollectionDataSource ds = new JRBeanCollectionDataSource(reportList);
-
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("ReportTitle", "Purchase Order Financial Report");
-
-        JasperPrint print = JasperFillManager.fillReport(report, parameters, ds);
-        JasperViewer.viewReport(print, false);
-        JasperExportManager.exportReportToPdfFile(print, "PO_Table_Report_" + System.currentTimeMillis() + ".pdf");
-
-        JOptionPane.showMessageDialog(this, "PDF Exported Successfully!");
-
-    } catch (Exception e) {
-        e.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Error generating report: " + e.getMessage());
-    }
-}
+//    private void exportJTableToJasperReport() {
+//    try {
+//        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+//        List<PurchaseOrderReportEntry> reportList = new ArrayList<>();
+//    
+//        for (int i = 0; i < model.getRowCount(); i++) {
+//            String poid = model.getValueAt(i, 0).toString();       // PO Id
+//            String itemIds = model.getValueAt(i, 3).toString();    // Item Id
+//            String itemNames = model.getValueAt(i, 4).toString();  // Item Name
+//            String quantities = model.getValueAt(i, 5).toString(); // Quantity
+//            String amount = model.getValueAt(i, 6).toString();     // Amount
+//            String orderDate = model.getValueAt(i, 8).toString();  // Order Date
+//
+//            reportList.add(new PurchaseOrderReportEntry(poid, itemIds, itemNames, quantities, orderDate, amount));
+//        }
+//
+//        // Load .jrxml or .jasper file (compiled)
+//        JasperReport report = JasperCompileManager.compileReport("C:\\Users\\Isaac\\JaspersoftWorkspace\\MyReports\\FinanceReportTemplate.jrxml");
+//
+//        JRBeanCollectionDataSource ds = new JRBeanCollectionDataSource(reportList);
+//
+//        Map<String, Object> parameters = new HashMap<>();
+//        parameters.put("ReportTitle", "Purchase Order Financial Report");
+//
+//        JasperPrint print = JasperFillManager.fillReport(report, parameters, ds);
+//        JasperViewer.viewReport(print, false);
+//        JasperExportManager.exportReportToPdfFile(print, "PO_Table_Report_" + System.currentTimeMillis() + ".pdf");
+//
+//        JOptionPane.showMessageDialog(this, "PDF Exported Successfully!");
+//
+//    } catch (Exception e) {
+//        e.printStackTrace();
+//        JOptionPane.showMessageDialog(this, "Error generating report: " + e.getMessage());
+//    }
+//}
 
     
     private void showReportPopup(List<PurchaseOrder> poList, String title){
@@ -206,6 +216,7 @@ public class FinanceGReport extends javax.swing.JFrame {
         content.setFont(boldFont, 18);
         content.beginText();
         content.newLineAtOffset(margin, y);
+
         content.showText(title);
         content.endText();
         y -= 30;
@@ -254,10 +265,10 @@ public class FinanceGReport extends javax.swing.JFrame {
         for (int row = 0; row < table.getRowCount(); row++) {
             String amountStr = table.getValueAt(row, 1).toString().replace("RM", "").trim();
             try {
-                totalAmount += Double.parseDouble(amountStr);
+            totalAmount += Double.parseDouble(amountStr);
             } catch (NumberFormatException ignored) {}
         }
-
+        
         y -= 40;
         content.setFont(boldFont, 12);
         content.beginText();
@@ -272,7 +283,7 @@ public class FinanceGReport extends javax.swing.JFrame {
         document.close();
 
         JOptionPane.showMessageDialog(null, "PDF saved as " + fileName);
-}
+    }
     private void resizeColumnWidths(JTable table) {
     for (int column = 0; column < table.getColumnCount(); column++) {
         TableColumn tableColumn = table.getColumnModel().getColumn(column);
@@ -324,14 +335,13 @@ public class FinanceGReport extends javax.swing.JFrame {
         jTextField1 = new javax.swing.JTextField();
         rejectBtn = new javax.swing.JButton();
         jComboBox2 = new javax.swing.JComboBox<>();
-        genpdf = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {},
             new String [] {
-                "PO Id","PR Id","Created by", "Item Id", "Item Name", "Quantity", "Amount", "Supplier Name", "Order Date", "Status", "Payment Status", "Received?"
+                "PO Id","PR Id","Created by", "Item Id", "Item Name","Unit Price" ,"Quantity", "Amount", "Supplier Name", "Order Date", "Status", "Received", "Payment Status"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -480,14 +490,6 @@ public class FinanceGReport extends javax.swing.JFrame {
 
     jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" }));
 
-    genpdf.setFont(new java.awt.Font("Segoe UI Black", 1, 13)); // NOI18N
-    genpdf.setText("Generate pdf");
-    genpdf.addActionListener(new java.awt.event.ActionListener() {
-        public void actionPerformed(java.awt.event.ActionEvent evt) {
-            genpdfActionPerformed(evt);
-        }
-    });
-
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
@@ -516,9 +518,7 @@ public class FinanceGReport extends javax.swing.JFrame {
                     .addGap(121, 121, 121)
                     .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGap(18, 18, 18)
-                    .addComponent(donDeleteMe)
-                    .addGap(64, 64, 64)
-                    .addComponent(genpdf)))
+                    .addComponent(donDeleteMe)))
             .addContainerGap(330, Short.MAX_VALUE))
     );
     layout.setVerticalGroup(
@@ -529,20 +529,19 @@ public class FinanceGReport extends javax.swing.JFrame {
         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
             .addGap(40, 40, 40)
             .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 15, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                 .addComponent(jLabel1)
                 .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addComponent(jLabel13))
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+            .addGap(18, 18, 18)
             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 364, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addGap(30, 30, 30)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                 .addComponent(donDeleteMe)
                 .addComponent(rejectBtn)
-                .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addComponent(genpdf))
-            .addGap(102, 102, 102))
+                .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGap(103, 103, 103))
     );
 
     pack();
@@ -594,9 +593,9 @@ public class FinanceGReport extends javax.swing.JFrame {
         generateWeeklyReport();
     }//GEN-LAST:event_rejectBtnActionPerformed
 
-    private void genpdfActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_genpdfActionPerformed
+    private void genpdfActionPerformed(java.awt.event.ActionEvent evt) {                                       
 //        exportJTableToJasper(jTable1);
-    }//GEN-LAST:event_genpdfActionPerformed
+    }                                      
 
     /**
      * @param args the command line arguments
@@ -635,7 +634,6 @@ public class FinanceGReport extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton donDeleteMe;
-    private javax.swing.JButton genpdf;
     private javax.swing.JButton jButton10;
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;

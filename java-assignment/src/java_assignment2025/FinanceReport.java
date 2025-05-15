@@ -5,18 +5,18 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperCompileManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import net.sf.jasperreports.view.JasperViewer;
-
-import net.sf.jasperreports.engine.export.JRPdfExporter;
-import net.sf.jasperreports.export.SimpleExporterInput;
-import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
-import net.sf.jasperreports.export.SimplePdfExporterConfiguration;
+//import net.sf.jasperreports.engine.JasperReport;
+//import net.sf.jasperreports.engine.JasperPrint;
+//import net.sf.jasperreports.engine.JasperCompileManager;
+//import net.sf.jasperreports.engine.JasperFillManager;
+//import net.sf.jasperreports.engine.JasperExportManager;
+//import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+//import net.sf.jasperreports.view.JasperViewer;
+//
+//import net.sf.jasperreports.engine.export.JRPdfExporter;
+//import net.sf.jasperreports.export.SimpleExporterInput;
+//import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
+//import net.sf.jasperreports.export.SimplePdfExporterConfiguration;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,15 +25,14 @@ import java.util.Map;
 
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
-import net.sf.jasperreports.engine.JREmptyDataSource;
-import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
-import net.sf.jasperreports.engine.util.JRLoader;
+//import net.sf.jasperreports.engine.JREmptyDataSource;
+//import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
+//import net.sf.jasperreports.engine.util.JRLoader;
 
 public class FinanceReport {
     private final PurchaseOrderManager poManager;
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     private final SalesDataManager salesDataManager = new SalesDataManager();
-
 
     public FinanceReport(PurchaseOrderManager poManager) {
         this.poManager = poManager;
@@ -87,7 +86,7 @@ public class FinanceReport {
                 .mapToDouble(PurchaseOrder::getAmount)
                 .sum();
     }
-    
+
     public List<DailySalesSummary> getDailySalesSummary(String targetDate, InventoryDataManager inventoryManager) {
         List<DailySales> dailyList = salesDataManager.getdailysaleslist();
         List<IndividualSales> individualList = salesDataManager.getindividualsaleslist();
