@@ -57,10 +57,12 @@ public class SM_DailySalesEntry extends javax.swing.JFrame {
         });
         }
     }
-        private void fillComboBoxFromitemList() {
-    for (Item item : inventorydatamanager.getinventorylist()) {
-        String comboBoxItem = item.getItemid() + " - " + item.getItemname();
-        jComboBox1.addItem(comboBoxItem);
+    private void fillComboBoxFromitemList() {
+        for (Item item : inventorydatamanager.getinventorylist()) {
+            if(!item.isDeleted()){
+                String comboBoxItem = item.getItemid() + " - " + item.getItemname();
+                jComboBox1.addItem(comboBoxItem);
+            }
         }
     }
     private void clearTextField(){
