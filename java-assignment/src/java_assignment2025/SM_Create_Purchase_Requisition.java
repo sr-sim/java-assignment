@@ -95,9 +95,11 @@ public class SM_Create_Purchase_Requisition extends javax.swing.JFrame {
     }
     
     private void fillComboBoxFromitemList() {
-    for (Item item : inventorydatamanager.getinventorylist()) {
-        String comboBoxItem = item.getItemid() + " - " + item.getItemname();
-        jComboBox1.addItem(comboBoxItem);
+        for (Item item : inventorydatamanager.getinventorylist()) {
+            if(!item.isDeleted()){
+                String comboBoxItem = item.getItemid() + " - " + item.getItemname();
+                jComboBox1.addItem(comboBoxItem);
+            }
         }
     }
     
