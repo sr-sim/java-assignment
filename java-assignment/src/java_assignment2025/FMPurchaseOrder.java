@@ -60,11 +60,12 @@ public class FMPurchaseOrder extends javax.swing.JFrame {
 
         model.addRow(new Object[] {
             po.getOrderId(),
+            po.getPoCreator(),
             po.getRequestId(),
             po.getUserId(),
             String.join("|", po.getItemIds()),
             itemNames,
-//            String.join("|", po.getunitprice),
+            String.join("|", po.getUnitPrices()),
             String.join("|", po.getQuantities()),
             po.getAmount(),
             supplierNames,
@@ -180,7 +181,7 @@ public class FMPurchaseOrder extends javax.swing.JFrame {
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {},
             new String [] {
-                "PO Id","PR Id","Created by", "Item Id", "Item Name","Unit Per Price" ,"Quantity", "Amount", "Supplier Name", "Order Date", "Status", "Payment Status", "Received?"
+                "PO Id","PO Created","PR Id","PR Created", "Item Id", "Item Name","Unit Per Price" ,"Quantity", "Amount", "Supplier Name", "Order Date", "Status", "Received", "Payment Status"
             }
         ) {
             boolean[] canEdit = new boolean [] {

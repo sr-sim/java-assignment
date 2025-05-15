@@ -16,14 +16,14 @@ import java.util.*;
 public class FinancePayment {
     
     public void markAsPaid(String poId) throws IOException {
-        File poFile = new File("PurchaseOrder.txt");
+        File poFile = new File("C:\\Users\\Isaac\\OneDrive - Asia Pacific University\\Documents\\NetBeansProjects\\java-assignment\\java-assignment\\src\\java_assignment2025\\PurchaseOrder.txt");
         List<String> lines = Files.readAllLines(poFile.toPath());
         List<String> updatedLines = new ArrayList<>();
 
         for (String line : lines) {
             String[] parts = line.split(",");
             if (parts[0].equals(poId)) {
-                parts[10] = "paid"; // update paymentStatus
+                parts[12] = "paid"; // update paymentStatus
                 updatedLines.add(String.join(",", parts));
             } else {
                 updatedLines.add(line);
@@ -33,9 +33,9 @@ public class FinancePayment {
         Files.write(poFile.toPath(), updatedLines, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
     }
 
-    public void createPaymentEntry(String poId) throws IOException {
-    File poFile = new File("PurchaseOrder.txt");
-    File paymentFile = new File("payment.txt");
+    public boolean createPaymentEntry(String poId) throws IOException {
+    File poFile = new File("C:\\Users\\Isaac\\OneDrive - Asia Pacific University\\Documents\\NetBeansProjects\\java-assignment\\java-assignment\\src\\java_assignment2025\\PurchaseOrder.txt");
+    File paymentFile = new File("C:\\Users\\Isaac\\OneDrive - Asia Pacific University\\Documents\\NetBeansProjects\\java-assignment\\java-assignment\\src\\java_assignment2025\\payment.txt");
 
     List<String> poLines = Files.readAllLines(poFile.toPath());
     List<String> paymentLines = paymentFile.exists() ? Files.readAllLines(paymentFile.toPath()) : new ArrayList<>();
@@ -47,15 +47,15 @@ public class FinancePayment {
         String[] parts = line.split(",");
         if (parts[0].equals(poId)) {
             // ✅ Check if "verified" before proceeding
-            if (!parts[10].equalsIgnoreCase("received")) {
+            if (!parts[11].equalsIgnoreCase("received")) {
                 JOptionPane.showMessageDialog(null,
                         "Payment cannot proceed. Status is not 'received' for PO: " + poId);
-                return;
+                return false;
             }
 
-            String itemIds = parts[3];        // I002|I003|I004
-            String unitPrices = parts[4];     // 2.5|3.0|5.0
-            String quantities = parts[5];     // 2|3|5
+            String itemIds = parts[4];        // I002|I003|I004
+            String unitPrices = parts[5];     // 2.5|3.0|5.0
+            String quantities = parts[6];     // 2|3|5
 
             String[] qtyArr = quantities.split("\\|");
             String[] priceArr = unitPrices.split("\\|");
@@ -63,7 +63,7 @@ public class FinancePayment {
             if (qtyArr.length != priceArr.length) {
                 JOptionPane.showMessageDialog(null,
                         "Mismatch between quantities and unit prices for PO: " + poId);
-                return;
+                return false;
             }
 
             double totalAmount = 0;
@@ -84,21 +84,39 @@ public class FinancePayment {
                     Collections.singletonList(paymentEntry),
                     StandardOpenOption.CREATE,
                     StandardOpenOption.APPEND);
-            return;
+            return true;
         }
     }
+    return false;
 }
 
 
-    public void processPayment(String poId) {
+    public boolean processPayment(String poId) {
         try {
-            markAsPaid(poId);
-            createPaymentEntry(poId);
-            JOptionPane.showMessageDialog(null, "Payment recorded for " + poId);
+            File poFile = new File("C:\\Users\\Isaac\\OneDrive - Asia Pacific University\\Documents\\NetBeansProjects\\java-assignment\\java-assignment\\src\\java_assignment2025\\PurchaseOrder.txt");
+            List<String> poLines = Files.readAllLines(poFile.toPath());
+
+            for (String line : poLines) {
+                String[] parts = line.split(",");
+                if (parts[0].equals(poId)) {
+                    String paymentStatus = parts[12].trim();
+                    if (paymentStatus.equalsIgnoreCase("paid")) {
+                        JOptionPane.showMessageDialog(null, "PO " + poId + " has already been paid.");
+                        return false;
+                    }
+                }
+            }
+            boolean success = createPaymentEntry(poId);
+            if (success){
+                markAsPaid(poId);
+                JOptionPane.showMessageDialog(null, "Payment recorded for " + poId);
+                return true;
+            }
         } catch (IOException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Failed to process payment");
         }
+        return false;
     }
 }
 

@@ -4,18 +4,100 @@
  */
 package java_assignment2025;
 
+import java.awt.Component;
+import java.util.ArrayList;
+import java.util.List;
+import static java_assignment2025.PurchaseOrderManager.findSupplierNameById;
+import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+
 /**
  *
  * @author Isaac
  */
 public class FinanceCPayment extends javax.swing.JFrame {
+    
+    private PurchaseOrderManager poManager;
+    private InventoryDataManager inventoryManager;
 
     /**
      * Creates new form FinanceCPayment
      */
     public FinanceCPayment() {
         initComponents();
+        jScrollPane1.setHorizontalScrollBarPolicy(
+        javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        jTable1.getColumnModel().getColumn(10).setPreferredWidth(120);
+        poManager = new PurchaseOrderManager();
+        inventoryManager = new InventoryDataManager();
+        loadPOsIntoTable();
     }
+    
+    public void loadPOsIntoTable() {
+        poManager = new PurchaseOrderManager();
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        model.setRowCount(0); // clear table
+
+    for (PurchaseOrder po : poManager.getpolist()) {
+        String itemNames = "";
+        for (String itemId : po.getItemIds()) {
+            itemNames += inventoryManager.findItemNameById(itemId) + " | ";
+        }
+        itemNames = itemNames.replaceAll(" \\| $", ""); // Remove trailing "|"
+
+        List<String> supplierIds = po.getSupplierIds();
+            List<String> supplierNamesList = new ArrayList<>();
+            for (String supplierId : supplierIds) {
+                String name = findSupplierNameById(supplierId); // No file path here
+                supplierNamesList.add(name);
+            }
+            String supplierNames = String.join(",", supplierNamesList);
+
+        model.addRow(new Object[] {
+            po.getOrderId(),
+            po.getPoCreator(),
+            po.getRequestId(),
+            po.getUserId(),
+            String.join("|", po.getItemIds()),
+            itemNames,
+            String.join("|", po.getUnitPrices()),
+            String.join("|", po.getQuantities()),
+            po.getAmount(),
+            supplierNames,
+            po.getOrderDate(),
+            po.getOrderStatus(),
+            po.getVerifyStatus(),
+            po.getPaymentStatus()
+        });
+    }
+    resizeColumnWidths(jTable1);
+    
+    
+}
+    private void resizeColumnWidths(JTable table) {
+    for (int column = 0; column < table.getColumnCount(); column++) {
+        TableColumn tableColumn = table.getColumnModel().getColumn(column);
+        int preferredWidth = 75;
+        int maxWidth = 300;
+    
+        TableCellRenderer headerRenderer = table.getTableHeader().getDefaultRenderer();
+        Component headerComp = headerRenderer.getTableCellRendererComponent(table, tableColumn.getHeaderValue(), false, false, 0, column);
+        preferredWidth = Math.max(preferredWidth, headerComp.getPreferredSize().width);
+
+        for (int row = 0; row < table.getRowCount(); row++) {
+            TableCellRenderer cellRenderer = table.getCellRenderer(row, column);
+            Component c = table.prepareRenderer(cellRenderer, row, column);
+            int width = c.getPreferredSize().width + table.getIntercellSpacing().width;
+            preferredWidth = Math.max(preferredWidth, width);
+        }
+
+        preferredWidth = Math.min(preferredWidth, maxWidth);
+        tableColumn.setPreferredWidth(preferredWidth);
+    }
+}
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -46,7 +128,7 @@ public class FinanceCPayment extends javax.swing.JFrame {
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {},
             new String [] {
-                "PO Id","PR Id","Created by", "Item Id", "Item Name","Unit Per Price" ,"Quantity", "Amount", "Supplier Name", "Order Date", "Status", "Payment Status", "Received?"
+                "PO Id","PO Created","PR Id","PR Created", "Item Id", "Item Name","Unit Per Price" ,"Quantity", "Amount", "Supplier Name", "Order Date", "Status", "Received", "Payment Status"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -238,7 +320,16 @@ public class FinanceCPayment extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton10ActionPerformed
 
     private void rejectBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rejectBtnActionPerformed
-        
+        int selectedRow = jTable1.getSelectedRow();
+        if (selectedRow != -1) { // Check if any row is selected
+            String poId = jTable1.getValueAt(selectedRow, 0).toString();
+            new FinancePayment().processPayment(poId);
+            loadPOsIntoTable();
+    // now use poId
+        } else {
+            JOptionPane.showMessageDialog(this, "Please select a row.");
+        } // example: "PO01"
+                
     }//GEN-LAST:event_rejectBtnActionPerformed
 
     /**
