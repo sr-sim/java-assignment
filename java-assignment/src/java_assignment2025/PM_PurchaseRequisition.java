@@ -60,6 +60,8 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
             String itemids = String.join(",", itemidslist);
             List<String> quantitieslist = pr.getQuantities();
             String quantity = String.join(",", quantitieslist);
+            List<String> unitPricelist = pr.getUnitPrices();
+            String unitprice = String.join(",",unitPricelist);
             String totalprice = pr.getTotal();
             String reqdate = pr.getRequestdate();
             String expecteddate = pr.getExpecteddeliverydate();
@@ -77,7 +79,7 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
             
             model.addRow(new Object[]{
                 prid, itemids, itemnames,
-                quantity, totalprice,
+                quantity,unitprice, totalprice,
                 reqdate, expecteddate, createdby,note,
                 status
             });
@@ -87,7 +89,7 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
         String[] statuses = {"pending","reject","approved"};
         JComboBox<String> comboBox = new JComboBox<>(statuses);
         
-        TableColumn statusColumn = jTable1.getColumnModel().getColumn(9); 
+        TableColumn statusColumn = jTable1.getColumnModel().getColumn(10); 
         statusColumn.setCellEditor(new DefaultCellEditor(comboBox));
        
     }
@@ -125,11 +127,11 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {},
             new String [] {
-                "PR Id", "Item Id", "Item Name", "Quantity", "Amount", "Request Date", "Expected Delivery Date", "Created By", "Note","Status"
+                "PR Id", "Item Id", "Item Name", "Quantity","Unit Price", "Amount", "Request Date", "Expected Delivery Date", "Created By", "Note","Status"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, false,false,true
+                false, false, false, false, false,false, false, false, false,false,true
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -399,6 +401,7 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
                         oldpr.getItemids(),
                         oldpr.getUserid(),
                         oldpr.getQuantities(),
+                        oldpr.getUnitPrices(),
                         oldpr.getTotal(),
                         oldpr.getRequestdate(),
                         oldpr.getExpecteddeliverydate(),
@@ -440,7 +443,7 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
         }
 
         // Check if status is approved
-        String status = jTable1.getValueAt(selectedRow, 9).toString().trim().toLowerCase();
+        String status = jTable1.getValueAt(selectedRow, 10).toString().trim().toLowerCase();
         if (!status.equals("approved")) {
             JOptionPane.showMessageDialog(null, "Only approved requests can generate a Purchase Order.");
             return;
@@ -454,22 +457,27 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
        // Extract PR row data
         String requestId = jTable1.getValueAt(selectedRow, 0).toString();
         String itemIdsRaw = jTable1.getValueAt(selectedRow, 1).toString(); // Comma or pipe separated
-        String userId = jTable1.getValueAt(selectedRow, 7).toString();
+        String userId = jTable1.getValueAt(selectedRow, 8).toString();
         String quantitiesRaw = jTable1.getValueAt(selectedRow, 3).toString();
-        double amount = Double.parseDouble(jTable1.getValueAt(selectedRow, 4).toString());
+        String unitPriceRaw=jTable1.getValueAt(selectedRow,4).toString();
+        double amount = Double.parseDouble(jTable1.getValueAt(selectedRow, 5).toString());
 
         String[] itemIdList = itemIdsRaw.contains("|") ? itemIdsRaw.split("\\|") : itemIdsRaw.split(",");
         String[] quantityList = quantitiesRaw.contains("|") ? quantitiesRaw.split("\\|") : quantitiesRaw.split(",");
+        String[] unitPriceList = unitPriceRaw.contains("|") ? unitPriceRaw.split("\\|") : unitPriceRaw.split(",");
 
         List<String> validItemIds = new ArrayList<>();
         List<String> validQuantities = new ArrayList<>();
+        List<String> validUnitPrices = new ArrayList<>();
         List<String> supplierIds = new ArrayList<>();
         
         List<String> existingPOs = TextFile.readFile("C:\\Users\\Isaac\\OneDrive - Asia Pacific University\\Documents\\NetBeansProjects\\java-assignment\\java-assignment\\src\\java_assignment2025\\PurchaseOrder.txt");
 
         for (int i = 0; i < itemIdList.length; i++) {
             String itemId = itemIdList[i].trim();
+            String unitprice= unitPriceList[i].trim();
             String quantity = quantityList[i].trim();
+
             // Check for duplicate PO (based on requestId and itemId)
             boolean isDuplicate = existingPOs.stream().anyMatch(line -> {
                 String[] parts = line.split(",");
@@ -487,29 +495,34 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
 
             validItemIds.add(itemId);
             validQuantities.add(quantity);
+            validUnitPrices.add(unitprice);
             supplierIds.add(supplierId);
         }
 
         // Only create PO if there are valid items
         if (!validItemIds.isEmpty()) {
             String nextPoId = PurchaseOrder.getNextOrderId();
+            String poCreator = "MACY";
             PurchaseOrder po = new PurchaseOrder(
                 nextPoId,
+                poCreator,
                 requestId,
                 userId,
                 validItemIds,
+                validUnitPrices,
                 validQuantities,
                 amount,  
                 supplierIds,
-                PurchaseOrder.getCurrentDate(),
-                "Pending",
-                "Pending",
-                "Unpaid"
+                PurchaseOrderManager.getCurrentDate(),
+                "pending",
+                "pending",
+                "unpaid"
             );
 
             // Write to file
-            String poLine = po.toString();  
-            TextFile.appendTo("C:\\JPL9\\java-assignment\\java-assignment\\src\\java_assignment2025\\PurchaseOrder.txt", poLine);
+            String poLine = po.toString(); 
+            System.out.println(poLine);
+            TextFile.appendTo("C:\\Users\\Isaac\\OneDrive - Asia Pacific University\\Documents\\NetBeansProjects\\java-assignment\\java-assignment\\src\\java_assignment2025\\PurchaseOrder.txt", poLine);
             JOptionPane.showMessageDialog(null, "Purchase Order generated successfully.");
              new PMPurchaseOrder().setVisible(true);
         } else {

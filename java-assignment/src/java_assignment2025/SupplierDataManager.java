@@ -3,6 +3,8 @@ package java_assignment2025;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java_assignment2025.Item;
 import java_assignment2025.Supplier;
 import java_assignment2025.TextFile;
@@ -122,16 +124,28 @@ public class SupplierDataManager {
         }
         return false;
     }
-public Supplier findsupplierid(String supplierId) {
-    for (Supplier supplier : supplierlist) {
-        if (supplier.getSupplierid().equals(supplierId)) {
-            return supplier;
+    public Supplier findsupplierid(String supplierId) {
+        for (Supplier supplier : supplierlist) {
+            if (supplier.getSupplierid().equals(supplierId)) {
+                return supplier;
+            }
         }
+        return null;
     }
-    return null;
-}
 
-    
-    
+    public static boolean phoneNumber(String phoneNumber){
+        String regex = "^(01\\d-\\d{3}-\\d{4})|(01\\d-\\d{4}-\\d{4})$";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(phoneNumber);
+        return matcher.matches();
+    }
+
+    public static boolean email(String email){
+        String regex = "^[a-zA-Z0-9]+@(gmail|yahoo|hotmail).com$";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
+    }
+
 }
 
