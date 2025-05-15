@@ -432,7 +432,6 @@ public class SM_SupplierEntry extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-
         new SM_ItemEntry(salesmanager,inventorydatamanager,supplierdatamanager).setVisible(true);
         this.dispose();
     }//GEN-LAST:event_jButton6ActionPerformed
@@ -488,10 +487,16 @@ public class SM_SupplierEntry extends javax.swing.JFrame {
         boolean readDescrptionStatus = false;
         boolean deleted = false;
         
-        if (suppliername.isEmpty() || contact.isEmpty()|| email.isEmpty() || address.isEmpty() || itemdesc.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "There is an unfilled field." , "Input Error", JOptionPane.ERROR_MESSAGE);
+        if (suppliername.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Supplier name cannot be empty.");
             return;
         }
+        
+        
+        if(itemdesc.isEmpty()){
+            itemdesc = "Will be update";
+        }
+        
         if (address.length()<5){
             JOptionPane.showMessageDialog(this, "Address must be more than 5 characters", "Input Error", JOptionPane.ERROR_MESSAGE);
             return;

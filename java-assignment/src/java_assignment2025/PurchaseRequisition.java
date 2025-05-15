@@ -17,6 +17,7 @@ public class PurchaseRequisition {
     private List<String> itemids;
     private String userid;
     private List<String> quantities;
+    private List<String> unitprice;
     private String total;
     private String requestdate;
     private String expecteddeliverydate;
@@ -40,11 +41,12 @@ public class PurchaseRequisition {
     }
 }
 
-    public PurchaseRequisition(String prid, List<String> itemids, String userid,List<String> quantities,String total,String requestdate, String expecteddeliverydate, ApproveStatus approvestatus, String note){
+    public PurchaseRequisition(String prid, List<String> itemids, String userid,List<String> quantities,List<String> unitprice,String total,String requestdate, String expecteddeliverydate, ApproveStatus approvestatus, String note){
         this.prid = prid;
         this.itemids = itemids;
         this.userid = userid;
         this.quantities = quantities;
+        this.unitprice = unitprice;
         this.total = total;
         this.requestdate = requestdate;
         this.expecteddeliverydate = expecteddeliverydate;
@@ -142,7 +144,16 @@ public class PurchaseRequisition {
     
     @Override
     public String toString(){
-        return prid + "," + String.join("|", itemids) + "," + userid + "," + String.join("|", quantities) +"," + total+ "," + requestdate + "," + expecteddeliverydate + "," + approvestatus + "," + note;
+        return prid + "," + String.join("|", itemids) + "," + userid + "," + String.join("|", quantities) +"," + String.join("|", unitprice) +"," + total+ "," + requestdate + "," + expecteddeliverydate + "," + approvestatus + "," + note;
     } 
+
+
+    public List<String> getUnitprice() {
+        return unitprice;
+    }
+
+    public void setUnitprice(List<String> unitprice) {
+        this.unitprice = unitprice;
+    }
 
 }

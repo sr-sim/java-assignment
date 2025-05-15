@@ -47,10 +47,10 @@ public class SM_DailySalesEntry extends javax.swing.JFrame {
             String qty = sales.getQuantity();
             String amount = sales.getAmount();
             String dateofsales = sales.getDateofsales();
+            String retailprice = sales.getretailprice();
 
             Item item = inventorydatamanager.finditemid(itemid);
             String itemname = (item != null) ? item.getItemname() : "Unknown Item";
-            String retailprice = (item != null) ? item.getRetailprice() : "Unknown retail price";
 
             model.addRow(new Object[]{
                 salesid,itemid,itemname,qty,retailprice,amount,dateofsales
@@ -560,10 +560,10 @@ public class SM_DailySalesEntry extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null,"Item not found", "Eror",JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            double retailprice = Double.parseDouble(item.getRetailprice());
-            double amount = qty*retailprice;
+            double unitretailprice = Double.parseDouble(item.getRetailprice());
+            double amount = qty*unitretailprice;
             
-            IndividualSales sales = new IndividualSales(salesid, itemid, qtystring, String.valueOf(amount), date);
+            IndividualSales sales = new IndividualSales(salesid, itemid, qtystring, String.valueOf(unitretailprice),String.valueOf(amount), date);
             salesdatamanager.addIndividualSales(sales);
    
             JOptionPane.showMessageDialog(null, "Success","Information", JOptionPane.INFORMATION_MESSAGE);
@@ -595,23 +595,22 @@ public class SM_DailySalesEntry extends javax.swing.JFrame {
             }
             int qty;
             double amount;
-            try{
-                qty=Integer.parseInt(qtystr);
-                if(qty<=0) throw new NumberFormatException();
-                Item item = inventorydatamanager.finditemid(itemid);
-                if (item==null){
-                    JOptionPane.showMessageDialog(null,"Item not found", "Eror",JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-                double retailprice = Double.parseDouble(item.getRetailprice());
-                amount = qty*retailprice;
-            }catch(NumberFormatException e){
-                JOptionPane.showMessageDialog(null, "Invalid quantity", "error", JOptionPane.ERROR_MESSAGE);
+            double retailprice;
+
+            try {
+                qty = Integer.parseInt(qtystr);
+                if (qty <= 0) throw new NumberFormatException();
+
+                retailprice = Double.parseDouble(oldsales.getretailprice());
+                amount = qty * retailprice;
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Invalid quantity or retail price in existing sales record", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
+
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
             String dateformated = df.format(date);
-            salesdatamanager.updateindividualsales(salesid,itemid,String.valueOf(qty),String.valueOf(amount), dateformated);
+            salesdatamanager.updateindividualsales(salesid,itemid,String.valueOf(qty),String.valueOf(retailprice),String.valueOf(amount), dateformated);
             fillTable1FromTxtFile();
             clearTextField();
             JOptionPane.showMessageDialog(this, "Update Successfully!");

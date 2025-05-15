@@ -14,13 +14,15 @@ public class IndividualSales {
     private String salesid;
     private String itemid;
     private String quantity;
+    private String retailprice;
     private String amount;
     private String dateofsales;
     
-    public IndividualSales(String salesid, String itemid, String quantity, String amount, String dateofsales){
+    public IndividualSales(String salesid, String itemid, String quantity, String retailprice, String amount, String dateofsales){
         this.salesid = salesid;
         this.itemid = itemid;
         this.quantity = quantity;
+        this.retailprice = retailprice;
         this.amount = amount;
         this.dateofsales = dateofsales;
     }
@@ -69,7 +71,16 @@ public class IndividualSales {
     }
     @Override
     public String toString(){
-        return salesid + "," + itemid +"," + quantity + "," + amount + "," + dateofsales;
+        return salesid + "," + itemid +"," + quantity + "," + retailprice + "," + amount + "," + dateofsales;
     } 
+
+
+    public String getretailprice() {
+        return retailprice;
+    }
+
+    public void setretailprice(String retailprice) {
+        this.retailprice = retailprice;
+    }
 
 }
