@@ -399,6 +399,7 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
                         oldpr.getItemids(),
                         oldpr.getUserid(),
                         oldpr.getQuantities(),
+                        oldpr.getUnitprice(),
                         oldpr.getTotal(),
                         oldpr.getRequestdate(),
                         oldpr.getExpecteddeliverydate(),
