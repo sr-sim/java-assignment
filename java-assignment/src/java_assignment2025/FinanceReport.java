@@ -5,18 +5,18 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
-//import net.sf.jasperreports.engine.JasperReport;
-//import net.sf.jasperreports.engine.JasperPrint;
-//import net.sf.jasperreports.engine.JasperCompileManager;
-//import net.sf.jasperreports.engine.JasperFillManager;
-//import net.sf.jasperreports.engine.JasperExportManager;
-//import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-//import net.sf.jasperreports.view.JasperViewer;
-//
-//import net.sf.jasperreports.engine.export.JRPdfExporter;
-//import net.sf.jasperreports.export.SimpleExporterInput;
-//import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
-//import net.sf.jasperreports.export.SimplePdfExporterConfiguration;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.view.JasperViewer;
+
+import net.sf.jasperreports.engine.export.JRPdfExporter;
+import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
+import net.sf.jasperreports.export.SimplePdfExporterConfiguration;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,9 +25,9 @@ import java.util.Map;
 
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
-//import net.sf.jasperreports.engine.JREmptyDataSource;
-//import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
-//import net.sf.jasperreports.engine.util.JRLoader;
+import net.sf.jasperreports.engine.JREmptyDataSource;
+import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
+import net.sf.jasperreports.engine.util.JRLoader;
 
 public class FinanceReport {
     private final PurchaseOrderManager poManager;
@@ -149,60 +149,58 @@ public class FinanceReport {
 
     return allSummaries;
 }
-//    public static void exportJTableToJasper(JTable table) {
-//    try {
+    public static void exportJTableToJasper(JTable table) {
+    try {
 //        System.setProperty("net.sf.jasperreports.export.pdf.force.linebreak.policy", "false");
 //        System.setProperty("net.sf.jasperreports.default.pdf.font.name", "Helvetica");
 //        System.setProperty("net.sf.jasperreports.default.pdf.encoding", "Cp1252");
 //        System.setProperty("net.sf.jasperreports.default.pdf.embedded", "false");
-//
-//        // Step 1: Extract JTable data into a list of maps
-//        List<Map<String, ?>> data = new ArrayList<>();
-//        for (int row = 0; row < table.getRowCount(); row++) {
-//            Map<String, Object> record = new HashMap<>();
-//            record.put("poid", table.getValueAt(row, 0));
-//            record.put("itemIds", table.getValueAt(row, 1));
-//            record.put("itemNames", table.getValueAt(row, 2));
-//            record.put("quantities", table.getValueAt(row, 3));
-//            record.put("amount", table.getValueAt(row, 4));
-//            record.put("orderDate", table.getValueAt(row, 5));
-//            data.add(record);
-//        }
-//
-//        // Step 2: Create data source
-//        JRMapCollectionDataSource tableSource = new JRMapCollectionDataSource(data);
-//        Map<String, Object> params = new HashMap<>();
-//        params.put("REPORT_DATA_SOURCE", tableSource);
-//
-//        // Step 3: Load compiled Jasper file
-//        JasperReport report = (JasperReport) JRLoader.loadObjectFromFile(
-//            "C://Users//Isaac//OneDrive - Asia Pacific University//Documents//NetBeansProjects//java-assignment//java-assignment//src//java_assignment2025//Jasper//Finance.jasper"
-//        );
-//
-//        // Step 4: Fill report
-//        JasperPrint filled = JasperFillManager.fillReport(report, params, new JREmptyDataSource());
-//
-//        // Step 5: Export to PDF
-//        String path = "Finance_Report_" + System.currentTimeMillis() + ".pdf";
-//
-//        JRPdfExporter exporter = new JRPdfExporter();
-//        exporter.setExporterInput(new SimpleExporterInput(filled));
-//        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(path));
-//
-//        SimplePdfExporterConfiguration config = new SimplePdfExporterConfiguration();
-//        
-//        exporter.setConfiguration(config);
-//
-//        exporter.exportReport();
-//
-//        JOptionPane.showMessageDialog(null, "Report exported to " + path);
-//
-//    } catch (Exception e) {
-//        e.printStackTrace();
-//        JOptionPane.showMessageDialog(null, "Export failed: " + e.getMessage());
-//    }
-//}
 
+        // Step 1: Extract JTable data into a list of maps
+        List<Map<String, ?>> data = new ArrayList<>();
+        for (int row = 0; row < table.getRowCount(); row++) {
+            Map<String, Object> record = new HashMap<>();
+            record.put("poid", table.getValueAt(row, 0));
+            record.put("itemIds", table.getValueAt(row, 4));
+            record.put("itemNames", table.getValueAt(row, 5));
+            record.put("quantities", table.getValueAt(row, 7));
+            record.put("amount", table.getValueAt(row, 8));
+            record.put("orderDate", table.getValueAt(row, 10));
+            data.add(record);
+        }
 
+        // Step 2: Create JRMapCollectionDataSource
+        JRMapCollectionDataSource dataSource = new JRMapCollectionDataSource(data);
+        Map<String, Object> params = new HashMap<>();
+        params.put("DATA_SOURCE", dataSource);
+
+        // Step 3: Load compiled Jasper file
+        JasperReport report = (JasperReport) JRLoader.loadObjectFromFile(
+            "C://Users//Isaac//OneDrive - Asia Pacific University//Documents//NetBeansProjects//java-assignment//java-assignment//src//java_assignment2025//Jasper//stupidting.jasper"
+        );
+
+        // Step 4: Fill report
+        JasperPrint filled = JasperFillManager.fillReport(report, params, new JREmptyDataSource());
+
+        // Step 5: Export to PDF
+        String path = "Finance_Report_" + System.currentTimeMillis() + ".pdf";
+
+        JRPdfExporter exporter = new JRPdfExporter();
+        exporter.setExporterInput(new SimpleExporterInput(filled));
+        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(path));
+
+        SimplePdfExporterConfiguration config = new SimplePdfExporterConfiguration();
+        
+        exporter.setConfiguration(config);
+
+        exporter.exportReport();
+
+        JOptionPane.showMessageDialog(null, "Report exported to " + path);
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(null, "Export failed: " + e.getMessage());
+    }
+}
 
 }

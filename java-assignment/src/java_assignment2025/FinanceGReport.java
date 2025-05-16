@@ -30,7 +30,7 @@ import java.util.Map;
 import static java_assignment2025.PurchaseOrderManager.findSupplierNameById;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
-//import static java_assignment2025.FinanceReport.exportJTableToJasper;
+import static java_assignment2025.FinanceReport.exportJTableToJasper;
 
 //import net.sf.jasperreports.engine.JasperReport;
 //import net.sf.jasperreports.engine.JasperPrint;
@@ -39,13 +39,13 @@ import javax.swing.table.TableColumn;
 //import net.sf.jasperreports.engine.JasperExportManager;
 //import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 //import net.sf.jasperreports.view.JasperViewer;
-
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.PDPageContentStream;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.font.PDType1Font;
-import org.apache.pdfbox.pdmodel.font.PDFont;
+//
+//import org.apache.pdfbox.pdmodel.PDDocument;
+//import org.apache.pdfbox.pdmodel.PDPage;
+//import org.apache.pdfbox.pdmodel.PDPageContentStream;
+//import org.apache.pdfbox.pdmodel.common.PDRectangle;
+//import org.apache.pdfbox.pdmodel.font.PDType1Font;
+//import org.apache.pdfbox.pdmodel.font.PDFont;
 
 /**
  *
@@ -113,41 +113,6 @@ public class FinanceGReport extends javax.swing.JFrame {
         showReportPopup(filtered, "paid pos - week" + currentWeek);
         
     }
-//    private void exportJTableToJasperReport() {
-//    try {
-//        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-//        List<PurchaseOrderReportEntry> reportList = new ArrayList<>();
-//    
-//        for (int i = 0; i < model.getRowCount(); i++) {
-//            String poid = model.getValueAt(i, 0).toString();       // PO Id
-//            String itemIds = model.getValueAt(i, 3).toString();    // Item Id
-//            String itemNames = model.getValueAt(i, 4).toString();  // Item Name
-//            String quantities = model.getValueAt(i, 5).toString(); // Quantity
-//            String amount = model.getValueAt(i, 6).toString();     // Amount
-//            String orderDate = model.getValueAt(i, 8).toString();  // Order Date
-//
-//            reportList.add(new PurchaseOrderReportEntry(poid, itemIds, itemNames, quantities, orderDate, amount));
-//        }
-//
-//        // Load .jrxml or .jasper file (compiled)
-//        JasperReport report = JasperCompileManager.compileReport("C:\\Users\\Isaac\\JaspersoftWorkspace\\MyReports\\FinanceReportTemplate.jrxml");
-//
-//        JRBeanCollectionDataSource ds = new JRBeanCollectionDataSource(reportList);
-//
-//        Map<String, Object> parameters = new HashMap<>();
-//        parameters.put("ReportTitle", "Purchase Order Financial Report");
-//
-//        JasperPrint print = JasperFillManager.fillReport(report, parameters, ds);
-//        JasperViewer.viewReport(print, false);
-//        JasperExportManager.exportReportToPdfFile(print, "PO_Table_Report_" + System.currentTimeMillis() + ".pdf");
-//
-//        JOptionPane.showMessageDialog(this, "PDF Exported Successfully!");
-//
-//    } catch (Exception e) {
-//        e.printStackTrace();
-//        JOptionPane.showMessageDialog(this, "Error generating report: " + e.getMessage());
-//    }
-//}
 
     
     private void showReportPopup(List<PurchaseOrder> poList, String title){
@@ -179,113 +144,113 @@ public class FinanceGReport extends javax.swing.JFrame {
         JLabel totalLabel = new JLabel("Total Amount Spent: RM " + String.format("%.2f", total));
         totalLabel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
         
-        JButton downloadBtn = new JButton("Download PDF");
-
-        downloadBtn.addActionListener(e -> {
-            try {
-                exportTableToPDF(table, title);
-            } catch (IOException ex) {
-                ex.printStackTrace();
-                JOptionPane.showMessageDialog(this, "Failed to export PDF: " + ex.getMessage());
-            }
-        });
+//        JButton downloadBtn = new JButton("Download PDF");
+//
+//        downloadBtn.addActionListener(e -> {
+//            try {
+//                exportTableToPDF(table, title);
+//            } catch (IOException ex) {
+//                ex.printStackTrace();
+//                JOptionPane.showMessageDialog(this, "Failed to export PDF: " + ex.getMessage());
+//            }
+//        });
     
         JPanel southPanel = new JPanel(new BorderLayout());
         southPanel.add(totalLabel, BorderLayout.CENTER);
-        southPanel.add(downloadBtn, BorderLayout.EAST);
+//        southPanel.add(downloadBtn, BorderLayout.EAST);
         
         dialog.add(scrollPane, BorderLayout.CENTER);
         dialog.add(southPanel, BorderLayout.SOUTH);
         dialog.setVisible(true);
     }
     
-    private void exportTableToPDF(JTable table, String title) throws IOException {
-        PDDocument document = new PDDocument();
-        PDPage page = new PDPage(PDRectangle.A4);
-        document.addPage(page);
-
-        PDPageContentStream content = new PDPageContentStream(document, page);
-        PDFont font = PDType1Font.HELVETICA;
-        PDFont boldFont = PDType1Font.HELVETICA_BOLD;
-
-        float margin = 50;
-        float yStart = page.getMediaBox().getHeight() - margin;
-        float y = yStart;
-        float tableWidth = page.getMediaBox().getWidth() - 2 * margin;
-        float rowHeight = 20;
-        float tableBottomY = 100;
-
-        content.setFont(boldFont, 18);
-        content.beginText();
-        content.newLineAtOffset(margin, y);
-
-        content.showText(title);
-        content.endText();
-        y -= 30;
-
-    // Draw header
-        content.setFont(boldFont, 12);
-        content.beginText();
-        content.newLineAtOffset(margin, y);
-        content.showText("PO ID      Amount               Order Date        Supplier       Status");
-        content.endText();
-
-        y -= rowHeight;
-        content.setStrokingColor(0, 0, 0); // black line
-
-        // Draw header bottom line
-        content.moveTo(margin, y);
-        content.lineTo(margin + tableWidth, y);
-        content.stroke();
-
-        content.setFont(font, 11);
-
-        // Table body
-        for (int row = 0; row < table.getRowCount(); row++) {
-            if (y < tableBottomY) break; // avoid writing off page
-
-            y -= rowHeight;
-            String poId = table.getValueAt(row, 0).toString();
-            String amount = table.getValueAt(row, 1).toString();
-            String date = table.getValueAt(row, 2).toString();
-            String supplier = table.getValueAt(row, 3).toString();
-            String status = table.getValueAt(row, 4).toString();
-
-            content.beginText();
-            content.newLineAtOffset(margin, y);
-            content.showText(String.format("%-10s %-20s %-15s %-12s %-10s", poId, amount, date, supplier, status));
-            content.endText();
-
-            // Draw horizontal line below row
-            content.moveTo(margin, y - 5);
-            content.lineTo(margin + tableWidth, y - 5);
-            content.stroke();
-        }
-
-        // Total amount
-        double totalAmount = 0;
-        for (int row = 0; row < table.getRowCount(); row++) {
-            String amountStr = table.getValueAt(row, 1).toString().replace("RM", "").trim();
-            try {
-            totalAmount += Double.parseDouble(amountStr);
-            } catch (NumberFormatException ignored) {}
-        }
-        
-        y -= 40;
-        content.setFont(boldFont, 12);
-        content.beginText();
-        content.newLineAtOffset(margin, y);
-        content.showText("Total Amount Spent: RM " + String.format("%.2f", totalAmount));
-        content.endText();
-
-        content.close();
-
-        String fileName = "FinanceReport_" + System.currentTimeMillis() + ".pdf";
-        document.save(fileName);
-        document.close();
-
-        JOptionPane.showMessageDialog(null, "PDF saved as " + fileName);
-    }
+//    private void exportTableToPDF(JTable table, String title) throws IOException {
+//        PDDocument document = new PDDocument();
+//        PDPage page = new PDPage(PDRectangle.A4);
+//        document.addPage(page);
+//
+//        PDPageContentStream content = new PDPageContentStream(document, page);
+//        PDFont font = PDType1Font.HELVETICA;
+//        PDFont boldFont = PDType1Font.HELVETICA_BOLD;
+//
+//        float margin = 50;
+//        float yStart = page.getMediaBox().getHeight() - margin;
+//        float y = yStart;
+//        float tableWidth = page.getMediaBox().getWidth() - 2 * margin;
+//        float rowHeight = 20;
+//        float tableBottomY = 100;
+//
+//        content.setFont(boldFont, 18);
+//        content.beginText();
+//        content.newLineAtOffset(margin, y);
+//
+//        content.showText(title);
+//        content.endText();
+//        y -= 30;
+//
+//    // Draw header
+//        content.setFont(boldFont, 12);
+//        content.beginText();
+//        content.newLineAtOffset(margin, y);
+//        content.showText("PO ID      Amount               Order Date        Supplier       Status");
+//        content.endText();
+//
+//        y -= rowHeight;
+//        content.setStrokingColor(0, 0, 0); // black line
+//
+//        // Draw header bottom line
+//        content.moveTo(margin, y);
+//        content.lineTo(margin + tableWidth, y);
+//        content.stroke();
+//
+//        content.setFont(font, 11);
+//
+//        // Table body
+//        for (int row = 0; row < table.getRowCount(); row++) {
+//            if (y < tableBottomY) break; // avoid writing off page
+//
+//            y -= rowHeight;
+//            String poId = table.getValueAt(row, 0).toString();
+//            String amount = table.getValueAt(row, 1).toString();
+//            String date = table.getValueAt(row, 2).toString();
+//            String supplier = table.getValueAt(row, 3).toString();
+//            String status = table.getValueAt(row, 4).toString();
+//
+//            content.beginText();
+//            content.newLineAtOffset(margin, y);
+//            content.showText(String.format("%-10s %-20s %-15s %-12s %-10s", poId, amount, date, supplier, status));
+//            content.endText();
+//
+//            // Draw horizontal line below row
+//            content.moveTo(margin, y - 5);
+//            content.lineTo(margin + tableWidth, y - 5);
+//            content.stroke();
+//        }
+//
+//        // Total amount
+//        double totalAmount = 0;
+//        for (int row = 0; row < table.getRowCount(); row++) {
+//            String amountStr = table.getValueAt(row, 1).toString().replace("RM", "").trim();
+//            try {
+//            totalAmount += Double.parseDouble(amountStr);
+//            } catch (NumberFormatException ignored) {}
+//        }
+//        
+//        y -= 40;
+//        content.setFont(boldFont, 12);
+//        content.beginText();
+//        content.newLineAtOffset(margin, y);
+//        content.showText("Total Amount Spent: RM " + String.format("%.2f", totalAmount));
+//        content.endText();
+//
+//        content.close();
+//
+//        String fileName = "FinanceReport_" + System.currentTimeMillis() + ".pdf";
+//        document.save(fileName);
+//        document.close();
+//
+//        JOptionPane.showMessageDialog(null, "PDF saved as " + fileName);
+//    }
     private void resizeColumnWidths(JTable table) {
     for (int column = 0; column < table.getColumnCount(); column++) {
         TableColumn tableColumn = table.getColumnModel().getColumn(column);
@@ -337,6 +302,7 @@ public class FinanceGReport extends javax.swing.JFrame {
         jTextField1 = new javax.swing.JTextField();
         rejectBtn = new javax.swing.JButton();
         jComboBox2 = new javax.swing.JComboBox<>();
+        pdf = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -465,7 +431,7 @@ public class FinanceGReport extends javax.swing.JFrame {
             .addComponent(jButton9)
             .addGap(18, 18, 18)
             .addComponent(jButton10)
-            .addContainerGap(192, Short.MAX_VALUE))
+            .addContainerGap(233, Short.MAX_VALUE))
     );
 
     jLabel1.setFont(new java.awt.Font("STZhongsong", 2, 13)); // NOI18N
@@ -492,6 +458,13 @@ public class FinanceGReport extends javax.swing.JFrame {
 
     jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" }));
 
+    pdf.setText("pdf");
+    pdf.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            pdfActionPerformed(evt);
+        }
+    });
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
@@ -499,29 +472,30 @@ public class FinanceGReport extends javax.swing.JFrame {
         .addGroup(layout.createSequentialGroup()
             .addContainerGap()
             .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(47, 47, 47)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 946, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(278, 278, 278)
-                        .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(406, 406, 406)
-                        .addComponent(jLabel11)))
-                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                    .addGap(159, 159, 159)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(18, 18, 18)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(278, 278, 278)
+                    .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(406, 406, 406)
+                    .addComponent(jLabel11))
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(pdf, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(276, 276, 276)
                     .addComponent(rejectBtn)
                     .addGap(121, 121, 121)
                     .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGap(18, 18, 18)
-                    .addComponent(donDeleteMe)))
-            .addContainerGap(330, Short.MAX_VALUE))
+                    .addComponent(donDeleteMe))
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(33, 33, 33)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 946, javax.swing.GroupLayout.PREFERRED_SIZE)))
+            .addContainerGap(344, Short.MAX_VALUE))
     );
     layout.setVerticalGroup(
         layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -542,7 +516,8 @@ public class FinanceGReport extends javax.swing.JFrame {
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                 .addComponent(donDeleteMe)
                 .addComponent(rejectBtn)
-                .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(pdf))
             .addGap(103, 103, 103))
     );
 
@@ -594,6 +569,10 @@ public class FinanceGReport extends javax.swing.JFrame {
     private void rejectBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rejectBtnActionPerformed
         generateWeeklyReport();
     }//GEN-LAST:event_rejectBtnActionPerformed
+
+    private void pdfActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pdfActionPerformed
+        exportJTableToJasper(jTable1);
+    }//GEN-LAST:event_pdfActionPerformed
 
     private void genpdfActionPerformed(java.awt.event.ActionEvent evt) {                                       
 //        exportJTableToJasper(jTable1);
@@ -652,6 +631,7 @@ public class FinanceGReport extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     private javax.swing.JTextField jTextField1;
+    private javax.swing.JButton pdf;
     private javax.swing.JButton rejectBtn;
     // End of variables declaration//GEN-END:variables
 }
