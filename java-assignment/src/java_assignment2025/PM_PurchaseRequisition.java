@@ -60,6 +60,8 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
             String itemids = String.join(",", itemidslist);
             List<String> quantitieslist = pr.getQuantities();
             String quantity = String.join(",", quantitieslist);
+            List<String> unitPricelist = pr.getUnitPrices();
+            String unitprice = String.join(",",unitPricelist);
             String totalprice = pr.getTotal();
             String reqdate = pr.getRequestdate();
             String expecteddate = pr.getExpecteddeliverydate();
@@ -77,7 +79,7 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
             
             model.addRow(new Object[]{
                 prid, itemids, itemnames,
-                quantity, totalprice,
+                quantity,unitprice, totalprice,
                 reqdate, expecteddate, createdby,note,
                 status
             });
@@ -87,7 +89,7 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
         String[] statuses = {"pending","reject","approved"};
         JComboBox<String> comboBox = new JComboBox<>(statuses);
         
-        TableColumn statusColumn = jTable1.getColumnModel().getColumn(9); 
+        TableColumn statusColumn = jTable1.getColumnModel().getColumn(10); 
         statusColumn.setCellEditor(new DefaultCellEditor(comboBox));
        
     }
@@ -125,11 +127,11 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {},
             new String [] {
-                "PR Id", "Item Id", "Item Name", "Quantity", "Amount", "Request Date", "Expected Delivery Date", "Created By", "Note","Status"
+                "PR Id", "Item Id", "Item Name", "Quantity","Unit Price", "Amount", "Request Date", "Expected Delivery Date", "Created By", "Note","Status"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, false,false,true
+                false, false, false, false, false,false, false, false, false,false,true
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -394,19 +396,19 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
                 );
                 
                 if (confirm == JOptionPane.YES_OPTION) {
-                    PurchaseRequisition newpr = new PurchaseRequisition(
+                    prmanager.updatepr(
                         oldpr.getPrid(),
                         oldpr.getItemids(),
                         oldpr.getUserid(),
                         oldpr.getQuantities(),
+                        oldpr.getUnitPrices(),
                         oldpr.getTotal(),
                         oldpr.getRequestdate(),
                         oldpr.getExpecteddeliverydate(),
                         PurchaseRequisition.ApproveStatus.fromString(updatedStatus),
-                        oldpr.getNote()
+                        oldpr.getNote(),
+                        oldpr.isDeleted()
                     );
-
-                    prmanager.updatepr(oldpr, newpr);
                     savedChanges = true;
                 } else {
                     // Revert change visually if cancelled
@@ -442,7 +444,7 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
         }
 
         // Check if status is approved
-        String status = jTable1.getValueAt(selectedRow, 9).toString().trim().toLowerCase();
+        String status = jTable1.getValueAt(selectedRow, 10).toString().trim().toLowerCase();
         if (!status.equals("approved")) {
             JOptionPane.showMessageDialog(null, "Only approved requests can generate a Purchase Order.");
             return;
@@ -454,81 +456,80 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
         }
         
        // Extract PR row data
-            String requestId = jTable1.getValueAt(selectedRow, 0).toString();
-            String itemIds = jTable1.getValueAt(selectedRow, 1).toString();
-            String userId = jTable1.getValueAt(selectedRow, 7).toString();
-            String[] itemIdList = itemIds.split(",");
-            String[] quantities = jTable1.getValueAt(selectedRow, 3).toString().split(",");
-            String[] amounts = jTable1.getValueAt(selectedRow, 4).toString().split(",");
+        String requestId = jTable1.getValueAt(selectedRow, 0).toString();
+        String itemIdsRaw = jTable1.getValueAt(selectedRow, 1).toString(); // Comma or pipe separated
+        String userId = jTable1.getValueAt(selectedRow, 8).toString();
+        String quantitiesRaw = jTable1.getValueAt(selectedRow, 3).toString();
+        String unitPriceRaw=jTable1.getValueAt(selectedRow,4).toString();
+        double amount = Double.parseDouble(jTable1.getValueAt(selectedRow, 5).toString());
 
-            // Read existing PO records from file
-            List<String> existingPOs = TextFile.readFile("C:\\JPL9\\java-assignment\\java-assignment\\src\\java_assignment2025\\PurchaseOrder.txt");
-            //StringBuilder supplierIdBuilder = new StringBuilder(); // To collect supplier IDs
-            for (int i = 0; i < itemIdList.length; i++) {
-                String itemId = itemIdList[i].trim();
-                int quantity = Integer.parseInt(quantities[i].trim());
-                double amount = Double.parseDouble(amounts[i].trim());
+        String[] itemIdList = itemIdsRaw.contains("|") ? itemIdsRaw.split("\\|") : itemIdsRaw.split(",");
+        String[] quantityList = quantitiesRaw.contains("|") ? quantitiesRaw.split("\\|") : quantitiesRaw.split(",");
+        String[] unitPriceList = unitPriceRaw.contains("|") ? unitPriceRaw.split("\\|") : unitPriceRaw.split(",");
 
-                // Check for duplicate PO (based on requestId and itemId)
-                boolean isDuplicate = existingPOs.stream().anyMatch(line -> {
-                    String[] parts = line.split(",");
-                    return parts.length >= 4 && parts[1].equals(requestId) && parts[3].equals(itemId);
-                });
+        List<String> validItemIds = new ArrayList<>();
+        List<String> validQuantities = new ArrayList<>();
+        List<String> validUnitPrices = new ArrayList<>();
+        List<String> supplierIds = new ArrayList<>();
 
-                if (isDuplicate) {
-                    JOptionPane.showMessageDialog(null, "PO for Request ID " + requestId + " and Item ID " + itemId + " already exists. Skipping...");
-                    continue; // Skip this item
-                }
-                
-                String nextPoId=PurchaseOrder.getNextOrderId();
-                
-                // Find supplier ID
-                Item item = inventorydatamanager.finditemid(itemId);
-                String supplierId = (item != null) ? item.getSupplierid() : "Unknown";
-               
+        List<String> existingPOs = TextFile.readFile("src/java_assignment2025/PurchaseOrder.txt");
 
+        for (int i = 0; i < itemIdList.length; i++) {
+            String itemId = itemIdList[i].trim();
+            String unitprice= unitPriceList[i].trim();
+            String quantity = quantityList[i].trim();
+            
 
-                 // Append the supplier ID to the builder with "\\|" delimiter
-                /**if (i > 0) {
-                    supplierIdBuilder.append("\\|");
-                }
-                supplierIdBuilder.append(supplierId);**/
-                // Create new PO
-                PurchaseOrder po = new PurchaseOrder(
-                    nextPoId,
-                    requestId,
-                    userId,
-                    Arrays.asList(itemId),
-                    Arrays.asList(String.valueOf(quantity)),
-                    amount,
-                    Arrays.asList(supplierId),
-                    PurchaseOrder.getCurrentDate(),
-                    "Pending",
-                    "Unpaid"
-                );
+            // Check for duplicate PO (based on requestId and itemId)
+            boolean isDuplicate = existingPOs.stream().anyMatch(line -> {
+                String[] parts = line.split(",");
+                return parts.length >= 4 && parts[1].equals(requestId) && Arrays.asList(parts[3].split("\\|")).contains(itemId);
+            });
 
-                // Prepare line and write to file
-                String poLine = String.join(",",
-                    po.getOrderId(),
-                    po.getRequestId(),
-                    po.getUserId(),
-                    String.join("|", po.getItemIds()!= null ? po.getItemIds() : Collections.emptyList()),           // Join item IDs with "|"
-                    String.join("|", po.getQuantities()!= null ? po.getQuantities() : Collections.emptyList()),
-                    String.format("%.2f", po.getAmount()),
-                    String.join("|", po.getSupplierIds()!= null ? po.getSupplierIds() : Collections.emptyList()),
-                    po.getOrderDate(),
-                    po.getOrderStatus(),
-                    po.getPaymentStatus()
-                );
-                
-                    //String concatenatedSupplierIds = supplierIdBuilder.toString();
-                    TextFile.appendTo("C:\\JPL9\\java-assignment\\java-assignment\\src\\java_assignment2025\\PurchaseOrder.txt", poLine);
-                    
-                    JOptionPane.showMessageDialog(null, "Purchase Order(s) generated successfully.");
-                }
+            if (isDuplicate) {
+                JOptionPane.showMessageDialog(null, "PO for Request ID " + requestId + " and Item ID " + itemId + " already exists. Skipping this item...");
+                return;
+            }
 
-                
+            // Find supplier ID
+            Item item = inventorydatamanager.finditemid(itemId);
+            String supplierId = (item != null) ? item.getSupplierid() : "Unknown";
 
+            validItemIds.add(itemId);
+            validQuantities.add(quantity);
+            validUnitPrices.add(unitprice);
+            supplierIds.add(supplierId);
+        }
+
+        // Only create PO if there are valid items
+        if (!validItemIds.isEmpty()) {
+            String nextPoId = PurchaseOrder.getNextOrderId();
+            String poCreator = "MACY";
+            PurchaseOrder po = new PurchaseOrder(
+                nextPoId,
+                poCreator,
+                requestId,
+                userId,
+                validItemIds,
+                validUnitPrices,
+                validQuantities,
+                amount,  
+                supplierIds,
+                PurchaseOrderManager.getCurrentDate(),
+                "pending",
+                "pending",
+                "unpaid"
+            );
+
+            // Write to file
+            String poLine = po.toString(); 
+            System.out.println(poLine);
+            TextFile.appendTo("src/java_assignment2025/PurchaseOrder.txt", poLine);
+            JOptionPane.showMessageDialog(null, "Purchase Order generated successfully.");
+             new PMPurchaseOrder().setVisible(true);
+        } else {
+            JOptionPane.showMessageDialog(null, "No valid items to generate PO. All were duplicates.");
+        }
 
     }//GEN-LAST:event_createPurchaseOrderActionPerformed
 

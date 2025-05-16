@@ -19,8 +19,9 @@ public class Item {
     private String reorderlevel;
     private String reorderstatus;
     private String lastmodifieddate;
+    private boolean deleted;
    
-    public Item(String itemid, String itemname, String itemdesc, String supplierid, String unitprice, String retailprice, String instockquantity, String reorderlevel, String reorderstatus, String lastmodifieddate){
+    public Item(String itemid, String itemname, String itemdesc, String supplierid, String unitprice, String retailprice, String instockquantity, String reorderlevel, String reorderstatus, String lastmodifieddate,boolean deleted){
         this.itemid = itemid;
         this.itemname = itemname;
         this.itemdesc = itemdesc;
@@ -31,6 +32,7 @@ public class Item {
         this.reorderlevel = reorderlevel;
         this.reorderstatus = reorderstatus;
         this.lastmodifieddate = lastmodifieddate;
+        this.deleted = deleted;
     }
     public Item() {
     }
@@ -130,9 +132,19 @@ public class Item {
     public void setLastmodifieddate(String lastmodifieddate) {
         this.lastmodifieddate = lastmodifieddate;
     }
+    public boolean isDeleted() {
+        return deleted;
+    }
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
     @Override
     public String toString(){
-        return itemid + "," + itemname + "," + itemdesc + "," + supplierid + "," + unitprice+ "," + retailprice+ "," + instockquantity +","+ reorderlevel+ "," + reorderstatus + "," + lastmodifieddate;
+        return itemid + "," + itemname + "," + itemdesc + "," + supplierid + "," + unitprice+ "," + retailprice+ "," + instockquantity +","+ reorderlevel+ "," + reorderstatus + "," + lastmodifieddate +","+ isDeleted();
     }
+
+    /**
+     * @return the deleted
+     */
 
 }

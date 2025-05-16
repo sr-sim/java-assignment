@@ -9,10 +9,15 @@ package java_assignment2025;
  * @author User
  */
 public class FinanceManager extends User{
-    public FinanceManager(String userId, String username, String password, String contact) {
-        super(userId, username, password,contact, "Finance Manager");
+    public FinanceManager(String userID, String userName, String password, String fullname, String email, String contact, boolean isActive) {
+        super(userID, userName, password, fullname, email, contact, Role.FINANCE_MANAGER, isActive);
     }
-    public void managefinance(){
-         System.out.println("maange finance niceeeeee");
+    
+    public FinanceManager(String userID, String userName, String password, String fullname, String email, String contact) {
+        super(userID, userName, password, fullname, email, contact, Role.FINANCE_MANAGER, true);
+    }
+    
+    public FinanceManager(User user) {
+        super (user.getUserId(), user.getUsername(), user.getPassword(), user.getFullname(), user.getEmail(), user.getContact(), Role.FINANCE_MANAGER, true);
     }
 }

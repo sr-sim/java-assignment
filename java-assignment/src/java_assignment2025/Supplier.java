@@ -17,8 +17,9 @@ public class Supplier {
     private String email;
     private String itemdescription;
     private boolean readDescrptionStatus;
+    private boolean deleted;
     
-    public Supplier(String supplierid, String suppliername, String address, String contact, String email, String itemdescription, boolean readDescrptionStatus){
+    public Supplier(String supplierid, String suppliername, String address, String contact, String email, String itemdescription, boolean readDescrptionStatus,boolean deleted){
         this.supplierid = supplierid;
         this.suppliername = suppliername;
         this.address = address;
@@ -26,6 +27,7 @@ public class Supplier {
         this.email = email;
         this.itemdescription = itemdescription;
         this.readDescrptionStatus =readDescrptionStatus;
+        this.deleted = deleted;
     }
     public Supplier() {
     }
@@ -85,11 +87,20 @@ public class Supplier {
     public void setReadDescrptionStatus(boolean readDescrptionStatus) {
         this.readDescrptionStatus = readDescrptionStatus;
     }
-    @Override
-    public String toString(){
-        return supplierid + "," + suppliername + "," + address + "," + contact +"," + email+ "," + itemdescription + "," + readDescrptionStatus;
+    
+    public boolean isDeleted() {
+        return deleted;
     }
 
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    @Override
+    public String toString(){
+        return supplierid + "," + suppliername + "," + address + "," + contact +"," + email+ "," + itemdescription + "," + readDescrptionStatus+","+deleted;
+    }
+    
 }
 //suppliername;
 //    private String address;

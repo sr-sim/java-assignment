@@ -5,6 +5,7 @@
 
 package java_assignment2025;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -20,29 +21,38 @@ public class SM_SupplierEntry extends javax.swing.JFrame {
     private SupplierDataManager supplierdatamanager;
     private InventoryDataManager inventorydatamanager = new InventoryDataManager();
     private PurchaseRequisitionManager prmanager = new PurchaseRequisitionManager();
+    private SalesDataManager salesdatamanager = new SalesDataManager();
     
     
-    public SM_SupplierEntry(SalesManager salesmanager, SupplierDataManager supplierdatamanager) {
+    public SM_SupplierEntry(SupplierDataManager supplierdatamanager) {
         initComponents();
-        this.salesmanager = salesmanager;
+        this.salesmanager = (SalesManager)Session.getCurrentUser();
         this.supplierdatamanager = supplierdatamanager;
         String generatedID = supplierdatamanager.generateSupplierId();
         jTextField1.setText(generatedID);
         jTextField1.setEditable(false);
         jTextField1.setFocusable(false);
-        fillTableFromTxtFile();
+        fillTable1FromTxtFile();
     }
-    public void fillTableFromTxtFile(){
+    public void fillTable1FromTxtFile() {
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-        model.setRowCount(0);
-        String filename = supplierdatamanager.getsupplierfilepath();
-        List<String> list = TextFile.readFile(filename);
-        
-        for (String details : list){
-            String[] Info = details.split(",");
-            if(Info.length >=6){
-                model.addRow(new Object[]{Info[0], Info[1], Info[2], Info[3], Info[4], Info[5]});
-            }      
+        model.setRowCount(0); 
+        for (Supplier supplier : supplierdatamanager.getsupplierlist()) {
+            if(!supplier.isDeleted()){ //is deleted is false
+                String supplierid = supplier.getSupplierid();
+                String suppliername = supplier.getSuppliername();
+                String address = supplier.getAddress();
+                String contact = supplier.getContact();
+                String email = supplier.getEmail();
+                String itemdescription = supplier.getItemdescription();
+
+                model.addRow(new Object[]{
+                    supplierid, suppliername, address,
+                    contact, email,
+                    itemdescription
+                });
+            }
+
         }
     }
     private void clearTextField(){
@@ -79,6 +89,8 @@ public class SM_SupplierEntry extends javax.swing.JFrame {
         jButton10 = new javax.swing.JButton();
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
+        jButton5 = new javax.swing.JButton();
+        jButton11 = new javax.swing.JButton();
         jTextField1 = new javax.swing.JTextField();
         jTextField2 = new javax.swing.JTextField();
         jTextField3 = new javax.swing.JTextField();
@@ -168,13 +180,29 @@ public class SM_SupplierEntry extends javax.swing.JFrame {
         jLabel9.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
         jLabel9.setText("(OWSB)");
 
+        jButton5.setText("Log Out");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
+
+        jButton11.setText("Home");
+        jButton11.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton11ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addComponent(jLabel2)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel2)
+                    .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 0, Short.MAX_VALUE))
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -190,13 +218,17 @@ public class SM_SupplierEntry extends javax.swing.JFrame {
                             .addComponent(jButton10, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGap(79, 79, 79)
-                        .addComponent(jLabel9)))
+                        .addComponent(jLabel9))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(59, 59, 59)
+                        .addComponent(jButton11)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(56, 56, 56)
+                .addComponent(jButton5)
+                .addGap(33, 33, 33)
                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(2, 2, 2)
                 .addComponent(jLabel9)
@@ -212,7 +244,9 @@ public class SM_SupplierEntry extends javax.swing.JFrame {
                 .addComponent(jButton9)
                 .addGap(18, 18, 18)
                 .addComponent(jButton10)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton11)
+                .addGap(18, 18, 18))
         );
 
         jTextField1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
@@ -423,23 +457,22 @@ public class SM_SupplierEntry extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-
-        new SM_ItemEntry(salesmanager,inventorydatamanager,supplierdatamanager).setVisible(true);
+        new SM_ItemEntry(inventorydatamanager,supplierdatamanager).setVisible(true);
         this.dispose();
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-        new SM_SupplierEntry(salesmanager,supplierdatamanager).setVisible(true);
+        new SM_SupplierEntry(supplierdatamanager).setVisible(true);
         this.dispose();
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-//        new SM_DailySalesEntry(supplierdatamanager).setVisible(true);
-//        this.dispose();
+        new SM_DailySalesEntry(salesdatamanager, inventorydatamanager).setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
-        new SM_PurchaseRequisition(salesmanager, prmanager, inventorydatamanager).setVisible(true);
+        new SM_PurchaseRequisition(prmanager, inventorydatamanager).setVisible(true);
         this.dispose();  
     }//GEN-LAST:event_jButton9ActionPerformed
 
@@ -477,21 +510,55 @@ public class SM_SupplierEntry extends javax.swing.JFrame {
         String address = jTextField5.getText();
         String itemdesc = jTextArea1.getText();
         boolean readDescrptionStatus = false;
+        boolean deleted = false;
         
-        if (suppliername.isEmpty() || contact.isEmpty()|| email.isEmpty() || address.isEmpty() || itemdesc.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "There is an unfilled field." , "Input Error", JOptionPane.ERROR_MESSAGE);
+        if (supplierdatamanager.findsupplierid(supplierid) != null) {
+            JOptionPane.showMessageDialog(this, "Supplier ID already exists.", "Duplicate ID", JOptionPane.ERROR_MESSAGE);
             return;
         }
+
+        if (suppliername.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Supplier name cannot be empty.");
+            return;
+        }
+        if (contact.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Contact cannot be empty.");
+            return;
+        }
+        if (email.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Email cannot be empty.");
+            return;
+        }
+        if (address.isEmpty()){
+            JOptionPane.showMessageDialog(this, "Address cannot be empty");
+            return;
+        }
+        if(itemdesc.isEmpty()){
+            itemdesc = "Will be update";
+        }
+        
+        String phoneRegex = "^(01\\d-\\d{3}-\\d{4})|(01\\d-\\d{4}-\\d{4})$";
+        if (!contact.matches(phoneRegex)) {
+            JOptionPane.showMessageDialog(this, "Invalid phone number format. Example: 012-345-6789 or 012-3456-7890", "Phone Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String emailRegex = "^[a-zA-Z0-9]+@(gmail|yahoo|hotmail)\\.com$";
+        if (!email.matches(emailRegex)) {
+            JOptionPane.showMessageDialog(this, "Invalid email. Must be gmail.com, yahoo.com, or hotmail.com", "Email Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         if (address.length()<5){
             JOptionPane.showMessageDialog(this, "Address must be more than 5 characters", "Input Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
         
         try {
-            Supplier supplier = new Supplier(supplierid, suppliername , contact, email, address, itemdesc, readDescrptionStatus);
+            Supplier supplier = new Supplier(supplierid, suppliername , contact, email, address, itemdesc, readDescrptionStatus,deleted);
             supplierdatamanager.addSupplier(supplier);
             JOptionPane.showMessageDialog(null, "Success","Information", JOptionPane.INFORMATION_MESSAGE);
-            fillTableFromTxtFile();
+            fillTable1FromTxtFile();
             clearTextField();
             }catch (Exception e){
                 JOptionPane.showMessageDialog(null, "Error");
@@ -510,49 +577,96 @@ public class SM_SupplierEntry extends javax.swing.JFrame {
             String address = jTextField5.getText();
             String itemdesc = jTextArea1.getText();
 
-            if (suppliername.isEmpty() || contact.isEmpty()|| email.isEmpty() || address.isEmpty() || itemdesc.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "There is an unfilled field." , "Input Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            if (address.length()<5){
-                JOptionPane.showMessageDialog(this, "Address must be more than 5 characters", "Input Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            Supplier oldsupplier = supplierdatamanager.findsupplierid(supplierid);
-            if (oldsupplier == null){
-                JOptionPane.showMessageDialog(this, "old supplier not found" , "Error",JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            boolean readDescrptionStatus = oldsupplier.getReadDescrptionStatus();
-            Supplier newsupplier = new Supplier(supplierid, suppliername , contact, email, address, itemdesc, readDescrptionStatus);
-            supplierdatamanager.updateSupplier(oldsupplier, newsupplier);
-     
-            fillTableFromTxtFile();
-            clearTextField();
-            JOptionPane.showMessageDialog(this, "Update Successfully!");
-            clearTextField();
-        }else{
-            JOptionPane.showMessageDialog(this, "Please select single row for update");
+        if (suppliername.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Supplier name cannot be empty.");
+            return;
         }
+        if (contact.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Contact cannot be empty.");
+            return;
+        }
+        if (email.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Email cannot be empty.");
+            return;
+        }
+        if (address.isEmpty()){
+            JOptionPane.showMessageDialog(this, "Address cannot be empty");
+            return;
+        }
+        if(itemdesc.isEmpty()){
+            itemdesc = "Will be update";
+        }
+        
+        String phoneRegex = "^(01\\d-\\d{3}-\\d{4})|(01\\d-\\d{4}-\\d{4})$";
+        if (!contact.matches(phoneRegex)) {
+            JOptionPane.showMessageDialog(this, "Invalid phone number format. Example: 012-345-6789 or 012-3456-7890", "Phone Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String emailRegex = "^[a-zA-Z0-9]+@(gmail|yahoo|hotmail)\\.com$";
+        if (!email.matches(emailRegex)) {
+            JOptionPane.showMessageDialog(this, "Invalid email. Must be gmail.com, yahoo.com, or hotmail.com", "Email Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (address.length()<5){
+            JOptionPane.showMessageDialog(this, "Address must be more than 5 characters", "Input Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        Supplier existingSupplier = supplierdatamanager.findsupplierid(supplierid);
+        if (existingSupplier == null){
+            JOptionPane.showMessageDialog(this, "old supplier not found" , "Error",JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        boolean readDescrptionStatus = existingSupplier.getReadDescrptionStatus();
+        boolean deleted = existingSupplier.isDeleted();
+
+        supplierdatamanager.updateSupplier(supplierid, suppliername , contact, email, address, itemdesc, readDescrptionStatus,deleted);
+     
+        fillTable1FromTxtFile();
+        clearTextField();
+        JOptionPane.showMessageDialog(this, "Update Successfully!");
+        clearTextField();
+    }else{
+        JOptionPane.showMessageDialog(this, "Please select single row for update");
+    }
               
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // TODO add your handling code here:
-        int selectedrow = jTable1.getSelectedRow();
-        if (selectedrow != -1){
-            String supplierid = jTable1.getValueAt(selectedrow, 0).toString();
-            int YesOrNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this supplier?" + supplierid , "Confirm Delete", JOptionPane.YES_NO_OPTION);
-            
-            if (YesOrNo == JOptionPane.YES_OPTION){
-                supplierdatamanager.deleteSupplier(supplierid);
-                fillTableFromTxtFile();
-                clearTextField();
-                JOptionPane.showMessageDialog(null, "This Supplier Deleted successfully");
-            }
-        }else{
-                JOptionPane.showMessageDialog(null, "Please select a supplier from the table");
-            }       
+ int selectedrow = jTable1.getSelectedRow();
+if (selectedrow != -1) {
+    String supplierid = jTable1.getValueAt(selectedrow, 0).toString();
+
+    List<Item> supplierItems = inventorydatamanager.getItemsBySupplier(supplierid);
+
+    List<String> undeletableItems = new ArrayList<>();
+    for (Item item : supplierItems) {
+        String status = inventorydatamanager.getItemDeletionStatus(item.getItemid());
+        if (!"can_delete".equals(status)) {
+            undeletableItems.add("Item ID: " + item.getItemid() + " - " + status.replace('_', ' '));
+        }
+    }
+    if (!undeletableItems.isEmpty()) {
+        StringBuilder message = new StringBuilder("Cannot delete this supplier. The following item(s) are in use:\n\n");
+        for (String itemInfo : undeletableItems) {
+            message.append(itemInfo).append("\n");
+        }
+        JOptionPane.showMessageDialog(null, message.toString(), "Deletion Not Allowed", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    int YesOrNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this supplier? \n\nThe items of this suppliers also will be delete." + supplierid, "Confirm Delete", JOptionPane.YES_NO_OPTION);
+    if (YesOrNo == JOptionPane.YES_OPTION) {
+        supplierdatamanager.marksupplierasDeleted(supplierid,inventorydatamanager);
+        fillTable1FromTxtFile();
+        clearTextField();
+        JOptionPane.showMessageDialog(null, "This Supplier was deleted successfully.");
+    }
+} else {
+    JOptionPane.showMessageDialog(null, "Please select a supplier from the table.");
+}
+
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
@@ -585,6 +699,16 @@ public class SM_SupplierEntry extends javax.swing.JFrame {
             System.err.println("Selected row index is out of bounds: " + selectedRow);
         }        // TODO add your handling code here:
     }//GEN-LAST:event_jTable1MouseClicked
+
+    private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
+        new SM_MainPage().setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_jButton11ActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        new Login().setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_jButton5ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -624,9 +748,11 @@ public class SM_SupplierEntry extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton10;
+    private javax.swing.JButton jButton11;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
     private javax.swing.JButton jButton8;
