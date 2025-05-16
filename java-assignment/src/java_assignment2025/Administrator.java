@@ -9,10 +9,17 @@ package java_assignment2025;
  * @author User
  */
 public class Administrator extends User{
-    public Administrator(String userId, String username, String password, String contact) {
-        super(userId, username, password,contact, "Administrator");
+    public Administrator(String userID, String userName, String password, String fullname, String email, String contact, boolean isActive) {
+        super(userID, userName, password, fullname, email, contact, Role.ADMIN, isActive);
     }
-    public void manageuser(){
-        System.out.println("manage user lodfgdfgdfgdfgdfgdfgdfgdfgdfgdfgdfgdfggdfg");
+    
+    //for creating new user
+    public Administrator(String userID, String userName, String password, String fullname, String email, String contact) {
+        super(userID, userName, password, fullname, email, contact, Role.ADMIN, true);
+    }
+    
+    //for login
+    public Administrator(User user){
+        super (user.getUserId(), user.getUsername(), user.getPassword(), user.getFullname(), user.getEmail(), user.getContact(), Role.ADMIN, true);
     }
 }

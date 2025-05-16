@@ -8,33 +8,37 @@ package java_assignment2025;
  *
  * @author User
  */
-public class User {
-    private String userId;
-    private String username;
-    private String password;
-    private String contact;
-    private String role;
-    
-    public User(String userId, String username, String password, String contact, String role){
-        this.userId = userId;
+public abstract class User{
+    protected String userId;
+    protected String username;
+    protected String password;
+    protected String fullname;
+    protected String email;
+    protected String contact;
+    protected Role role;
+    protected boolean active;
+
+    public User(String userID, String username, String password, String fullname, String email, String contact, Role role, boolean isActive) {
+        this.userId = userID;
         this.username = username;
         this.password = password;
+        this.fullname = fullname;
+        this.email = email;
         this.contact = contact;
         this.role = role;
-    }
-    public User() {
-    }
-    
-    public String getUsername(){
-        return username;
+        this.active = isActive;
     }
 
     public String getUserId() {
         return userId;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setUserID(String userID) {
+        this.userId = userID;
+    }
+
+    public String getUsername() {
+        return username;
     }
 
     public void setUsername(String username) {
@@ -48,21 +52,44 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
-    
-    public String getContact(){
+
+    public String getFullname() {
+        return fullname;
+    }
+
+    public void setFullname(String fullname) {
+        this.fullname = fullname;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getContact() {
         return contact;
     }
-    
-    public String setContact(){
-        return contact;
+
+    public void setContact(String contact) {
+        this.contact = contact;
     }
-    
-    public String getRole() {
+
+    public Role getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(Role role) {
         this.role = role;
     }
-    
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean isActive) {
+        this.active = isActive;
+    }
 }

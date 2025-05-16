@@ -55,6 +55,9 @@ public class PMPurchaseOrder extends javax.swing.JFrame {
 
             List<String> itemIdsList = po.getItemIds();
             String itemIds = String.join(",", itemIdsList);
+            
+            List<String> unitPriceList = po.getUnitPrices();
+            String unitprice = String.join(",", unitPriceList);
 
             List<String> quantitiesList = po.getQuantities();
             String quantities = String.join(",", quantitiesList);
@@ -73,7 +76,7 @@ public class PMPurchaseOrder extends javax.swing.JFrame {
             List<String> supplierIds = po.getSupplierIds();
             List<String> supplierNamesList = new ArrayList<>();
             for (String supplierId : supplierIds) {
-                String name = findSupplierNameById(supplierId); // No file path here
+                String name = PurchaseOrderManager.findSupplierNameById(supplierId); // No file path here
                 supplierNamesList.add(name);
             }
             String supplierNames = String.join(",", supplierNamesList);
@@ -84,6 +87,7 @@ public class PMPurchaseOrder extends javax.swing.JFrame {
                 createdBy,
                 itemIds,
                 itemNames,
+                unitprice,
                 quantities,
                 String.format("%.2f", amount),
                 supplierNames,
@@ -130,11 +134,11 @@ public class PMPurchaseOrder extends javax.swing.JFrame {
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {},
             new String [] {
-                "PO Id","PR Id","Created by", "Item Id", "Item Name", "Quantity", "Amount", "Supplier Name", "Order Date", "PO Status", "Order Received", "Payment Status"
+                "PO Id","PR Id","PR Creator", "Item Id", "Item Name", "Unit Price", "Quantity", "Amount", "Supplier Name", "Order Date", "PO Status", "Order Received", "Payment Status"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, false,false,true,true,true
+                false, false, false, false, false, false, false, false,false,false,true,true,true
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -378,43 +382,21 @@ public class PMPurchaseOrder extends javax.swing.JFrame {
     }//GEN-LAST:event_saveMeActionPerformed
 
     private void donDeleteMeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_donDeleteMeActionPerformed
-        // Delete you
-        int selectedRow = jTable1.getSelectedRow();
 
-        if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "Please select a row to delete.", "No Selection", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete the selected purchase order?", "Confirm Deletion", JOptionPane.YES_NO_OPTION);
-
-        if (confirm == JOptionPane.YES_OPTION) {
-            // Get order ID from the table 
-            String orderId = jTable1.getValueAt(selectedRow, 0).toString();
-
-            // Get full PurchaseOrder object
-            PurchaseOrder po = pomanager.findpoid(orderId);
-            System.out.println("order Id: "+orderId);
-
-            if (po != null) {
-                
-                String poLine = po.toString(); 
-                System.out.println("Deleting line: " + po.toString());
-
-
-                // Delete from list and text file
-                pomanager.deletepo(orderId); // this internally calls textfile.deleteLine()
-
-                // Remove from table
-                DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-                model.removeRow(selectedRow);
-
-                JOptionPane.showMessageDialog(this, "Purchase order deleted successfully.");
-            } else {
-                JOptionPane.showMessageDialog(this, "Purchase order not found.", "Error", JOptionPane.ERROR_MESSAGE);
+        int selectedrow = jTable1.getSelectedRow();
+        if (selectedrow != -1){
+            String poid = jTable1.getValueAt(selectedrow, 0).toString();
+            System.out.println("here"+ poid);
+            int YesOrNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this purchase o?" + poid , "Confirm Delete", JOptionPane.YES_NO_OPTION);
+            
+            if (YesOrNo == JOptionPane.YES_OPTION){
+                pomanager.deletepo(poid);
+                loadAllpofromtxtfile();
+                JOptionPane.showMessageDialog(null, "This purchase o deleted successfully");
             }
-        }
-
+        }else{
+                JOptionPane.showMessageDialog(null, "Please select a purchase o from the table");
+            } 
     }//GEN-LAST:event_donDeleteMeActionPerformed
 
     private void jTextField1KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField1KeyReleased

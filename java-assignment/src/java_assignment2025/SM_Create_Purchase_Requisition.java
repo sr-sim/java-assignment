@@ -67,7 +67,7 @@ public class SM_Create_Purchase_Requisition extends javax.swing.JFrame {
                 String itemid = existingPR.getItemids().get(i);
                 Item item = inventorydatamanager.finditemid(itemid);
                 String qty = existingPR.getQuantities().get(i);
-            String unitPriceStr = existingPR.getUnitprice().get(i);
+            String unitPriceStr = existingPR.getUnitPrices().get(i);
             double totalprice = Integer.parseInt(qty) * Double.parseDouble(unitPriceStr);
 
             ((DefaultTableModel) jTable1.getModel()).addRow(new Object[]{
