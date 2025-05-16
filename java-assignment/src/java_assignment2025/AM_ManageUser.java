@@ -534,86 +534,86 @@ public class AM_ManageUser extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField1ActionPerformed
 
     private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
-
-        String salesid = jTextField1.getText();
-        String qtystring = jTextField2.getText();
-        String itemid = jComboBox1.getSelectedItem().toString().split("-")[0].trim();
-        Date dateofsales = jDateChooser1.getDate();
-        
-        
-        if (salesid.isEmpty()|| qtystring.isEmpty() || itemid.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "There is an unfilled field." , "Input Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-        String date = df.format(dateofsales);
-        try {
-            int qty=Integer.parseInt(qtystring);
-            if(qty<=0) throw new NumberFormatException();
-            Item item = inventorydatamanager.finditemid(itemid);
-            if (item==null){
-                JOptionPane.showMessageDialog(null,"Item not found", "Eror",JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            double retailprice = Double.parseDouble(item.getRetailprice());
-            double amount = qty*retailprice;
-            
-            IndividualSales sales = new IndividualSales(salesid, itemid, qtystring, String.valueOf(amount), date);
-            salesdatamanager.addIndividualSales(sales);
-   
-            JOptionPane.showMessageDialog(null, "Success","Information", JOptionPane.INFORMATION_MESSAGE);
-            fillTable1FromTxtFile();
-            clearTextField();
-            }catch (Exception e){
-                JOptionPane.showMessageDialog(null, "Error");
-                 e.printStackTrace(); 
-        }
+//
+//        String salesid = jTextField1.getText();
+//        String qtystring = jTextField2.getText();
+//        String itemid = jComboBox1.getSelectedItem().toString().split("-")[0].trim();
+//        Date dateofsales = jDateChooser1.getDate();
+//        
+//        
+//        if (salesid.isEmpty()|| qtystring.isEmpty() || itemid.isEmpty()) {
+//            JOptionPane.showMessageDialog(this, "There is an unfilled field." , "Input Error", JOptionPane.ERROR_MESSAGE);
+//            return;
+//        }
+//        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+//        String date = df.format(dateofsales);
+//        try {
+//            int qty=Integer.parseInt(qtystring);
+//            if(qty<=0) throw new NumberFormatException();
+//            Item item = inventorydatamanager.finditemid(itemid);
+//            if (item==null){
+//                JOptionPane.showMessageDialog(null,"Item not found", "Eror",JOptionPane.ERROR_MESSAGE);
+//                return;
+//            }
+//            double retailprice = Double.parseDouble(item.getRetailprice());
+//            double amount = qty*retailprice;
+//            
+//            IndividualSales sales = new IndividualSales(salesid, itemid, qtystring, String.valueOf(amount), date);
+//            salesdatamanager.addIndividualSales(sales);
+//   
+//            JOptionPane.showMessageDialog(null, "Success","Information", JOptionPane.INFORMATION_MESSAGE);
+//            fillTable1FromTxtFile();
+//            clearTextField();
+//            }catch (Exception e){
+//                JOptionPane.showMessageDialog(null, "Error");
+//                 e.printStackTrace(); 
+//        }
     }//GEN-LAST:event_jButton11ActionPerformed
 
     private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton12ActionPerformed
-        int selectedRow = jTable1.getSelectedRow();
-
-        if(selectedRow != -1){
-            String salesid = jTextField1.getText();
-            String itemid = jComboBox1.getSelectedItem().toString().split("-")[0].trim();
-            String qtystr = jTextField2.getText();
-            Date date = jDateChooser1.getDate();
-
-            if (salesid.isEmpty()|| itemid.isEmpty() || qtystr.isEmpty() || date==null) {
-                JOptionPane.showMessageDialog(this, "There is an unfilled field." , "Input Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            IndividualSales oldsales = salesdatamanager.findsalesid(salesid);
-            if (oldsales == null){
-                JOptionPane.showMessageDialog(this, "old sales not found" , "Error",JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            int qty;
-            double amount;
-            try{
-                qty=Integer.parseInt(qtystr);
-                if(qty<=0) throw new NumberFormatException();
-                Item item = inventorydatamanager.finditemid(itemid);
-                if (item==null){
-                    JOptionPane.showMessageDialog(null,"Item not found", "Eror",JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-                double retailprice = Double.parseDouble(item.getRetailprice());
-                amount = qty*retailprice;
-            }catch(NumberFormatException e){
-                JOptionPane.showMessageDialog(null, "Invalid quantity", "error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-            String dateformated = df.format(date);
-            salesdatamanager.updateindividualsales(salesid,itemid,String.valueOf(qty),String.valueOf(amount), dateformated);
-            fillTable1FromTxtFile();
-            clearTextField();
-            JOptionPane.showMessageDialog(this, "Update Successfully!");
-            clearTextField();
-        }else{
-            JOptionPane.showMessageDialog(this, "Please select single row for update");
-        }
+//        int selectedRow = jTable1.getSelectedRow();
+//
+//        if(selectedRow != -1){
+//            String salesid = jTextField1.getText();
+//            String itemid = jComboBox1.getSelectedItem().toString().split("-")[0].trim();
+//            String qtystr = jTextField2.getText();
+//            Date date = jDateChooser1.getDate();
+//
+//            if (salesid.isEmpty()|| itemid.isEmpty() || qtystr.isEmpty() || date==null) {
+//                JOptionPane.showMessageDialog(this, "There is an unfilled field." , "Input Error", JOptionPane.ERROR_MESSAGE);
+//                return;
+//            }
+//            IndividualSales oldsales = salesdatamanager.findsalesid(salesid);
+//            if (oldsales == null){
+//                JOptionPane.showMessageDialog(this, "old sales not found" , "Error",JOptionPane.ERROR_MESSAGE);
+//                return;
+//            }
+//            int qty;
+//            double amount;
+//            try{
+//                qty=Integer.parseInt(qtystr);
+//                if(qty<=0) throw new NumberFormatException();
+//                Item item = inventorydatamanager.finditemid(itemid);
+//                if (item==null){
+//                    JOptionPane.showMessageDialog(null,"Item not found", "Eror",JOptionPane.ERROR_MESSAGE);
+//                    return;
+//                }
+//                double retailprice = Double.parseDouble(item.getRetailprice());
+//                amount = qty*retailprice;
+//            }catch(NumberFormatException e){
+//                JOptionPane.showMessageDialog(null, "Invalid quantity", "error", JOptionPane.ERROR_MESSAGE);
+//                return;
+//            }
+//            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+//            String dateformated = df.format(date);
+//            salesdatamanager.updateindividualsales(salesid,itemid,String.valueOf(qty),String.valueOf(amount), dateformated);
+//            fillTable1FromTxtFile();
+//            clearTextField();
+//            JOptionPane.showMessageDialog(this, "Update Successfully!");
+//            clearTextField();
+//        }else{
+//            JOptionPane.showMessageDialog(this, "Please select single row for update");
+//        }
              
     }//GEN-LAST:event_jButton12ActionPerformed
 
@@ -640,7 +640,7 @@ public class AM_ManageUser extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton14ActionPerformed
 
     private void jButton15ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton15ActionPerformed
-        new SM_DailySummary(salesmanager,salesdatamanager,inventorydatamanager).setVisible(true);
+        new SM_DailySummary(salesdatamanager,inventorydatamanager).setVisible(true);
         this.dispose();     
     }//GEN-LAST:event_jButton15ActionPerformed
 
@@ -650,7 +650,7 @@ public class AM_ManageUser extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton10ActionPerformed
 
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
-        new SM_PurchaseRequisition(salesmanager, prmanager, inventorydatamanager).setVisible(true);
+        new SM_PurchaseRequisition(prmanager, inventorydatamanager).setVisible(true);
         this.dispose();
     }//GEN-LAST:event_jButton9ActionPerformed
 
@@ -660,12 +660,12 @@ public class AM_ManageUser extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-        new SM_SupplierEntry(salesmanager,supplierdatamanager).setVisible(true);
+        new SM_SupplierEntry(supplierdatamanager).setVisible(true);
         this.dispose();  
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        new SM_ItemEntry(salesmanager,inventorydatamanager,supplierdatamanager).setVisible(true);
+        new SM_ItemEntry(inventorydatamanager,supplierdatamanager).setVisible(true);
         this.dispose();
     }//GEN-LAST:event_jButton6ActionPerformed
 

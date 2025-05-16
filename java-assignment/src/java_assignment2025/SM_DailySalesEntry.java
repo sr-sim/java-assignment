@@ -25,16 +25,20 @@ public class SM_DailySalesEntry extends javax.swing.JFrame {
     private PurchaseRequisitionManager prmanager = new PurchaseRequisitionManager();
     
     
-    public SM_DailySalesEntry(SalesManager salesmanager,SalesDataManager salesdatamanager,InventoryDataManager inventorydatamanager) {
+    public SM_DailySalesEntry(SalesDataManager salesdatamanager,InventoryDataManager inventorydatamanager) {
         initComponents();
-        this.salesmanager = salesmanager;
+        this.salesmanager = (SalesManager)Session.getCurrentUser();
         this.salesdatamanager = salesdatamanager;
         this.inventorydatamanager = inventorydatamanager;
         String generatedID = salesdatamanager.generatesalesId();
         jTextField1.setText(generatedID);
         jTextField1.setEditable(false);
         jTextField1.setFocusable(false);
-        jDateChooser1.setDate(new Date());
+        
+        Date today = new Date();
+        jDateChooser1.setDate(today);
+        jDateChooser1.setMinSelectableDate(today);
+        
         fillTable1FromTxtFile();
         fillComboBoxFromitemList();
     }
@@ -100,6 +104,8 @@ public class SM_DailySalesEntry extends javax.swing.JFrame {
         jButton10 = new javax.swing.JButton();
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
+        jButton16 = new javax.swing.JButton();
+        jButton17 = new javax.swing.JButton();
         jTextField1 = new javax.swing.JTextField();
         jTextField2 = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
@@ -272,13 +278,30 @@ public class SM_DailySalesEntry extends javax.swing.JFrame {
         jLabel9.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
         jLabel9.setText("(OWSB)");
 
+        jButton16.setText("Log Out");
+        jButton16.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton16ActionPerformed(evt);
+            }
+        });
+
+        jButton17.setText("Home");
+        jButton17.setToolTipText("");
+        jButton17.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton17ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addComponent(jLabel2)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel2)
+                    .addComponent(jButton16, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 0, Short.MAX_VALUE))
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -294,13 +317,17 @@ public class SM_DailySalesEntry extends javax.swing.JFrame {
                             .addComponent(jButton10, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGap(79, 79, 79)
-                        .addComponent(jLabel9)))
+                        .addComponent(jLabel9))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(59, 59, 59)
+                        .addComponent(jButton17, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(56, 56, 56)
+                .addComponent(jButton16)
+                .addGap(33, 33, 33)
                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(2, 2, 2)
                 .addComponent(jLabel9)
@@ -316,7 +343,9 @@ public class SM_DailySalesEntry extends javax.swing.JFrame {
                 .addComponent(jButton9)
                 .addGap(18, 18, 18)
                 .addComponent(jButton10)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton17)
+                .addGap(19, 19, 19))
         );
 
         jTextField1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
@@ -546,16 +575,29 @@ public class SM_DailySalesEntry extends javax.swing.JFrame {
         Date dateofsales = jDateChooser1.getDate();
         
         
-        if (salesid.isEmpty()|| qtystring.isEmpty() || itemid.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "There is an unfilled field." , "Input Error", JOptionPane.ERROR_MESSAGE);
+        if (qtystring.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Quantity cannot be empty." , "Input Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
+        if (salesdatamanager.findsalesid(salesid) != null) {
+            JOptionPane.showMessageDialog(this, "Sales ID already exists.", "Duplicate ID", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        int qty;
+        try {
+            qty = Integer.parseInt(qtystring);
+            if (qty <= 0) {
+                JOptionPane.showMessageDialog(this, "Quantity must be greater than 0.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Quantity must be a valid whole number.", "Input Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         String date = df.format(dateofsales);
-        try {
-            int qty=Integer.parseInt(qtystring);
-            if(qty<=0) throw new NumberFormatException();
-            Item item = inventorydatamanager.finditemid(itemid);
+        Item item = inventorydatamanager.finditemid(itemid);
             if (item==null){
                 JOptionPane.showMessageDialog(null,"Item not found", "Eror",JOptionPane.ERROR_MESSAGE);
                 return;
@@ -569,10 +611,6 @@ public class SM_DailySalesEntry extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Success","Information", JOptionPane.INFORMATION_MESSAGE);
             fillTable1FromTxtFile();
             clearTextField();
-            }catch (Exception e){
-                JOptionPane.showMessageDialog(null, "Error");
-                 e.printStackTrace(); 
-        }
     }//GEN-LAST:event_jButton11ActionPerformed
 
     private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton12ActionPerformed
@@ -600,25 +638,44 @@ public class SM_DailySalesEntry extends javax.swing.JFrame {
             try {
                 qty = Integer.parseInt(qtystr);
                 if (qty <= 0) throw new NumberFormatException();
-
-                retailprice = Double.parseDouble(oldsales.getretailprice());
-                amount = qty * retailprice;
             } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "Invalid quantity or retail price in existing sales record", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Invalid quantity in existing sales record", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
+            if (!itemid.equals(oldsales.getItemid())) {
+                Item newItem = inventorydatamanager.finditemid(itemid);
+                if (newItem == null) {
+                    JOptionPane.showMessageDialog(this, "New item not found.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                try {
+                    retailprice = Double.parseDouble(newItem.getRetailprice());
+                } catch (NumberFormatException e) {
+                    JOptionPane.showMessageDialog(this, "Invalid retail price in the new item.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            } else {
+                try {
+                    retailprice = Double.parseDouble(oldsales.getretailprice());
+                } catch (NumberFormatException e) {
+                    JOptionPane.showMessageDialog(this, "Invalid retail price in existing sales record.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
+
+            amount = qty * retailprice;
 
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-            String dateformated = df.format(date);
-            salesdatamanager.updateindividualsales(salesid,itemid,String.valueOf(qty),String.valueOf(retailprice),String.valueOf(amount), dateformated);
+            String dateFormatted = df.format(date);
+            salesdatamanager.updateindividualsales(salesid, itemid, String.valueOf(qty), String.valueOf(retailprice), String.valueOf(amount), dateFormatted);
+
             fillTable1FromTxtFile();
             clearTextField();
-            JOptionPane.showMessageDialog(this, "Update Successfully!");
-            clearTextField();
-        }else{
-            JOptionPane.showMessageDialog(this, "Please select single row for update");
-        }
-             
+            JOptionPane.showMessageDialog(this, "Sales record updated successfully!");
+        } else {
+            JOptionPane.showMessageDialog(this, "Please select a single row to update.", "Selection Error", JOptionPane.WARNING_MESSAGE);   
+                }
     }//GEN-LAST:event_jButton12ActionPerformed
 
     private void jButton13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton13ActionPerformed
@@ -644,7 +701,7 @@ public class SM_DailySalesEntry extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton14ActionPerformed
 
     private void jButton15ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton15ActionPerformed
-        new SM_DailySummary(salesmanager,salesdatamanager,inventorydatamanager).setVisible(true);
+        new SM_DailySummary(salesdatamanager,inventorydatamanager).setVisible(true);
         this.dispose();     
     }//GEN-LAST:event_jButton15ActionPerformed
 
@@ -654,22 +711,22 @@ public class SM_DailySalesEntry extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton10ActionPerformed
 
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
-        new SM_PurchaseRequisition(salesmanager, prmanager, inventorydatamanager).setVisible(true);
+        new SM_PurchaseRequisition(prmanager, inventorydatamanager).setVisible(true);
         this.dispose();
     }//GEN-LAST:event_jButton9ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-        new SM_DailySalesEntry(salesmanager, salesdatamanager, inventorydatamanager).setVisible(true);
+        new SM_DailySalesEntry(salesdatamanager, inventorydatamanager).setVisible(true);
         this.dispose();
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-        new SM_SupplierEntry(salesmanager,supplierdatamanager).setVisible(true);
+        new SM_SupplierEntry(supplierdatamanager).setVisible(true);
         this.dispose();  
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        new SM_ItemEntry(salesmanager,inventorydatamanager,supplierdatamanager).setVisible(true);
+        new SM_ItemEntry(inventorydatamanager,supplierdatamanager).setVisible(true);
         this.dispose();
     }//GEN-LAST:event_jButton6ActionPerformed
 
@@ -718,6 +775,16 @@ public class SM_DailySalesEntry extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jComboBox1ActionPerformed
 
+    private void jButton17ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton17ActionPerformed
+        new SM_MainPage().setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_jButton17ActionPerformed
+
+    private void jButton16ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton16ActionPerformed
+        new Login().setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_jButton16ActionPerformed
+
 //    /**
 //     * @param args the command line arguments
 //     */
@@ -761,6 +828,8 @@ public class SM_DailySalesEntry extends javax.swing.JFrame {
     private javax.swing.JButton jButton13;
     private javax.swing.JButton jButton14;
     private javax.swing.JButton jButton15;
+    private javax.swing.JButton jButton16;
+    private javax.swing.JButton jButton17;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;

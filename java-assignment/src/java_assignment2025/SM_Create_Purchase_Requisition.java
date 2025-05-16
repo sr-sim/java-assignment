@@ -33,13 +33,17 @@ public class SM_Create_Purchase_Requisition extends javax.swing.JFrame {
     /**
      * Creates new form SM_Create_Purchase_Requisition
      */
-    public SM_Create_Purchase_Requisition(SalesManager salesmanager, PurchaseRequisitionManager prmanager,InventoryDataManager inventorydatamanager,PRformMode mode,PurchaseRequisition existingPR) {
+    public SM_Create_Purchase_Requisition(PurchaseRequisitionManager prmanager,InventoryDataManager inventorydatamanager,PRformMode mode,PurchaseRequisition existingPR) {
         initComponents();
-        this.salesmanager = salesmanager;
+        this.salesmanager = (SalesManager)Session.getCurrentUser();
         this.prmanager = prmanager;
         this.inventorydatamanager = inventorydatamanager;
         this.mode = mode;
         this.existingPR = existingPR;
+        Date today = new Date();
+        jDateChooser1.setDate(today);
+        jDateChooser1.setMinSelectableDate(today);
+        jDateChooser2.setMinSelectableDate(today);
         setupform();
     }
 
@@ -48,7 +52,6 @@ public class SM_Create_Purchase_Requisition extends javax.swing.JFrame {
         jLabel14.setText("Create Purchase Requisition");
         jLabel3.setText(prmanager.generatePrId());
         jLabel10.setText(salesmanager.getUsername());
-        jDateChooser1.setDate(new Date());
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DAY_OF_MONTH,1);
         Date tomorrow = cal.getTime();
@@ -56,7 +59,7 @@ public class SM_Create_Purchase_Requisition extends javax.swing.JFrame {
         jLabel11.setVisible(false);
         }else if (existingPR != null) {
        jLabel3.setText(existingPR.getPrid());
-       jLabel10.setText(existingPR.getUserid());
+       jLabel10.setText(salesmanager.getUsername());
        jTextArea1.setText(existingPR.getNote());
        jLabel4.setText(existingPR.getTotal());
        jDateChooser1.setDate(java.sql.Date.valueOf(existingPR.getRequestdate()));
@@ -82,6 +85,7 @@ public class SM_Create_Purchase_Requisition extends javax.swing.JFrame {
             prUnitPriceList.add(unitPriceStr);
         }if (mode == PRformMode.edit){
         jLabel14.setText("Edit Purchase Requisition");
+        jDateChooser1.setEnabled(false);
         }else if (mode == PRformMode.view){
             jLabel14.setText("View Purchase Requisition");
             jComboBox1.setVisible(false);
@@ -138,6 +142,7 @@ public class SM_Create_Purchase_Requisition extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jButton16 = new javax.swing.JButton();
         jPanel5 = new javax.swing.JPanel();
         jLabel14 = new javax.swing.JLabel();
         jPanel7 = new javax.swing.JPanel();
@@ -174,9 +179,13 @@ public class SM_Create_Purchase_Requisition extends javax.swing.JFrame {
         jButton10 = new javax.swing.JButton();
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
+        jButton17 = new javax.swing.JButton();
+        jButton18 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jLabel11 = new javax.swing.JLabel();
         jButton4 = new javax.swing.JButton();
+
+        jButton16.setText("Log Out");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -428,13 +437,29 @@ public class SM_Create_Purchase_Requisition extends javax.swing.JFrame {
         jLabel9.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
         jLabel9.setText("(OWSB)");
 
+        jButton17.setText("Log Out");
+        jButton17.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton17ActionPerformed(evt);
+            }
+        });
+
+        jButton18.setText("Home");
+        jButton18.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton18ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addComponent(jLabel2)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel2)
+                    .addComponent(jButton17, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 0, Short.MAX_VALUE))
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -450,13 +475,17 @@ public class SM_Create_Purchase_Requisition extends javax.swing.JFrame {
                             .addComponent(jButton10, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGap(79, 79, 79)
-                        .addComponent(jLabel9)))
+                        .addComponent(jLabel9))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(62, 62, 62)
+                        .addComponent(jButton18, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(56, 56, 56)
+                .addComponent(jButton17)
+                .addGap(33, 33, 33)
                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(2, 2, 2)
                 .addComponent(jLabel9)
@@ -472,7 +501,9 @@ public class SM_Create_Purchase_Requisition extends javax.swing.JFrame {
                 .addComponent(jButton9)
                 .addGap(18, 18, 18)
                 .addComponent(jButton10)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton18)
+                .addGap(18, 18, 18))
         );
 
         jButton2.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
@@ -577,9 +608,10 @@ public class SM_Create_Purchase_Requisition extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
 
         String prid = jLabel3.getText();
-        String userid = jLabel10.getText();
+        String userid = salesmanager.getUserId();
         String totalprice = jLabel4.getText();
         String note = jTextArea1.getText();
+        boolean deleted = false;
     
         if(pritemlist.isEmpty()){
             JOptionPane.showMessageDialog(null, "Please add at leat one item" , "Input Error", JOptionPane.ERROR_MESSAGE);
@@ -605,18 +637,17 @@ public class SM_Create_Purchase_Requisition extends javax.swing.JFrame {
         String requestdate = df.format(reqdate);
         String expecteddate = df.format(expdate);
 
-        if (prid.isEmpty()|| userid.isEmpty() ||  totalprice.isEmpty() ||  note.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "There is an unfilled field." , "Input Error", JOptionPane.ERROR_MESSAGE);
-            return;
+        if (note.isEmpty()) {
+             note = "No description";
         }
         
         try {
             if (mode == PRformMode.edit && existingPR != null && existingPR.getApprovestatus() != PurchaseRequisition.ApproveStatus.approved){
-                prmanager.updatepr(prid,itemids,userid,quantities,unitprices,totalprice,requestdate,expecteddate,existingPR.getApprovestatus(),note);
+                prmanager.updatepr(prid,itemids,userid,quantities,unitprices,totalprice,requestdate,expecteddate,existingPR.getApprovestatus(),note,existingPR.isDeleted());
 
                 JOptionPane.showMessageDialog(null, "Updated Success","Information", JOptionPane.INFORMATION_MESSAGE);
             } else if (mode == PRformMode.create){
-                PurchaseRequisition pr = new PurchaseRequisition(prid,itemids,userid,quantities,unitprices,totalprice,requestdate,expecteddate,PurchaseRequisition.ApproveStatus.pending,note);
+                PurchaseRequisition pr = new PurchaseRequisition(prid,itemids,userid,quantities,unitprices,totalprice,requestdate,expecteddate,PurchaseRequisition.ApproveStatus.pending,note,deleted);
                 prmanager.addpr(pr);
 
                 JOptionPane.showMessageDialog(null, "Success","Information", JOptionPane.INFORMATION_MESSAGE);
@@ -629,23 +660,23 @@ public class SM_Create_Purchase_Requisition extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        new SM_ItemEntry(salesmanager,inventorydatamanager,supplierdatamanager).setVisible(true);
+        new SM_ItemEntry(inventorydatamanager,supplierdatamanager).setVisible(true);
         this.dispose();
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-        new SM_SupplierEntry(salesmanager,supplierdatamanager).setVisible(true);
+        new SM_SupplierEntry(supplierdatamanager).setVisible(true);
         this.dispose();        // TODO add your handling code here:
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
 //        // TODO add your handling code here:
-        new SM_DailySalesEntry(salesmanager, salesdatamanager, inventorydatamanager).setVisible(true);
+        new SM_DailySalesEntry(salesdatamanager, inventorydatamanager).setVisible(true);
         this.dispose();
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
-        new SM_PurchaseRequisition(salesmanager,prmanager,inventorydatamanager).setVisible(true);
+        new SM_PurchaseRequisition(prmanager,inventorydatamanager).setVisible(true);
         this.dispose(); 
     }//GEN-LAST:event_jButton9ActionPerformed
 
@@ -694,18 +725,21 @@ public class SM_Create_Purchase_Requisition extends javax.swing.JFrame {
         }        
         double totalPriceOfeachitem = quantity*unitprice;
         
+        String formattedUnitPrice = String.format("%.2f", unitprice);
+        String formattedtotalPriceOfeachitem = String.format("%.2f", totalPriceOfeachitem);
+        
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
         model.addRow(new Object[]{
             item.getItemid(),
             item.getItemname(),
             quantity,
-            unitprice,
-            totalPriceOfeachitem
+            formattedUnitPrice,
+            formattedtotalPriceOfeachitem
         });
-        pritemlist.add(new PRItem(item, String.valueOf(quantity),String.valueOf(unitprice),String.valueOf(totalPriceOfeachitem)));
+        pritemlist.add(new PRItem(item, String.valueOf(quantity),formattedUnitPrice,formattedtotalPriceOfeachitem));
+        prUnitPriceList.add(String.valueOf(unitprice));
         updatetotalprice();
         System.out.println(pritemlist);
-         jComboBox1.setSelectedIndex(-1);
          jTextField4.setText("");
     }//GEN-LAST:event_jButton2ActionPerformed
 
@@ -717,7 +751,7 @@ public class SM_Create_Purchase_Requisition extends javax.swing.JFrame {
             model.removeRow(selectedRow);
         if (selectedRow < pritemlist.size()){
         pritemlist.remove(selectedRow);
-        prUnitPriceList.remove(selectedRow); // 🔑 Keep it in sync
+        prUnitPriceList.remove(selectedRow);
         updatetotalprice();
         }
         JOptionPane.showMessageDialog(null,"Selected item removed");
@@ -774,34 +808,42 @@ public class SM_Create_Purchase_Requisition extends javax.swing.JFrame {
 
         double unitprice;
 
-        if (mode == PRformMode.edit && existingPR != null) {
-            try {
-               unitprice = Double.parseDouble(prUnitPriceList.get(selectedRow));
+        // Check if the item in the selected row is the same as the current selected item
+        String existingItemId = (String) jTable1.getValueAt(selectedRow, 0);
+        boolean isSameItem = existingItemId.equals(item.getItemid());
 
-            } catch (IndexOutOfBoundsException | NumberFormatException e) {
-                JOptionPane.showMessageDialog(null, "Failed to get correct unit price from existing PR data.");
+        if (mode == PRformMode.edit && existingPR != null && isSameItem) {
+            // Use stored unit price if editing and item is unchanged
+            try {
+                unitprice = Double.parseDouble(prUnitPriceList.get(selectedRow));
+            } catch (NumberFormatException | IndexOutOfBoundsException e) {
+                JOptionPane.showMessageDialog(null, "Invalid stored unit price");
                 return;
             }
         } else {
             try {
                 unitprice = Double.parseDouble(item.getUnitprice());
             } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(null, "Invalid unit price");
+                JOptionPane.showMessageDialog(null, "Invalid unit price from item");
                 return;
             }
         }
-
         double totalPriceOfeachitem = quantity * unitprice;
-
+        String formattedUnitPrice = String.format("%.2f", unitprice);
+        String formattedtotalPriceOfeachitem = String.format("%.2f", totalPriceOfeachitem);
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
         model.setValueAt(item.getItemid(), selectedRow, 0);
         model.setValueAt(item.getItemname(), selectedRow, 1);
         model.setValueAt(quantity, selectedRow, 2);
-        model.setValueAt(unitprice, selectedRow, 3);
-        model.setValueAt(totalPriceOfeachitem, selectedRow, 4);
-
-        // Update the PRItem list with the correct unit price
-        pritemlist.set(selectedRow, new PRItem(item, String.valueOf(quantity), String.valueOf(unitprice), String.valueOf(totalPriceOfeachitem)));
+        model.setValueAt(formattedUnitPrice, selectedRow, 3);
+        model.setValueAt(formattedtotalPriceOfeachitem, selectedRow, 4);
+        pritemlist.set(selectedRow, new PRItem(item, String.valueOf(quantity), formattedUnitPrice, formattedtotalPriceOfeachitem));
+        if (selectedRow < prUnitPriceList.size()) {
+            prUnitPriceList.set(selectedRow, String.valueOf(unitprice));
+        } else {
+            // In case it's a new row added during edit mode, make sure to extend the list
+            prUnitPriceList.add(String.valueOf(unitprice));
+        }
 
         updatetotalprice();
         jComboBox1.setSelectedIndex(-1);
@@ -812,6 +854,16 @@ public class SM_Create_Purchase_Requisition extends javax.swing.JFrame {
     private void jTextField4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField4ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField4ActionPerformed
+
+    private void jButton18ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton18ActionPerformed
+        new SM_MainPage().setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_jButton18ActionPerformed
+
+    private void jButton17ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton17ActionPerformed
+        new Login().setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_jButton17ActionPerformed
 
 //    /**
 //     * @param args the command line arguments
@@ -851,6 +903,9 @@ public class SM_Create_Purchase_Requisition extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton10;
+    private javax.swing.JButton jButton16;
+    private javax.swing.JButton jButton17;
+    private javax.swing.JButton jButton18;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;

@@ -14,8 +14,8 @@ public class AdminHome extends javax.swing.JFrame {
     /**
      * Creates new form AdminHome
      */
-    public AdminHome(Administrator admin) {
-        this.admin = admin; 
+    public AdminHome() {
+        this.admin = (Administrator)Session.getCurrentUser(); 
         initComponents();
         
         
