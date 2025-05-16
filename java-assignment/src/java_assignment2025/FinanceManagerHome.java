@@ -13,8 +13,8 @@ public class FinanceManagerHome extends javax.swing.JFrame {
     /**
      * Creates new form FinanceManagerHome
      */
-    public FinanceManagerHome(FinanceManager financeManager) {
-        this.financeManager = financeManager; 
+    public FinanceManagerHome() {
+        this.financeManager = (FinanceManager)Session.getCurrentUser(); 
         initComponents();
         
 //        financeManager.managefinance();

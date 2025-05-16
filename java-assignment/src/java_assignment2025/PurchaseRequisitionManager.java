@@ -15,7 +15,7 @@ import java.util.List;
 public class PurchaseRequisitionManager {
    private final List<PurchaseRequisition>prlist;
     private final TextFile textfile;
-    private final String prfilepath = "C:\\JPL9\\java-assignment\\java-assignment\\src\\java_assignment2025\\purchaserequisition.txt";
+    private final String prfilepath = "src/java_assignment2025/purchaserequisition.txt";
     public PurchaseRequisitionManager() {
         this.prlist = new ArrayList<>();
         this.textfile = new TextFile();
@@ -25,29 +25,28 @@ public class PurchaseRequisitionManager {
     public void loadAllprfromtxtfile() {
         List<String> lines = textfile.readFile(prfilepath);
         for (String line : lines) {
-            String[] parts = line.split(",", 10);
-            if (parts.length == 10) {
-                List<String> itemids = Arrays.asList(parts[1].trim().split("\\|"));
-                List<String> quantities = Arrays.asList(parts[3].trim().split("\\|"));
-                List<String> unitPrices = Arrays.asList(parts[4].trim().split("\\|"));
-                prlist.add(new PurchaseRequisition(
-                        parts[0].trim(),
-                        itemids, // new ArrayList<>(itemids),
-                        parts[2].trim(),
-                        unitPrices,
-                        quantities,
-                        parts[5].trim(),
-                        parts[6].trim(),
-                        parts[7].trim(),
-                        PurchaseRequisition.ApproveStatus.fromString(parts[8].trim()),
-                        parts[9].trim()
-                ));
+            String[] parts = line.split(",", 11);
+            if (parts.length == 11) {
+                boolean isdeleted = Boolean.parseBoolean(parts[10].trim());
+                    List<String> itemids = Arrays.asList(parts[1].trim().split("\\|"));
+                    List<String> quantities = Arrays.asList(parts[3].trim().split("\\|"));
+                    List<String> unitPrices = Arrays.asList(parts[4].trim().split("\\|"));
+                    prlist.add(new PurchaseRequisition(
+                            parts[0].trim(),
+                            itemids, // new ArrayList<>(itemids),
+                            parts[2].trim(),
+                            quantities,
+                            unitPrices,
+                            parts[5].trim(),
+                            parts[6].trim(),
+                            parts[7].trim(),
+                            PurchaseRequisition.ApproveStatus.fromString(parts[8].trim()),
+                            parts[9].trim(),
+                            isdeleted
+                    ));
             }
         }
     }
-
-
-
 
     public String getprfilepath(){
         return prfilepath;
@@ -77,18 +76,18 @@ public class PurchaseRequisitionManager {
             System.out.println("pr exist already ya");
         }
     }
-    public void deletepr(String prid){
+    public void markprasDeleted(String prid){
         PurchaseRequisition pr = findprid(prid);
             if (pr != null){
-                prlist.remove(pr);
-                textfile.deleteLine(prfilepath, pr.toString());
+                pr.setDeleted(true);
+                textfile.rewriteFile(prfilepath, prlist);
                 System.out.println("delete successful");
                 return;
             }else{
                 System.out.println("pr not found");
             } 
     }
-    public void updatepr(String prid, List<String> itemids, String userid, List<String> quantities,List<String> unitprices, String total,String requestdate,String expecteddeliverydate,PurchaseRequisition.ApproveStatus status,String note) {
+    public void updatepr(String prid, List<String> itemids, String userid, List<String> quantities,List<String> unitprices, String total,String requestdate,String expecteddeliverydate,PurchaseRequisition.ApproveStatus status,String note, boolean isdeleted) {
         PurchaseRequisition existingpr= findprid(prid);
         if (existingpr != null) {
             existingpr.setPrid(prid);
@@ -101,6 +100,7 @@ public class PurchaseRequisitionManager {
             existingpr.setExpecteddeliverydate(expecteddeliverydate);
             existingpr.setApprovestatus(status);
             existingpr.setNote(note);
+            existingpr.setDeleted(isdeleted);
             textfile.rewriteFile(prfilepath, prlist);
             System.out.println("updated successfully.");
         } else {
@@ -136,7 +136,7 @@ public class PurchaseRequisitionManager {
     }
 
    public double calculatetotalprice(List<PRItem> pritemlist){
-        double totalprice = 0.0;
+        double totalprice = 0.00;
         for (PRItem pritem : pritemlist){
             try{
                 totalprice += Double.parseDouble(pritem.getTotalprice());

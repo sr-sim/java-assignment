@@ -3,3 +3,4 @@ UID002`hew`1`Hew`hew@mail.com`019-8765432`IM`active
 UID003`macy`1`Macy`macy@mail.com`019-1234567`PM`active
 UID004`iz`1`Izaac`iz@mail.com`011-2233445`FM`active
 UID005`opy`1`OPY`opy@mail.com`018-9988776`AM`active
+UID006`sr`1`sr`sr@mail.com`018-9988776`SM`active

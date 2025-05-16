@@ -266,19 +266,19 @@ public void openHomePage(User user) {
 
     switch (role) {
         case ADMIN:
-            new AdminHome((Administrator) user).setVisible(true); //By casting (Administrator) user, you're telling the program, "I know this user object is actually an instance of Administrator, so please treat it as such."
+            new AdminHome().setVisible(true); //By casting (Administrator) user, you're telling the program, "I know this user object is actually an instance of Administrator, so please treat it as such."
             break;
         case SALES_MANAGER:
-            new SM_MainPage((SalesManager) user).setVisible(true);
+            new SM_MainPage().setVisible(true);
             break;
         case FINANCE_MANAGER:
-            new FinanceManagerHome((FinanceManager) user).setVisible(true);
+            new FinanceManagerHome().setVisible(true);
             break;
         case INVENTORY_MANAGER:
-            new InventoryManagerHome((InventoryManager) user).setVisible(true);
+            new InventoryManagerHome().setVisible(true);
             break;
         case PURCHASE_MANAGER:
-            new PurchaseManagerHome((PurchaseManager) user).setVisible(true);
+            new PurchaseManagerHome().setVisible(true);
             break;
         default:
             JOptionPane.showMessageDialog(this, "Unknown role: " + role, "Login Error", JOptionPane.ERROR_MESSAGE);
