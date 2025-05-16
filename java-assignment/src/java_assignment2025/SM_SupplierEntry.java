@@ -31,19 +31,27 @@ public class SM_SupplierEntry extends javax.swing.JFrame {
         jTextField1.setText(generatedID);
         jTextField1.setEditable(false);
         jTextField1.setFocusable(false);
-        fillTableFromTxtFile();
+        fillTable1FromTxtFile();
     }
-    public void fillTableFromTxtFile(){
+    public void fillTable1FromTxtFile() {
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-        model.setRowCount(0);
-        String filename = supplierdatamanager.getsupplierfilepath();
-        List<String> list = TextFile.readFile(filename);
-        
-        for (String details : list){
-            String[] Info = details.split(",");
-            if(Info.length >=6){
-                model.addRow(new Object[]{Info[0], Info[1], Info[2], Info[3], Info[4], Info[5]});
-            }      
+        model.setRowCount(0); 
+        for (Supplier supplier : supplierdatamanager.getsupplierlist()) {
+            if(!supplier.isDeleted()){ //is deleted is false
+                String supplierid = supplier.getSupplierid();
+                String suppliername = supplier.getSuppliername();
+                String address = supplier.getAddress();
+                String contact = supplier.getContact();
+                String email = supplier.getEmail();
+                String itemdescription = supplier.getItemdescription();
+
+                model.addRow(new Object[]{
+                    supplierid, suppliername, address,
+                    contact, email,
+                    itemdescription
+                });
+            }
+
         }
     }
     private void clearTextField(){
@@ -424,7 +432,6 @@ public class SM_SupplierEntry extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-
         new SM_ItemEntry(salesmanager,inventorydatamanager,supplierdatamanager).setVisible(true);
         this.dispose();
     }//GEN-LAST:event_jButton6ActionPerformed
@@ -478,21 +485,28 @@ public class SM_SupplierEntry extends javax.swing.JFrame {
         String address = jTextField5.getText();
         String itemdesc = jTextArea1.getText();
         boolean readDescrptionStatus = false;
+        boolean deleted = false;
         
-        if (suppliername.isEmpty() || contact.isEmpty()|| email.isEmpty() || address.isEmpty() || itemdesc.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "There is an unfilled field." , "Input Error", JOptionPane.ERROR_MESSAGE);
+        if (suppliername.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Supplier name cannot be empty.");
             return;
         }
+        
+        
+        if(itemdesc.isEmpty()){
+            itemdesc = "Will be update";
+        }
+        
         if (address.length()<5){
             JOptionPane.showMessageDialog(this, "Address must be more than 5 characters", "Input Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
         
         try {
-            Supplier supplier = new Supplier(supplierid, suppliername , contact, email, address, itemdesc, readDescrptionStatus);
+            Supplier supplier = new Supplier(supplierid, suppliername , contact, email, address, itemdesc, readDescrptionStatus,deleted);
             supplierdatamanager.addSupplier(supplier);
             JOptionPane.showMessageDialog(null, "Success","Information", JOptionPane.INFORMATION_MESSAGE);
-            fillTableFromTxtFile();
+            fillTable1FromTxtFile();
             clearTextField();
             }catch (Exception e){
                 JOptionPane.showMessageDialog(null, "Error");
@@ -525,10 +539,11 @@ public class SM_SupplierEntry extends javax.swing.JFrame {
                 return;
             }
             boolean readDescrptionStatus = existingSupplier.getReadDescrptionStatus();
+            boolean deleted = existingSupplier.isDeleted();
 
-            supplierdatamanager.updateSupplier(supplierid, suppliername , contact, email, address, itemdesc, readDescrptionStatus);
+            supplierdatamanager.updateSupplier(supplierid, suppliername , contact, email, address, itemdesc, readDescrptionStatus,deleted);
      
-            fillTableFromTxtFile();
+            fillTable1FromTxtFile();
             clearTextField();
             JOptionPane.showMessageDialog(this, "Update Successfully!");
             clearTextField();
@@ -546,8 +561,8 @@ public class SM_SupplierEntry extends javax.swing.JFrame {
             int YesOrNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this supplier?" + supplierid , "Confirm Delete", JOptionPane.YES_NO_OPTION);
             
             if (YesOrNo == JOptionPane.YES_OPTION){
-                supplierdatamanager.deleteSupplier(supplierid);
-                fillTableFromTxtFile();
+                supplierdatamanager.marksupplierasDeleted(supplierid);
+                fillTable1FromTxtFile();
                 clearTextField();
                 JOptionPane.showMessageDialog(null, "This Supplier Deleted successfully");
             }

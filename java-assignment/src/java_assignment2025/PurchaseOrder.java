@@ -16,9 +16,11 @@ import java.util.List;
 public class PurchaseOrder {
     
     private String orderId;
+    private String poCreator;
     private String requestId;
     private String userId;
     private List<String> itemIds;
+    private List<String> unitPrices;
     private List<String> quantities;
     private double amount;
     private List<String> supplierIds;
@@ -30,20 +32,22 @@ public class PurchaseOrder {
     
     public PurchaseOrder(){}
     // Constructor
-    public PurchaseOrder(String orderId, String requestId, String userId,List<String> itemIds ,
-                         List<String> quantities, double amount,List<String>  supplierIds,
+    public PurchaseOrder(String orderId, String poCreator, String requestId, String userId,List<String> itemIds ,
+                         List<String> unitPrices, List<String> quantities, double amount,List<String>  supplierIds,
                          String orderDate, String orderStatus, String verifyStatus, String paymentStatus) {
         this.orderId = orderId;
+        this.poCreator = poCreator;
         this.requestId = requestId;
         this.userId = userId;
         this.itemIds = itemIds;
+        this.unitPrices=unitPrices;
         this.quantities = quantities;
         this.amount = amount;
         this.supplierIds = supplierIds;
-        this.orderDate = getCurrentDate();
-        this.orderStatus = "pending";
-        this.verifyStatus = "pending";
-        this.paymentStatus = "unpaid";
+        this.orderDate = orderDate;
+        this.orderStatus = orderStatus;
+        this.verifyStatus = verifyStatus;
+        this.paymentStatus = paymentStatus;
     }
     
 
@@ -52,6 +56,9 @@ public class PurchaseOrder {
         return orderId;
     }
 
+    public String getPoCreator(){
+        return poCreator;
+    }
     public String getRequestId() {
         return requestId;
     }
@@ -64,6 +71,15 @@ public class PurchaseOrder {
     return itemIds;
 }
 
+    public List<String> getUnitPrices() {
+        return unitPrices;
+    }
+
+    
+    public void setUnitPrices(List<String> unitPrices) {
+        this.unitPrices = unitPrices;
+    }
+    
     public List<String> getQuantities() {
         return quantities;
 }
@@ -98,18 +114,10 @@ public class PurchaseOrder {
     public void setPaymentStatus(String paymentStatus) {
         this.paymentStatus = paymentStatus;
     }
-
-   
-
-     public static String getCurrentDate() {
-        java.time.LocalDate today = java.time.LocalDate.now();
-        java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("yy-MM-dd");
-        return today.format(formatter);
-    }
     
     
     public static String getNextOrderId() {
-        String filePath = "C:\\Users\\User\\OneDrive\\Documents\\NetBeansProjects\\java-assignment\\java-assignment\\src\\java_assignment2025\\PurchaseOrder.txt";
+        String filePath = "C:\\JPL9\\java-assignment\\java-assignment\\src\\java_assignment2025\\PurchaseOrder.txt";
         List<String> lines = TextFile.readFile(filePath);
         int maxId = 0;
 
@@ -135,12 +143,15 @@ public class PurchaseOrder {
 
     @Override
     public String toString() {
-        return orderId + "," + requestId + "," + userId + "," +
+        return orderId + "," + poCreator + ","+ requestId + "," + userId + "," +
                String.join("|", itemIds) + "," +
+               String.join("|",unitPrices)+","+
                String.join("|", quantities) + "," +
                String.format("%.2f", amount) + "," +
                String.join("|", supplierIds) + "," +
                orderDate + "," + orderStatus + "," + verifyStatus+","+ paymentStatus;
 }
 
+   
+    
 }

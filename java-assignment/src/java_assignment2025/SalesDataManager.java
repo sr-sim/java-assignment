@@ -32,14 +32,15 @@ public class SalesDataManager {
     public void loadAllindividualsalesfromtxtfile(){
         List<String> lines = textfile.readFile(individualsalesfilepath);
         for(String line : lines){
-            String[] parts = line.split(",", 5);
-            if(parts.length == 5){
+            String[] parts = line.split(",", 6);
+            if(parts.length == 6){
                 individualsaleslist.add(new IndividualSales( // one by one add to list
                         parts[0].trim(),
                         parts[1].trim(),
                         parts[2].trim(),
                         parts[3].trim(),
-                        parts[4].trim()
+                        parts[4].trim(),
+                        parts[5].trim()
                 ));
             }
         }
@@ -99,32 +100,32 @@ public class SalesDataManager {
                 System.out.println("individualsales not found");
             } 
     }
-    public void updateindividualsales(IndividualSales oldindividualsales, IndividualSales newindividualsales){
-        if(individualsaleslist.contains(oldindividualsales)){
-            String oldItemId = oldindividualsales.getItemid();
-            String oldDate = oldindividualsales.getDateofsales();
-            String oldAmount = oldindividualsales.getAmount();
-
-            String newItemId = newindividualsales.getItemid();
-            String newDate = newindividualsales.getDateofsales();
-            String newAmount = newindividualsales.getAmount();
-            individualsaleslist.remove(oldindividualsales);
-            individualsaleslist.add(newindividualsales);
-            textfile.replaceLine(individualsalesfilepath, oldindividualsales.toString(), newindividualsales.toString());
-            System.out.println("Updating IndividualSales: " + oldindividualsales.getSalesid() + " to " + newindividualsales.getSalesid());
-            System.out.println("successful edit");
-            updatedailysummaryAfterUpdate(oldItemId, oldDate, oldAmount, newItemId, newDate, newAmount);
-        }else{
-            System.out.println("failed to edit");
-        }
-    }
-    public void updateindividualsales(String salesid, String itemid, String quantity, String amount, String dateofsales) {
+//    public void updateindividualsales(IndividualSales oldindividualsales, IndividualSales newindividualsales){
+//        if(individualsaleslist.contains(oldindividualsales)){
+//            String oldItemId = oldindividualsales.getItemid();
+//            String oldDate = oldindividualsales.getDateofsales();
+//            String oldAmount = oldindividualsales.getAmount();
+//
+//            String newItemId = newindividualsales.getItemid();
+//            String newDate = newindividualsales.getDateofsales();
+//            String newAmount = newindividualsales.getAmount();
+//            individualsaleslist.remove(oldindividualsales);
+//            individualsaleslist.add(newindividualsales);
+//            textfile.replaceLine(individualsalesfilepath, oldindividualsales.toString(), newindividualsales.toString());
+//            System.out.println("Updating IndividualSales: " + oldindividualsales.getSalesid() + " to " + newindividualsales.getSalesid());
+//            System.out.println("successful edit");
+//            updatedailysummaryAfterUpdate(oldItemId, oldDate, oldAmount, newItemId, newDate, newAmount);
+//        }else{
+//            System.out.println("failed to edit");
+//        }
+//    }
+    public void updateindividualsales(String salesid, String itemid, String quantity, String retailprice, String amount, String dateofsales) {
         IndividualSales existingsales= findsalesid(salesid);
         if (existingsales != null) {
             String oldItemId = existingsales.getItemid();
             String oldDate = existingsales.getDateofsales();
             String oldAmount = existingsales.getAmount();
-            
+            existingsales.setretailprice(retailprice);
             existingsales.setSalesid(salesid);
             existingsales.setItemid(itemid);
             existingsales.setQuantity(quantity);

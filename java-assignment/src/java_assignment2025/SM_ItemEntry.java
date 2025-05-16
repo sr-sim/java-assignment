@@ -46,33 +46,38 @@ public class SM_ItemEntry extends javax.swing.JFrame {
     
     private void fillComboBoxFromSupplierList() {
     for (Supplier supplier : supplierdatamanager.getsupplierlist()) {
-        String comboBoxItem = supplier.getSupplierid() + " - " + supplier.getSuppliername();
-        jComboBox1.addItem(comboBoxItem);
-        }
+         if(!supplier.isDeleted()){
+            String comboBoxItem = supplier.getSupplierid() + " - " + supplier.getSuppliername();
+            jComboBox1.addItem(comboBoxItem);
+         }
+      }
     }
 
     public void fillTable1FromTxtFile() {
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
         model.setRowCount(0); 
         for (Item item : inventorydatamanager.getinventorylist()) {
-            String itemId = item.getItemid();
-            String itemName = item.getItemname();
-            String itemDescription = item.getItemdesc();
-            String supplierId = item.getSupplierid();
-            String inStockQty = item.getInstockquantity();
-            String unitPrice = item.getUnitprice();
-            String retailPrice = item.getRetailprice();
-            String lastModifiedDate = item.getLastmodifieddate();
+            if(!item.isDeleted()){ //is deleted is false
+                String itemId = item.getItemid();
+                String itemName = item.getItemname();
+                String itemDescription = item.getItemdesc();
+                String supplierId = item.getSupplierid();
+                String inStockQty = item.getInstockquantity();
+                String unitPrice = item.getUnitprice();
+                String retailPrice = item.getRetailprice();
+                String lastModifiedDate = item.getLastmodifieddate();
 
-            Supplier supplier = supplierdatamanager.findsupplierid(supplierId);
-            String supplierName = (supplier != null) ? supplier.getSuppliername() : "Unknown Supplier";
+                Supplier supplier = supplierdatamanager.findsupplierid(supplierId);
+                String supplierName = (supplier != null) ? supplier.getSuppliername() : "Unknown Supplier";
 
-            model.addRow(new Object[]{
-                itemId, itemName, itemDescription,
-                supplierId, supplierName,
-                inStockQty, unitPrice, retailPrice,
-                lastModifiedDate
-            });
+                model.addRow(new Object[]{
+                    itemId, itemName, itemDescription,
+                    supplierId, supplierName,
+                    inStockQty, unitPrice, retailPrice,
+                    lastModifiedDate
+                });
+            }
+
         }
     }
 
@@ -103,7 +108,6 @@ public class SM_ItemEntry extends javax.swing.JFrame {
         jTextField2.setText("");
         jTextField3.setText("");
         jTextField4.setText("");
-        jComboBox1.setSelectedIndex(-1);
         jTextArea1.setText("");
         jTable1.clearSelection();
     }
@@ -389,30 +393,14 @@ public class SM_ItemEntry extends javax.swing.JFrame {
                     int column = e.getColumn();
 
                     if (column == 3) {
-                        String supplierId = model.getValueAt(row, 0).toString();
+                        String supplierid = model.getValueAt(row, 0).toString();
                         Boolean newStatusObj = (Boolean) model.getValueAt(row, column);
 
                         if (newStatusObj == null) return;
-
                         boolean newStatus = newStatusObj;
 
-                        Supplier existingSupplier = supplierdatamanager.findsupplierid(supplierId);
-                        if (existingSupplier == null) {
-                            JOptionPane.showMessageDialog(null, "Supplier not found", "Error", JOptionPane.ERROR_MESSAGE);
-                            return;
-                        }
+                        supplierdatamanager.marknewsupplierinitemasRead(supplierid, newStatus);
 
-                        // Create a new Supplier object with updated read status
-                        supplierdatamanager.updateSupplier(
-                            existingSupplier.getSupplierid(),
-                            existingSupplier.getSuppliername(),
-                            existingSupplier.getAddress(),
-                            existingSupplier.getContact(),
-                            existingSupplier.getEmail(),
-                            existingSupplier.getItemdescription(),
-                            newStatus
-                        );
-                        System.out.println("Updated read status for " + supplierId + " to " + newStatus);
                         filterTable2FromSupplierList(newStatus);
                     }
                 }
@@ -514,7 +502,7 @@ public class SM_ItemEntry extends javax.swing.JFrame {
                                 .addGap(423, 423, 423)
                                 .addComponent(jLabel11))
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGap(21, 21, 21)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addGroup(jPanel1Layout.createSequentialGroup()
                                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -538,17 +526,16 @@ public class SM_ItemEntry extends javax.swing.JFrame {
                                                 .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 139, Short.MAX_VALUE)
                                                 .addComponent(jTextField4)
                                                 .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED))
+                                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                     .addGroup(jPanel1Layout.createSequentialGroup()
                                         .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addGap(18, 18, 18)
                                         .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                         .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addGap(12, 12, 12)
-                                        .addComponent(jButton4)
-                                        .addGap(39, 39, 39)))
+                                        .addComponent(jButton4)))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 639, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addContainerGap(65, Short.MAX_VALUE))))
         );
@@ -595,11 +582,12 @@ public class SM_ItemEntry extends javax.swing.JFrame {
                             .addComponent(jLabel4)
                             .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(12, 12, 12)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton2)
-                            .addComponent(jButton3)
-                            .addComponent(jButton4))))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jButton4)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jButton2)
+                                .addComponent(jButton3)))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
@@ -661,21 +649,54 @@ public class SM_ItemEntry extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // TODO add your handling code here:
-        int selectedrow = jTable1.getSelectedRow();
-        if (selectedrow != -1){
-            String itemid = jTable1.getValueAt(selectedrow, 0).toString();
-            int YesOrNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this item?" + itemid , "Confirm Delete", JOptionPane.YES_NO_OPTION);
-            
-            if (YesOrNo == JOptionPane.YES_OPTION){
-                inventorydatamanager.deleteItem(itemid);
+int selectedRow = jTable1.getSelectedRow();
+
+if (selectedRow != -1) {
+    String itemId = jTable1.getValueAt(selectedRow, 0).toString();
+    String status = inventorydatamanager.getItemDeletionStatus(itemId);
+
+    switch (status) {
+        case "can_delete":
+            int yesOrNo = JOptionPane.showConfirmDialog(null,
+                    "Are you sure you want to delete this item? " + itemId,
+                    "Confirm Delete",
+                    JOptionPane.YES_NO_OPTION);
+
+            if (yesOrNo == JOptionPane.YES_OPTION) {
+                inventorydatamanager.markitemasDeleted(itemId);
                 fillTable1FromTxtFile();
                 clearTextField();
-                JOptionPane.showMessageDialog(null, "This item Deleted successfully");
+                JOptionPane.showMessageDialog(null, "Item deleted successfully.");
             }
-        }else{
-                JOptionPane.showMessageDialog(null, "Please select a item from the table");
-            }  
+            break;
+
+        case "cannot_delete_pending_pr":
+            JOptionPane.showMessageDialog(null,
+                    "Cannot delete this item because it is in a pending Purchase Requisition.\n" +
+                    "Please delete the pending PR first.");
+            break;
+
+        case "cannot_delete_approved_pr_po_not_paid":
+            JOptionPane.showMessageDialog(null,
+                    "Cannot delete this item because its PR is approved and PO is not paid or not fully approved.");
+            break;
+
+        case "cannot_delete_rejected_pr":
+            JOptionPane.showMessageDialog(null,
+                    "Cannot delete this item because it is in a rejected PR.\n" +
+                    "Please delete the PR first.");
+            break;
+
+        default:
+            JOptionPane.showMessageDialog(null,
+                    "This item cannot be deleted due to unknown status.");
+            break;
+    }
+
+} else {
+    JOptionPane.showMessageDialog(null, "Please select an item from the table.");
+}
+
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
@@ -683,16 +704,53 @@ public class SM_ItemEntry extends javax.swing.JFrame {
 
         if(selectedRow != -1){
             String itemid = jTextField1.getText();
+            
             String itemname = jTextField2.getText();
             String supplierid = jComboBox1.getSelectedItem().toString().split("-")[0].trim();
-            String unitprice = jTextField3.getText();
-            String retailprice = jTextField4.getText();
+            String unitpricestr = jTextField3.getText();
+            String retailpricestr = jTextField4.getText();
             String itemdesc = jTextArea1.getText();
 
-            if (itemname.isEmpty()|| supplierid.isEmpty() || unitprice.isEmpty() || retailprice.isEmpty()|| itemdesc.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "There is an unfilled field." , "Input Error", JOptionPane.ERROR_MESSAGE);
+            if (itemname.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Item name cannot be empty.");
                 return;
             }
+            if (unitpricestr.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Unit price cannot be empty.");
+                return;
+            }
+            if (retailpricestr.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Retail price cannot be empty.");
+                return;
+            }
+
+            double unitprice = 0.0;
+            double retailprice = 0.0;
+
+            try{
+                unitprice = Double.parseDouble(unitpricestr);
+            }catch(NumberFormatException e){
+                JOptionPane.showMessageDialog(this, "Unit price must be numeric.");
+                return;
+            }
+            try{
+                retailprice = Double.parseDouble(retailpricestr);
+            }catch(NumberFormatException e){
+                JOptionPane.showMessageDialog(this, "Retail price must be numeric.");
+                return;
+            }
+            if(unitprice > retailprice){
+                JOptionPane.showMessageDialog(this, "Unit price cannot be more than retail price.");
+                return;
+            }
+            
+            String formattedUnitPrice = String.format("%.2f", unitprice);
+            String formattedRetailPrice = String.format("%.2f", retailprice);
+            
+            if(itemdesc.isEmpty()){
+                itemdesc = "No description";
+            }
+
             Item olditem = inventorydatamanager.finditemid(itemid);
             if (olditem == null){
                 JOptionPane.showMessageDialog(this, "old item not found" , "Error",JOptionPane.ERROR_MESSAGE);
@@ -702,7 +760,8 @@ public class SM_ItemEntry extends javax.swing.JFrame {
             String lastmodifieddate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             String reorderlevel = olditem.getReorderlevel();
             String reorderstatus = olditem.getReorderstatus();
-            inventorydatamanager.updateItem(itemid, itemname, itemdesc, supplierid, unitprice, retailprice, instockquantity, reorderlevel, reorderstatus, lastmodifieddate);
+            boolean deleted = olditem.isDeleted();
+            inventorydatamanager.updateItem(itemid, itemname, itemdesc, supplierid,formattedUnitPrice,formattedRetailPrice, instockquantity, reorderlevel, reorderstatus, lastmodifieddate, deleted);
             fillTable1FromTxtFile();
             clearTextField();
             JOptionPane.showMessageDialog(this, "Update Successfully!");
@@ -718,22 +777,54 @@ public class SM_ItemEntry extends javax.swing.JFrame {
         String itemid = jTextField1.getText();
         String itemname = jTextField2.getText();
         String supplierid = jComboBox1.getSelectedItem().toString().split("-")[0].trim();
-        String unitprice = jTextField3.getText();
-        String retailprice = jTextField4.getText();
+        String unitpricestr = jTextField3.getText();
+        String retailpricestr = jTextField4.getText();
         String itemdesc = jTextArea1.getText();
         String instockquantity = "0";
         String lastmodifieddate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         String reorderlevel = "0";
         String reorderstatus = null;
-        
-        
-        if (itemname.isEmpty()|| supplierid.isEmpty() || unitprice.isEmpty() || retailprice.isEmpty()|| itemdesc.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "There is an unfilled field." , "Input Error", JOptionPane.ERROR_MESSAGE);
+        boolean deleted = false;
+
+        if (itemname.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Item name cannot be empty.");
             return;
+        }
+        if (unitpricestr.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Unit price cannot be empty.");
+            return;
+        }
+        if (retailpricestr.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Retail price cannot be empty.");
+            return;
+        }
+        double unitprice;
+        double retailprice;
+        try{
+            unitprice = Double.parseDouble(unitpricestr);
+        }catch(NumberFormatException e){
+            JOptionPane.showMessageDialog(this, "Unit price must be numeric.");
+            return;
+        }
+        try{
+            retailprice = Double.parseDouble(retailpricestr);
+        }catch(NumberFormatException e){
+            JOptionPane.showMessageDialog(this, "Retail price must be numeric.");
+            return;
+        }
+        if(unitprice > retailprice){
+            JOptionPane.showMessageDialog(this, "Unit price cannot be more than retail price.");
+            return;
+        }
+        String formattedUnitPrice = String.format("%.2f", unitprice);
+        String formattedRetailPrice = String.format("%.2f", retailprice);
+        
+        if(itemdesc.isEmpty()){
+            itemdesc = "No description";
         }
         
         try {
-            Item item = new Item(itemid, itemname, itemdesc, supplierid, unitprice, retailprice, instockquantity, reorderlevel, reorderstatus, lastmodifieddate);
+            Item item = new Item(itemid, itemname, itemdesc, supplierid,formattedUnitPrice,formattedRetailPrice,instockquantity, reorderlevel, reorderstatus, lastmodifieddate,deleted);
             inventorydatamanager.addItem(item);
    
             JOptionPane.showMessageDialog(null, "Success","Information", JOptionPane.INFORMATION_MESSAGE);

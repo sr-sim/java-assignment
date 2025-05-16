@@ -27,6 +27,9 @@ public class SM_Create_Purchase_Requisition extends javax.swing.JFrame {
     private SupplierDataManager supplierdatamanager = new SupplierDataManager();
     private SalesDataManager salesdatamanager = new SalesDataManager();
     private List<PRItem> pritemlist = new ArrayList<>();
+    private List<String> prUnitPriceList = new ArrayList<>();
+
+
     /**
      * Creates new form SM_Create_Purchase_Requisition
      */
@@ -51,29 +54,34 @@ public class SM_Create_Purchase_Requisition extends javax.swing.JFrame {
         Date tomorrow = cal.getTime();
         jDateChooser2.setDate(tomorrow);
         jLabel11.setVisible(false);
-     }else if(existingPR != null){
-            jLabel3.setText(existingPR.getPrid());
-            jLabel10.setText(existingPR.getUserid());
-            jTextArea1.setText(existingPR.getNote());
-            jLabel4.setText(existingPR.getTotal());
-            jDateChooser1.setDate(java.sql.Date.valueOf(existingPR.getRequestdate()));
-            jDateChooser2.setDate(java.sql.Date.valueOf(existingPR.getExpecteddeliverydate()));
-            jLabel11.setText("Status: "+ existingPR.getApprovestatus());
-            for(int i=0; i < existingPR.getItemids().size();i++){
-                Item item = inventorydatamanager.finditemid(existingPR.getItemids().get(i));
+        }else if (existingPR != null) {
+       jLabel3.setText(existingPR.getPrid());
+       jLabel10.setText(existingPR.getUserid());
+       jTextArea1.setText(existingPR.getNote());
+       jLabel4.setText(existingPR.getTotal());
+       jDateChooser1.setDate(java.sql.Date.valueOf(existingPR.getRequestdate()));
+       jDateChooser2.setDate(java.sql.Date.valueOf(existingPR.getExpecteddeliverydate()));
+       jLabel11.setText("Status: " + existingPR.getApprovestatus());
+
+            for (int i = 0; i < existingPR.getItemids().size(); i++) {
+                String itemid = existingPR.getItemids().get(i);
+                Item item = inventorydatamanager.finditemid(itemid);
                 String qty = existingPR.getQuantities().get(i);
-                double totalprice = Integer.parseInt(qty)*Double.parseDouble(item.getUnitprice());
-                ((DefaultTableModel) jTable1.getModel()).addRow(new Object[]{
-                    item.getItemid(),
-                    item.getItemname(),
-                    qty,
-                    item.getUnitprice(),
-                    totalprice
-                });
-                pritemlist.add(new PRItem(item, qty, String.valueOf(totalprice)));
-        }
-        if (mode == PRformMode.edit){
-            jLabel14.setText("Edit Purchase Requisition");
+            String unitPriceStr = existingPR.getUnitPrices().get(i);
+            double totalprice = Integer.parseInt(qty) * Double.parseDouble(unitPriceStr);
+
+            ((DefaultTableModel) jTable1.getModel()).addRow(new Object[]{
+                item.getItemid(),
+                item.getItemname(),
+                qty,
+                unitPriceStr,
+                totalprice
+            });
+
+            pritemlist.add(new PRItem(item, qty, unitPriceStr, String.valueOf(totalprice)));
+            prUnitPriceList.add(unitPriceStr);
+        }if (mode == PRformMode.edit){
+        jLabel14.setText("Edit Purchase Requisition");
         }else if (mode == PRformMode.view){
             jLabel14.setText("View Purchase Requisition");
             jComboBox1.setVisible(false);
@@ -95,18 +103,16 @@ public class SM_Create_Purchase_Requisition extends javax.swing.JFrame {
     }
     
     private void fillComboBoxFromitemList() {
-    for (Item item : inventorydatamanager.getinventorylist()) {
-        String comboBoxItem = item.getItemid() + " - " + item.getItemname();
-        jComboBox1.addItem(comboBoxItem);
+        for (Item item : inventorydatamanager.getinventorylist()) {
+            if(!item.isDeleted()){
+                String comboBoxItem = item.getItemid() + " - " + item.getItemname();
+                jComboBox1.addItem(comboBoxItem);
+            }
         }
     }
     
     private void updatetotalprice(){
-        double totalprice = 0.0;
-        
-        for (PRItem pritem : pritemlist){
-            totalprice += Double.parseDouble(pritem.getTotalprice());
-        }
+        double totalprice = prmanager.calculatetotalprice(pritemlist);
         jLabel4.setText(String.format("%.2f", totalprice));
     }
     private void clearTextField(){
@@ -581,9 +587,12 @@ public class SM_Create_Purchase_Requisition extends javax.swing.JFrame {
         }
         List<String> itemids = new ArrayList<>();
         List<String> quantities = new ArrayList<>();
-        for(PRItem pritem : pritemlist){
+        List<String> unitprices = new ArrayList<>();
+        for(int i = 0; i < pritemlist.size(); i++){
+            PRItem pritem = pritemlist.get(i);
             itemids.add(pritem.getItem().getItemid());
             quantities.add(pritem.getQuantity());
+            unitprices.add(pritem.getUnitprice());
         }
         
         Date reqdate = jDateChooser1.getDate();
@@ -603,11 +612,11 @@ public class SM_Create_Purchase_Requisition extends javax.swing.JFrame {
         
         try {
             if (mode == PRformMode.edit && existingPR != null && existingPR.getApprovestatus() != PurchaseRequisition.ApproveStatus.approved){
-                prmanager.updatepr(prid,itemids,userid,quantities,totalprice,requestdate,expecteddate,existingPR.getApprovestatus(),note);
+                prmanager.updatepr(prid,itemids,userid,quantities,unitprices,totalprice,requestdate,expecteddate,existingPR.getApprovestatus(),note);
 
                 JOptionPane.showMessageDialog(null, "Updated Success","Information", JOptionPane.INFORMATION_MESSAGE);
             } else if (mode == PRformMode.create){
-                PurchaseRequisition pr = new PurchaseRequisition(prid,itemids,userid,quantities,totalprice,requestdate,expecteddate,PurchaseRequisition.ApproveStatus.pending,note);
+                PurchaseRequisition pr = new PurchaseRequisition(prid,itemids,userid,quantities,unitprices,totalprice,requestdate,expecteddate,PurchaseRequisition.ApproveStatus.pending,note);
                 prmanager.addpr(pr);
 
                 JOptionPane.showMessageDialog(null, "Success","Information", JOptionPane.INFORMATION_MESSAGE);
@@ -693,7 +702,7 @@ public class SM_Create_Purchase_Requisition extends javax.swing.JFrame {
             unitprice,
             totalPriceOfeachitem
         });
-        pritemlist.add(new PRItem(item, String.valueOf(quantity), String.valueOf(totalPriceOfeachitem)));
+        pritemlist.add(new PRItem(item, String.valueOf(quantity),String.valueOf(unitprice),String.valueOf(totalPriceOfeachitem)));
         updatetotalprice();
         System.out.println(pritemlist);
          jComboBox1.setSelectedIndex(-1);
@@ -707,8 +716,9 @@ public class SM_Create_Purchase_Requisition extends javax.swing.JFrame {
             DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
             model.removeRow(selectedRow);
         if (selectedRow < pritemlist.size()){
-            pritemlist.remove(selectedRow);
-            updatetotalprice();
+        pritemlist.remove(selectedRow);
+        prUnitPriceList.remove(selectedRow); // 🔑 Keep it in sync
+        updatetotalprice();
         }
         JOptionPane.showMessageDialog(null,"Selected item removed");
         }else{
@@ -729,54 +739,74 @@ public class SM_Create_Purchase_Requisition extends javax.swing.JFrame {
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         int selectedRow = jTable1.getSelectedRow();
-        if(selectedRow == -1){
-            JOptionPane.showMessageDialog(null,"Please select a row in the table to edit");
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(null, "Please select a row in the table to edit");
             return;
         }
-        String selected = (String)jComboBox1.getSelectedItem();
-        if(selected == null || selected.isEmpty()){
-            JOptionPane.showMessageDialog(null,"Please select an item");
+
+        String selected = (String) jComboBox1.getSelectedItem();
+        if (selected == null || selected.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Please select an item");
             return;
         }
+
         String itemid = selected.split(" - ")[0];
         Item item = inventorydatamanager.finditemid(itemid);
-        if(item == null){
-            JOptionPane.showMessageDialog(null,"item not found");
+        if (item == null) {
+            JOptionPane.showMessageDialog(null, "Item not found");
             return;
         }
+
         String qty = jTextField4.getText().trim();
-        if(qty.isEmpty()){
-            JOptionPane.showMessageDialog(null,"Please fill in quantity");
+        if (qty.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Please fill in quantity");
             return;
         }
+
         int quantity;
-        try{
+        try {
             quantity = Integer.parseInt(qty);
             if (quantity <= 0) throw new NumberFormatException();
-        }catch(NumberFormatException e){
-            JOptionPane.showMessageDialog(null,"Invalid quantity");
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Invalid quantity");
             return;
         }
+
         double unitprice;
-        try{ 
-            unitprice = Double.parseDouble(item.getUnitprice());
-        }catch(NumberFormatException e){
-            JOptionPane.showMessageDialog(null,"Invalid unit price");
-            return;
-        }        
-        double totalPriceOfeachitem = quantity*unitprice;
-        
+
+        if (mode == PRformMode.edit && existingPR != null) {
+            try {
+               unitprice = Double.parseDouble(prUnitPriceList.get(selectedRow));
+
+            } catch (IndexOutOfBoundsException | NumberFormatException e) {
+                JOptionPane.showMessageDialog(null, "Failed to get correct unit price from existing PR data.");
+                return;
+            }
+        } else {
+            try {
+                unitprice = Double.parseDouble(item.getUnitprice());
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(null, "Invalid unit price");
+                return;
+            }
+        }
+
+        double totalPriceOfeachitem = quantity * unitprice;
+
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-        model.setValueAt(item.getItemid(),selectedRow, 0);
-        model.setValueAt(item.getItemname(),selectedRow, 1);
-        model.setValueAt(quantity,selectedRow, 2);
-        model.setValueAt(unitprice,selectedRow, 3);
-        model.setValueAt(totalPriceOfeachitem,selectedRow, 4);
-        
-        pritemlist.set(selectedRow,new PRItem(item, String.valueOf(quantity), String.valueOf(totalPriceOfeachitem)));
+        model.setValueAt(item.getItemid(), selectedRow, 0);
+        model.setValueAt(item.getItemname(), selectedRow, 1);
+        model.setValueAt(quantity, selectedRow, 2);
+        model.setValueAt(unitprice, selectedRow, 3);
+        model.setValueAt(totalPriceOfeachitem, selectedRow, 4);
+
+        // Update the PRItem list with the correct unit price
+        pritemlist.set(selectedRow, new PRItem(item, String.valueOf(quantity), String.valueOf(unitprice), String.valueOf(totalPriceOfeachitem)));
+
         updatetotalprice();
-         jComboBox1.setSelectedIndex(-1);
-         jTextField4.setText("");
+        jComboBox1.setSelectedIndex(-1);
+        jTextField4.setText("");
+
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jTextField4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField4ActionPerformed
