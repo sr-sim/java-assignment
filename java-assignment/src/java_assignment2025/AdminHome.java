@@ -19,7 +19,7 @@ public class AdminHome extends javax.swing.JFrame {
         initComponents();
         
         
-        admin.manageuser();
+//        admin.manageuser();
     }
 
     /**
@@ -39,7 +39,7 @@ public class AdminHome extends javax.swing.JFrame {
 
         jLabel1.setText("AdminHome");
 
-        jLabel2.setText("Welcome, " + admin.getUsername() + " (" + admin.getUserId() + ") - " + admin.getRole());
+        jLabel2.setText("Welcome, " + admin.getUsername()+ " (" + admin.getUserId() + ") - " + admin.getRole());
 
         jButton1.setText("jButton1");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
