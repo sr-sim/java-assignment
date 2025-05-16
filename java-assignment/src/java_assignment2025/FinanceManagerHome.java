@@ -17,7 +17,7 @@ public class FinanceManagerHome extends javax.swing.JFrame {
         this.financeManager = financeManager; 
         initComponents();
         
-        financeManager.managefinance();
+//        financeManager.managefinance();
     }
 
     /**
