@@ -14,8 +14,8 @@ public class PurchaseManagerHome extends javax.swing.JFrame {
     /**
      * Creates new form PurchaseManagerHome
      */
-    public PurchaseManagerHome(PurchaseManager purchaseManager) {
-        this.purchaseManager = purchaseManager; 
+    public PurchaseManagerHome() {
+        this.purchaseManager = (PurchaseManager)Session.getCurrentUser(); 
         initComponents();
     }
 

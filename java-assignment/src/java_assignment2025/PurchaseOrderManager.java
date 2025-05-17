@@ -60,7 +60,7 @@ public class PurchaseOrderManager {
     }
     
     public static String findSupplierNameById(String supplierId) {
-    String supplierFilePath = "C:\\JPL9\\java-assignment\\java-assignment\\src\\java_assignment2025\\supplier.txt";
+    String supplierFilePath = "src/java_assignment2025/supplier.txt";
     List<String> lines = TextFile.readFile(supplierFilePath);
     
     for (String line : lines) {
