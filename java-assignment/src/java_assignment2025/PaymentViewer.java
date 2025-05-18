@@ -5,6 +5,7 @@
 package java_assignment2025;
 
 import java.awt.Component;
+import static java_assignment2025.FinanceReport.PaymentExportToJasper;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
@@ -76,6 +77,7 @@ public class PaymentViewer extends javax.swing.JFrame {
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
         jLabel13 = new javax.swing.JLabel();
+        approveBtn = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -198,6 +200,14 @@ public class PaymentViewer extends javax.swing.JFrame {
     jLabel13.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
     jLabel13.setText("Purchase Order Table");
 
+    approveBtn.setFont(new java.awt.Font("Segoe UI Black", 1, 13)); // NOI18N
+    approveBtn.setText("Generate PDF");
+    approveBtn.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            approveBtnActionPerformed(evt);
+        }
+    });
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
@@ -207,13 +217,17 @@ public class PaymentViewer extends javax.swing.JFrame {
             .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
-                    .addGap(135, 135, 135)
-                    .addComponent(jLabel11)
-                    .addGap(56, 56, 56)
-                    .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGap(260, 260, 260)
+                    .addComponent(jLabel11))
                 .addGroup(layout.createSequentialGroup()
                     .addGap(51, 51, 51)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 624, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 624, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(282, 282, 282)
+                    .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(312, 312, 312)
+                    .addComponent(approveBtn)))
             .addContainerGap(150, Short.MAX_VALUE))
     );
     layout.setVerticalGroup(
@@ -223,12 +237,14 @@ public class PaymentViewer extends javax.swing.JFrame {
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                 .addGroup(layout.createSequentialGroup()
                     .addGap(19, 19, 19)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel13))
+                    .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(jLabel13)
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(56, 56, 56))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(approveBtn)
+                    .addGap(19, 19, 19))
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addContainerGap())
     );
@@ -260,6 +276,10 @@ public class PaymentViewer extends javax.swing.JFrame {
         //        new SM_PurchaseOrder(salesmanager).setVisible(true);
         //        this.dispose();
     }//GEN-LAST:event_jButton10ActionPerformed
+
+    private void approveBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_approveBtnActionPerformed
+        PaymentExportToJasper(jTable1);
+    }//GEN-LAST:event_approveBtnActionPerformed
 
     /**
      * @param args the command line arguments
@@ -297,6 +317,7 @@ public class PaymentViewer extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton approveBtn;
     private javax.swing.JButton jButton10;
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;

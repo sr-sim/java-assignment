@@ -171,7 +171,7 @@ public class FinanceReport {
             record.put("poid", table.getValueAt(row, 0));
             record.put("itemIds", table.getValueAt(row, 4));
             record.put("itemNames", table.getValueAt(row, 5));
-            record.put("quantities", table.getValueAt(row, 7));
+            record.put("quantities", table.getValueAt(row, 7).toString().trim());
             record.put("amount", table.getValueAt(row, 8));
             record.put("orderDate", table.getValueAt(row, 10));
             
@@ -227,5 +227,132 @@ public class FinanceReport {
         JOptionPane.showMessageDialog(null, "Export failed: " + e.getMessage());
     }
 }
+    
+    public static void exportDailySumToJasper(JTable table) {
+    try {
+        List<Map<String, ?>> data = new ArrayList<>();
+        double totalAmount = 0.0;
 
+        for (int row = 0; row < table.getRowCount(); row++) {
+            Map<String, Object> record = new HashMap<>();
+            record.put("itemIds", table.getValueAt(row, 0));      // Item ID
+            record.put("itemNames", table.getValueAt(row, 1));    // Item Name
+            record.put("quantities", table.getValueAt(row, 2));  // Quantity
+            Object amtObj = table.getValueAt(row, 3);             // Amount
+            record.put("amount", amtObj);
+            record.put("orderDate", table.getValueAt(row, 4));    // Date
+
+            // Safely sum amount
+            if (amtObj instanceof Number) {
+                totalAmount += ((Number) amtObj).doubleValue();
+            } else {
+                try {
+                    totalAmount += Double.parseDouble(amtObj.toString().replace("RM", "").trim());
+                } catch (NumberFormatException e) {
+                    // Ignore malformed amount
+                }
+            }
+
+            data.add(record);
+        }
+
+        // Create JRMapCollectionDataSource
+        JRMapCollectionDataSource dataSource = new JRMapCollectionDataSource(data);
+
+        // Parameters
+        Map<String, Object> params = new HashMap<>();
+        params.put("DATA_SOURCE", dataSource);
+        params.put("DateCreated", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+        params.put("GrandTotal", String.format("RM %.2f", totalAmount));
+
+        // Load compiled Jasper file
+        JasperReport report = (JasperReport) JRLoader.loadObjectFromFile(
+            "src/java_assignment2025/Jasper/DailySumReport.jasper"
+        );
+
+        // Fill and export report
+        JasperPrint filled = JasperFillManager.fillReport(report, params, new JREmptyDataSource());
+        String path = "Daily_Sales_Report_" + System.currentTimeMillis() + ".pdf";
+
+        JRPdfExporter exporter = new JRPdfExporter();
+        exporter.setExporterInput(new SimpleExporterInput(filled));
+        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(path));
+        exporter.setConfiguration(new SimplePdfExporterConfiguration());
+        exporter.exportReport();
+
+        JOptionPane.showMessageDialog(null, "Report exported to " + path);
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(null, "Export failed: " + e.getMessage());
+    }
 }
+    
+    public static void PaymentExportToJasper(JTable table) {
+    try {
+        List<Map<String, ?>> data = new ArrayList<>();
+        double totalAmount = 0.0;
+
+        for (int row = 0; row < table.getRowCount(); row++) {
+            Map<String, Object> record = new HashMap<>();
+            record.put("payid", table.getValueAt(row, 0));
+            record.put("itemNames", table.getValueAt(row, 1));
+            record.put("itemIds", table.getValueAt(row, 2));
+            record.put("quantities", table.getValueAt(row, 3).toString().trim());
+            record.put("unitprice", table.getValueAt(row, 4).toString().trim());
+            
+            Object amtObj = table.getValueAt(row, 5);
+            double amountValue = 0.0;
+            
+            if (amtObj instanceof Number) {
+                amountValue = ((Number) amtObj).doubleValue();
+            } else {
+                try {
+                    amountValue = Double.parseDouble(amtObj.toString().trim().replace("RM", "").trim());
+                } catch (NumberFormatException e) {
+                    // Skip if invalid
+                    continue;
+                }
+            }
+
+            record.put("amount",amountValue);
+            totalAmount += amountValue;
+            record.put("orderDate", table.getValueAt(row, 6));
+            
+            data.add(record);
+        }
+
+        JRMapCollectionDataSource dataSource = new JRMapCollectionDataSource(data);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("DATA_SOURCE", dataSource);
+        params.put("DateCreated", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+        params.put("GrandTotal", String.format("RM %.2f", totalAmount));
+
+        JasperReport report = (JasperReport) JRLoader.loadObjectFromFile(
+            "src/java_assignment2025/Jasper/PaymentReport.jasper"
+        );
+
+        JasperPrint filled = JasperFillManager.fillReport(report, params, new JREmptyDataSource());
+
+        String path = "Payment_Report_" + System.currentTimeMillis() + ".pdf";
+
+        JRPdfExporter exporter = new JRPdfExporter();
+        exporter.setExporterInput(new SimpleExporterInput(filled));
+        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(path));
+        exporter.setConfiguration(new SimplePdfExporterConfiguration());
+
+        exporter.exportReport();
+
+        JOptionPane.showMessageDialog(null, "Payment report exported to " + path);
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(null, "Export failed: " + e.getMessage());
+    }
+}
+
+
+        
+}
+
