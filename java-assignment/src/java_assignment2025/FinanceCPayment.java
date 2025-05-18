@@ -22,11 +22,14 @@ public class FinanceCPayment extends javax.swing.JFrame {
     
     private PurchaseOrderManager poManager;
     private InventoryDataManager inventoryManager;
+    private FinanceManager fm;
+
 
     /**
      * Creates new form FinanceCPayment
      */
     public FinanceCPayment() {
+        this.fm = (FinanceManager) Session.getCurrentUser();
         initComponents();
         jScrollPane1.setHorizontalScrollBarPolicy(
         javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);

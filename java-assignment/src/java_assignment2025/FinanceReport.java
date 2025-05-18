@@ -162,6 +162,11 @@ public class FinanceReport {
         double totalAmount = 0.0;
         
         for (int row = 0; row < table.getRowCount(); row++) {
+            Object statusObj = table.getValueAt(row, 13); // 
+            if (statusObj == null || !"paid".equalsIgnoreCase(statusObj.toString().trim())) {
+                continue; // skip non-paid rows
+            }
+            //injecting
             Map<String, Object> record = new HashMap<>();
             record.put("poid", table.getValueAt(row, 0));
             record.put("itemIds", table.getValueAt(row, 4));
@@ -177,14 +182,14 @@ public class FinanceReport {
                 try {
                     totalAmount += Double.parseDouble(amtObj.toString());
                 } catch (NumberFormatException e) {
-                    // skip or log if parsing fails
+                    
                 }
             }
 
             data.add(record);
         }
 
-        // Step 2: Create JRMapCollectionDataSource
+        //create the data source
         JRMapCollectionDataSource dataSource = new JRMapCollectionDataSource(data);
         Map<String, Object> params = new HashMap<>();
         params.put("DATA_SOURCE", dataSource);
@@ -194,15 +199,15 @@ public class FinanceReport {
         
         params.put("GrandTotal", String.format("RM %.2f", totalAmount));
 
-        // Step 3: Load compiled Jasper file
+        //load the compiled jasper file
         JasperReport report = (JasperReport) JRLoader.loadObjectFromFile(
-            "C://Users//Isaac//OneDrive - Asia Pacific University//Documents//NetBeansProjects//java-assignment//java-assignment//src//java_assignment2025//Jasper//stupidting.jasper"
+            "src/java_assignment2025/Jasper/stupidting.jasper"
         );
 
-        // Step 4: Fill report
+        //fill the report
         JasperPrint filled = JasperFillManager.fillReport(report, params, new JREmptyDataSource());
 
-        // Step 5: Export to PDF
+        //export to pdf
         String path = "Finance_Report_" + System.currentTimeMillis() + ".pdf";
 
         JRPdfExporter exporter = new JRPdfExporter();

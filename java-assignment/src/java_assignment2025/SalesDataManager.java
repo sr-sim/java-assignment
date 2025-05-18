@@ -13,8 +13,8 @@ public class SalesDataManager {
     private final List<IndividualSales>individualsaleslist;
     private final List<DailySales>dailysaleslist;
     private final TextFile textfile;
-    private final String individualsalesfilepath = "C:\\Users\\Isaac\\OneDrive - Asia Pacific University\\Documents\\NetBeansProjects\\java-assignment\\java-assignment\\src\\java_assignment2025\\sales.txt";
-    private final String dailysalesfilepath = "C:\\Users\\Isaac\\OneDrive - Asia Pacific University\\Documents\\NetBeansProjects\\java-assignment\\java-assignment\\src\\java_assignment2025\\dailysales.txt";
+    private final String individualsalesfilepath = "src/java_assignment2025/sales.txt";
+    private final String dailysalesfilepath = "src/java_assignment2025/dailysales.txt";
     
     public SalesDataManager() {
         this.individualsaleslist = new ArrayList<>();

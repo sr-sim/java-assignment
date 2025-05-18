@@ -406,7 +406,8 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
                         oldpr.getRequestdate(),
                         oldpr.getExpecteddeliverydate(),
                         PurchaseRequisition.ApproveStatus.fromString(updatedStatus),
-                        oldpr.getNote()
+                        oldpr.getNote(),
+                        oldpr.isDeleted()
                     );
                     savedChanges = true;
                 } else {
@@ -522,7 +523,7 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
             // Write to file
             String poLine = po.toString(); 
             System.out.println(poLine);
-            TextFile.appendTo("C:\\Users\\Isaac\\OneDrive - Asia Pacific University\\Documents\\NetBeansProjects\\java-assignment\\java-assignment\\src\\java_assignment2025\\PurchaseOrder.txt", poLine);
+            TextFile.appendTo("src/java_assignment2025/PurchaseOrder.txt", poLine);
             JOptionPane.showMessageDialog(null, "Purchase Order generated successfully.");
              new PMPurchaseOrder().setVisible(true);
         } else {

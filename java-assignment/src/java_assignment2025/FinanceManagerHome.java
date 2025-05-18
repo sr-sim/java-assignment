@@ -9,15 +9,15 @@ package java_assignment2025;
  * @author User
  */
 public class FinanceManagerHome extends javax.swing.JFrame {
-     private FinanceManager financeManager;
+     private FinanceManager fm;
     /**
      * Creates new form FinanceManagerHome
      */
-    public FinanceManagerHome(FinanceManager financeManager) {
-        this.financeManager = financeManager; 
+    public FinanceManagerHome() {
+        this.fm = (FinanceManager)Session.getCurrentUser(); 
         initComponents();
         
-        financeManager.managefinance();
+//        financeManager.managefinance();
     }
 
     /**
@@ -36,7 +36,7 @@ public class FinanceManagerHome extends javax.swing.JFrame {
 
         jLabel1.setText("Finance Manager Home");
 
-        jLabel2.setText("Welcome, " + financeManager.getUsername() + " (" + financeManager.getUserId() + ")");
+        jLabel2.setText("Welcome, " + fm.getUsername() + " (" + fm.getUserId() + ")");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);

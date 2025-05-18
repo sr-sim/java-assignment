@@ -7,15 +7,17 @@ public class Payment {
     private String unitPrices;
     private String quantities;
     private String amount;
+    private String paymentDate;
 
     // Constructor
-    public Payment(String paymentId, String poId, String itemIds, String unitPrices, String quantities, String amount) {
+    public Payment(String paymentId, String poId, String itemIds, String unitPrices, String quantities, String amount, String paymentDate) {
         this.paymentId = paymentId;
         this.poId = poId;
         this.itemIds = itemIds;
         this.unitPrices = unitPrices;
         this.quantities = quantities;
         this.amount = amount;
+        this.paymentDate = paymentDate;
     }
 
     public String getPaymentId() {
@@ -41,6 +43,10 @@ public class Payment {
     public String getAmount() {
         return amount;
     }
+    
+    public String getPaymentDate(){
+        return paymentDate;
+    }
 
     public void setPaymentId(String paymentId) {
         this.paymentId = paymentId;
@@ -64,5 +70,9 @@ public class Payment {
 
     public void setAmount(String amount) {
         this.amount = amount;
+    }
+    
+    public void setPaymentDate(String paymentDate){
+        this.paymentDate = paymentDate;
     }
 }

@@ -12,6 +12,8 @@ import javax.swing.*;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class FinancePayment {
     
@@ -34,8 +36,8 @@ public class FinancePayment {
     }
 
     public boolean createPaymentEntry(String poId) throws IOException {
-    File poFile = new File("C:\\Users\\Isaac\\OneDrive - Asia Pacific University\\Documents\\NetBeansProjects\\java-assignment\\java-assignment\\src\\java_assignment2025\\PurchaseOrder.txt");
-    File paymentFile = new File("C:\\Users\\Isaac\\OneDrive - Asia Pacific University\\Documents\\NetBeansProjects\\java-assignment\\java-assignment\\src\\java_assignment2025\\payment.txt");
+    File poFile = new File("src/java_assignment2025/PurchaseOrder.txt");
+    File paymentFile = new File("src/java_assignment2025/payment.txt");
 
     List<String> poLines = Files.readAllLines(poFile.toPath());
     List<String> paymentLines = paymentFile.exists() ? Files.readAllLines(paymentFile.toPath()) : new ArrayList<>();
@@ -73,12 +75,14 @@ public class FinancePayment {
                 double price = Double.parseDouble(priceArr[i]);
                 totalAmount += qty * price;
             }
+            String currentDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 
             String paymentEntry = paymentId + "," + poId + "," +
                     itemIds + "," +
                     unitPrices + "," +
                     quantities + "," +
-                    String.format("%.2f", totalAmount);
+                    String.format("%.2f", totalAmount) + "," +
+                    currentDate;
 
             Files.write(paymentFile.toPath(),
                     Collections.singletonList(paymentEntry),
@@ -93,7 +97,7 @@ public class FinancePayment {
 
     public boolean processPayment(String poId) {
         try {
-            File poFile = new File("C:\\Users\\Isaac\\OneDrive - Asia Pacific University\\Documents\\NetBeansProjects\\java-assignment\\java-assignment\\src\\java_assignment2025\\PurchaseOrder.txt");
+            File poFile = new File("src/java_assignment2025/PurchaseOrder.txt");
             List<String> poLines = Files.readAllLines(poFile.toPath());
 
             for (String line : poLines) {

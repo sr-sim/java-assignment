@@ -59,7 +59,7 @@
     <Component class="javax.swing.JLabel" name="jLabel2">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-          <Connection code="&quot;Welcome, &quot; + financeManager.getUsername() + &quot; (&quot; + financeManager.getUserId() + &quot;)&quot;" type="code"/>
+          <Connection code="&quot;Welcome, &quot; + fm.getUsername() + &quot; (&quot; + fm.getUserId() + &quot;)&quot;" type="code"/>
         </Property>
       </Properties>
     </Component>

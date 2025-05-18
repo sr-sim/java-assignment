@@ -54,10 +54,13 @@ import static java_assignment2025.FinanceReport.exportJTableToJasper;
 public class FinanceGReport extends javax.swing.JFrame {
     private PurchaseOrderManager poManager;
     private InventoryDataManager inventoryManager;
+    private FinanceManager fm;
+
     /**
      * Creates new form FinanceGReport
      */
     public FinanceGReport() {
+        this.fm = (FinanceManager) Session.getCurrentUser();
         initComponents();
         inventoryManager = new InventoryDataManager();
         poManager = new PurchaseOrderManager();
@@ -105,14 +108,14 @@ public class FinanceGReport extends javax.swing.JFrame {
     
     
 }
-    private void generateWeeklyReport(){
-        Calendar cal = Calendar.getInstance();
-        int currentWeek = cal.get(Calendar.WEEK_OF_MONTH);
-        FinanceReport report = new FinanceReport(poManager);
-        List<PurchaseOrder> filtered = report.filterByWeek(String.valueOf(currentWeek));
-        showReportPopup(filtered, "paid pos - week" + currentWeek);
-        
-    }
+//    private void generateWeeklyReport(){
+//        Calendar cal = Calendar.getInstance();
+//        int currentWeek = cal.get(Calendar.WEEK_OF_MONTH);
+//        FinanceReport report = new FinanceReport(poManager);
+//        List<PurchaseOrder> filtered = report.filterByWeek(String.valueOf(currentWeek));
+//        showReportPopup(filtered, "paid pos - week" + currentWeek);
+//        
+//    }
 
     
     private void showReportPopup(List<PurchaseOrder> poList, String title){
@@ -300,7 +303,6 @@ public class FinanceGReport extends javax.swing.JFrame {
         jLabel9 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         jTextField1 = new javax.swing.JTextField();
-        rejectBtn = new javax.swing.JButton();
         jComboBox2 = new javax.swing.JComboBox<>();
         pdf = new javax.swing.JButton();
 
@@ -448,14 +450,6 @@ public class FinanceGReport extends javax.swing.JFrame {
         }
     });
 
-    rejectBtn.setFont(new java.awt.Font("Segoe UI Black", 1, 13)); // NOI18N
-    rejectBtn.setText("Generate Weekly");
-    rejectBtn.addActionListener(new java.awt.event.ActionListener() {
-        public void actionPerformed(java.awt.event.ActionEvent evt) {
-            rejectBtnActionPerformed(evt);
-        }
-    });
-
     jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" }));
 
     pdf.setText("pdf");
@@ -486,9 +480,7 @@ public class FinanceGReport extends javax.swing.JFrame {
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                     .addComponent(pdf, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(276, 276, 276)
-                    .addComponent(rejectBtn)
-                    .addGap(121, 121, 121)
+                    .addGap(540, 540, 540)
                     .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGap(18, 18, 18)
                     .addComponent(donDeleteMe))
@@ -515,7 +507,6 @@ public class FinanceGReport extends javax.swing.JFrame {
             .addGap(30, 30, 30)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                 .addComponent(donDeleteMe)
-                .addComponent(rejectBtn)
                 .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addComponent(pdf))
             .addGap(103, 103, 103))
@@ -565,10 +556,6 @@ public class FinanceGReport extends javax.swing.JFrame {
     private void jTextField1KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField1KeyReleased
 
     }//GEN-LAST:event_jTextField1KeyReleased
-
-    private void rejectBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rejectBtnActionPerformed
-        generateWeeklyReport();
-    }//GEN-LAST:event_rejectBtnActionPerformed
 
     private void pdfActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pdfActionPerformed
         exportJTableToJasper(jTable1);
@@ -632,6 +619,5 @@ public class FinanceGReport extends javax.swing.JFrame {
     private javax.swing.JTable jTable1;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JButton pdf;
-    private javax.swing.JButton rejectBtn;
     // End of variables declaration//GEN-END:variables
 }

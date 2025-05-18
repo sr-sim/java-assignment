@@ -21,7 +21,8 @@ import java_assignment2025.TextFile;
 public class SupplierDataManager {
     private final List<Supplier>supplierlist;
     private final TextFile textfile;
-    private final String supplierfilepath = "C:\\Users\\Isaac\\OneDrive - Asia Pacific University\\Documents\\NetBeansProjects\\java-assignment\\java-assignment\\src\\java_assignment2025\\supplier.txt";
+    private final String supplierfilepath = "src/java_assignment2025/supplier.txt";
+    private final String inventoryfilepath = "src/java_assignment2025/inventory.txt";
     
     public SupplierDataManager() {
         this.supplierlist = new ArrayList<>();
@@ -76,17 +77,49 @@ public class SupplierDataManager {
             System.out.println("supplier exist already ya");
         }
     }
-    public void marksupplierasDeleted(String supplierid){
-        Supplier supplier = findsupplierid(supplierid);
-            if (supplier != null){
+    public void marksupplierasDeleted(String supplierid,InventoryDataManager inventorydatamanager) {
+        InventoryDataManager inventoryManager = new InventoryDataManager();
+        List<Item> items = inventoryManager.getinventorylist();
+
+        List<String> blockingItems = new ArrayList<>();
+        for (Item item : items) {
+            if (!item.isDeleted() && item.getSupplierid().equals(supplierid)) {
+                String status = inventoryManager.getItemDeletionStatus(item.getItemid());
+                if (!"can_delete".equals(status)) {
+                    blockingItems.add(item.getItemid() + " - " + status.replace('_', ' '));
+                }
+            }
+        }
+
+        if (!blockingItems.isEmpty()) {
+            for (String bi : blockingItems) {
+                System.out.println("Item ID: " + bi);
+            }
+            return; 
+        }
+            Supplier supplier = findsupplierid(supplierid);
+            if (supplier != null) {
                 supplier.setDeleted(true);
                 textfile.rewriteFile(supplierfilepath, supplierlist);
-                System.out.println("delete successful");
-                return;
-            }else{
-                System.out.println("supplier not found");
-            } 
-    }
+                System.out.println("Supplier deleted successfully.");
+                boolean anyChanges = false;
+                for (Item item : items) {
+                    if (!item.isDeleted() && item.getSupplierid().equals(supplierid)) {
+                        item.setDeleted(true);
+                        anyChanges = true;
+                    }
+                }
+
+                if (anyChanges) {
+                    textfile.rewriteFile(inventoryfilepath, items); 
+                    inventorydatamanager.loadAllinventoryfromtxtfile();
+                    System.out.println("Related items also marked as deleted.");
+                }
+            } else {
+                System.out.println("Supplier not found.");
+            }
+        }
+
     public void marknewsupplierinitemasRead(String supplierid, boolean status){
         Supplier supplier = findsupplierid(supplierid);
             if (supplier != null){
@@ -132,20 +165,5 @@ public class SupplierDataManager {
         }
         return null;
     }
-
-    public static boolean phoneNumber(String phoneNumber){
-        String regex = "^(01\\d-\\d{3}-\\d{4})|(01\\d-\\d{4}-\\d{4})$";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(phoneNumber);
-        return matcher.matches();
-    }
-
-    public static boolean email(String email){
-        String regex = "^[a-zA-Z0-9]+@(gmail|yahoo|hotmail).com$";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(email);
-        return matcher.matches();
-    }
-
 }
 

@@ -30,7 +30,8 @@ public class PaymentDataManager {
                         parts[2], // itemIds
                         parts[3], // unitPrices
                         parts[4], // quantities
-                        parts[5]  // amount
+                        parts[5],  // amount
+                        parts[6]    //paymentdate
                     );
                     payments.add(payment);
                 }
@@ -43,7 +44,7 @@ public class PaymentDataManager {
     }
     
     public DefaultTableModel getPaymentTableModel() {
-        String[] columns = {"Payment ID", "PO ID", "Item IDs", "Unit Prices", "Quantities", "Amount"};
+        String[] columns = {"Payment ID", "PO ID", "Item IDs", "Unit Prices", "Quantities", "Amount","Payment Date"};
         DefaultTableModel model = new DefaultTableModel(columns, 0);
 
         for (Payment p : loadPayments()) {
@@ -53,7 +54,8 @@ public class PaymentDataManager {
                 p.getItemIds().replace("|", " | "),
                 p.getUnitPrices().replace("|", " | "),
                 p.getQuantities().replace("|", " | "),
-                p.getAmount()
+                p.getAmount(),
+                p.getPaymentDate()
             });
 
         }
