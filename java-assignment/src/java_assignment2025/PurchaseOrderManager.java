@@ -15,11 +15,12 @@ import java.util.List;
 public class PurchaseOrderManager {
     private final List<PurchaseOrder>polist;
     private final TextFile textfile;
-    private final String pofilepath = "src/java_assignment2025/PurchaseOrder.txt";
+    private final String pofilepath = "C:\\JPL9\\java-assignment\\java-assignment\\src\\java_assignment2025\\PurchaseOrder.txt";
     
     public PurchaseOrderManager() {
         this.polist = new ArrayList<>();
         this.textfile = new TextFile();
+        this.inventorydatamanager = new InventoryDataManager();
         loadAllpofromtxtfile();
     }
     
@@ -142,5 +143,4 @@ public class PurchaseOrderManager {
         java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd");
         return today.format(formatter);
     }
-
 }
