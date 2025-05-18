@@ -158,6 +158,9 @@ public class FinanceReport {
 
         // Step 1: Extract JTable data into a list of maps
         List<Map<String, ?>> data = new ArrayList<>();
+        
+        double totalAmount = 0.0;
+        
         for (int row = 0; row < table.getRowCount(); row++) {
             Map<String, Object> record = new HashMap<>();
             record.put("poid", table.getValueAt(row, 0));
@@ -166,6 +169,18 @@ public class FinanceReport {
             record.put("quantities", table.getValueAt(row, 7));
             record.put("amount", table.getValueAt(row, 8));
             record.put("orderDate", table.getValueAt(row, 10));
+            
+            Object amtObj = table.getValueAt(row, 8);
+            if (amtObj instanceof Number) {
+                totalAmount += ((Number) amtObj).doubleValue();
+            } else {
+                try {
+                    totalAmount += Double.parseDouble(amtObj.toString());
+                } catch (NumberFormatException e) {
+                    // skip or log if parsing fails
+                }
+            }
+
             data.add(record);
         }
 
@@ -173,6 +188,11 @@ public class FinanceReport {
         JRMapCollectionDataSource dataSource = new JRMapCollectionDataSource(data);
         Map<String, Object> params = new HashMap<>();
         params.put("DATA_SOURCE", dataSource);
+        
+        String today = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+        params.put("DateCreated", today); // make sure it's a PARAMETER in the JRXML
+        
+        params.put("GrandTotal", String.format("RM %.2f", totalAmount));
 
         // Step 3: Load compiled Jasper file
         JasperReport report = (JasperReport) JRLoader.loadObjectFromFile(
