@@ -135,6 +135,12 @@ public class InventoryDataManager {
         return null;
     }
     
+    public String findItemNameById(String itemid) {
+    Item item = finditemid(itemid);
+    return (item != null) ? item.getItemname() : "Unknown";
+}
+
+    
 public String getItemDeletionStatus(String itemId) {
     PurchaseRequisitionManager prManager = new PurchaseRequisitionManager();
     PurchaseOrderManager poManager = new PurchaseOrderManager();

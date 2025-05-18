@@ -23,7 +23,8 @@ public class PurchaseOrderManager {
         loadAllpofromtxtfile();
     }
     
-     public void loadAllpofromtxtfile() {
+    public void loadAllpofromtxtfile() {
+        polist.clear();
          
         List<String> lines = textfile.readFile(pofilepath);
         for (String line : lines) {
@@ -122,9 +123,24 @@ public class PurchaseOrderManager {
         }
         return null;
         }
+    
+    public void updatePOStatus(String orderId, String newStatus) {
+    PurchaseOrder po = findpoid(orderId);
+    if (po != null) {
+        String oldLine = po.toString();
+        po.setOrderStatus(newStatus);
+        String newLine = po.toString();
+        textfile.replaceLineByPOId(pofilepath, po.getOrderId(), newLine);
+        System.out.println("Status updated to " + newStatus + " for PO: " + orderId);
+    } else {
+        System.out.println("PO not found for ID: " + orderId);
+    }
+}
+
      public static String getCurrentDate() {
         java.time.LocalDate today = java.time.LocalDate.now();
         java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd");
         return today.format(formatter);
     }
+
 }
