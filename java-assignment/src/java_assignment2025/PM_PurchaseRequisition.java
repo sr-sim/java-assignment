@@ -471,14 +471,13 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
         List<String> validQuantities = new ArrayList<>();
         List<String> validUnitPrices = new ArrayList<>();
         List<String> supplierIds = new ArrayList<>();
-
-        List<String> existingPOs = TextFile.readFile("src/java_assignment2025/PurchaseOrder.txt");
+        
+        List<String> existingPOs = TextFile.readFile("C:\\Users\\Isaac\\OneDrive - Asia Pacific University\\Documents\\NetBeansProjects\\java-assignment\\java-assignment\\src\\java_assignment2025\\PurchaseOrder.txt");
 
         for (int i = 0; i < itemIdList.length; i++) {
             String itemId = itemIdList[i].trim();
             String unitprice= unitPriceList[i].trim();
             String quantity = quantityList[i].trim();
-            
 
             // Check for duplicate PO (based on requestId and itemId)
             boolean isDuplicate = existingPOs.stream().anyMatch(line -> {
