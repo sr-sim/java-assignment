@@ -15,13 +15,12 @@ import java.util.List;
 public class PurchaseOrderManager {
     private final List<PurchaseOrder>polist;
     private final TextFile textfile;
-    private final String pofilepath = "C:\\JPL9\\java-assignment\\java-assignment\\src\\java_assignment2025\\PurchaseOrder.txt";
+    private final String pofilepath = "src/java_assignment2025/PurchaseOrder.txt";
     
     public PurchaseOrderManager() {
         this.polist = new ArrayList<>();
         this.textfile = new TextFile();
-        this.inventorydatamanager = new InventoryDataManager();
-        loadAllpofromtxtfile();
+                loadAllpofromtxtfile();
     }
     
     public void loadAllpofromtxtfile() {
@@ -74,35 +73,7 @@ public class PurchaseOrderManager {
     return "Unknown Supplier";
     }
 
-//    public void deletepo(String orderId) {
-//        PurchaseOrder po = findpoid(orderId);
-//        if (po != null) {
-//            String poString = po.toString().trim();
-//            List<String> allLines = textfile.readFile(pofilepath);
-//            String lineToDelete = null;
-//
-//            for (String line : allLines) {
-//                if (line.trim().equals(poString)) {
-//                    lineToDelete = line; // Use exact line from file
-//                    break;
-//                }
-//            }
-//
-//            if (lineToDelete != null) {
-//                System.out.println("Deleting: [" + lineToDelete + "]");
-//                System.out.println("po:" +po);
-//                polist.remove(po);
-//                
-//                textfile.deleteLine(pofilepath, lineToDelete);
-//                System.out.println("Delete successful");
-//            } else {
-//                System.out.println("Line not found in file.");
-//            }
-//
-//        } else {
-//            System.out.println("Purchase order not found");
-//        }
-//}
+
     public void deletepo(String poid){
         PurchaseOrder po = findpoid(poid);
             if (po != null){
