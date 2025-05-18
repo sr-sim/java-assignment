@@ -472,7 +472,7 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
         List<String> validUnitPrices = new ArrayList<>();
         List<String> supplierIds = new ArrayList<>();
         
-        List<String> existingPOs = TextFile.readFile("C:\\Users\\Isaac\\OneDrive - Asia Pacific University\\Documents\\NetBeansProjects\\java-assignment\\java-assignment\\src\\java_assignment2025\\PurchaseOrder.txt");
+        List<String> existingPOs = TextFile.readFile("src/java_assignment2025/PurchaseOrder.txt");
 
         for (int i = 0; i < itemIdList.length; i++) {
             String itemId = itemIdList[i].trim();
