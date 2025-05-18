@@ -18,6 +18,7 @@ public class InventoryDataManager {
     private final String inventoryfilepath = "src/java_assignment2025/inventory.txt";
     
     
+    
     public InventoryDataManager() {
         this.itemlist = new ArrayList<>();
         this.itemlistbysupplier = new ArrayList<>();
