@@ -406,7 +406,8 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
                         oldpr.getRequestdate(),
                         oldpr.getExpecteddeliverydate(),
                         PurchaseRequisition.ApproveStatus.fromString(updatedStatus),
-                        oldpr.getNote()
+                        oldpr.getNote(),
+                        oldpr.isDeleted()
                     );
                     savedChanges = true;
                 } else {
@@ -470,14 +471,13 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
         List<String> validQuantities = new ArrayList<>();
         List<String> validUnitPrices = new ArrayList<>();
         List<String> supplierIds = new ArrayList<>();
-
-        List<String> existingPOs = TextFile.readFile("C:\\JPL9\\java-assignment\\java-assignment\\src\\java_assignment2025\\PurchaseOrder.txt");
+        
+        List<String> existingPOs = TextFile.readFile("src/java_assignment2025/PurchaseOrder.txt");
 
         for (int i = 0; i < itemIdList.length; i++) {
             String itemId = itemIdList[i].trim();
             String unitprice= unitPriceList[i].trim();
             String quantity = quantityList[i].trim();
-            
 
             // Check for duplicate PO (based on requestId and itemId)
             boolean isDuplicate = existingPOs.stream().anyMatch(line -> {
@@ -523,7 +523,7 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
             // Write to file
             String poLine = po.toString(); 
             System.out.println(poLine);
-            TextFile.appendTo("C:\\JPL9\\java-assignment\\java-assignment\\src\\java_assignment2025\\PurchaseOrder.txt", poLine);
+            TextFile.appendTo("src/java_assignment2025/PurchaseOrder.txt", poLine);
             JOptionPane.showMessageDialog(null, "Purchase Order generated successfully.");
              new PMPurchaseOrder().setVisible(true);
         } else {

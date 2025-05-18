@@ -117,7 +117,8 @@ public class PurchaseOrder {
     
     
     public static String getNextOrderId() {
-        String filePath = "C:\\JPL9\\java-assignment\\java-assignment\\src\\java_assignment2025\\PurchaseOrder.txt";
+
+        String filePath = "src/java_assignment2025/PurchaseOrder.txt";
         List<String> lines = TextFile.readFile(filePath);
         int maxId = 0;
 
