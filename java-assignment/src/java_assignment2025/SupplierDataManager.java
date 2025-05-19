@@ -18,13 +18,14 @@ import java_assignment2025.TextFile;
  *
  * @author User
  */
-public class SupplierDataManager {
+public class SupplierDataManager extends DataManager{
     private final List<Supplier>supplierlist;
     private final TextFile textfile;
     private final String supplierfilepath = "src/java_assignment2025/supplier.txt";
     private final String inventoryfilepath = "src/java_assignment2025/inventory.txt";
     
     public SupplierDataManager() {
+        super();
         this.supplierlist = new ArrayList<>();
         this.textfile = new TextFile();
         loadAllsupplierfromtxtfile();

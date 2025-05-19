@@ -34,7 +34,11 @@ public enum Role {
     }
     
     //use this method to convert string to enum value
-    public static Role convertFromData(String data) {
+    public static Role convertFromAbbr(String data) {
         return EnumUtils.convertFromLog(Role.class, Role::getRoleAbbr, data, "user role");
+    }
+    
+    public static Role convertFromFullName(String data) {
+        return EnumUtils.convertFromLog(Role.class, Role::getRoleFullName, data, "user role");
     }
 }

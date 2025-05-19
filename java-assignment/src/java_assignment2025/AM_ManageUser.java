@@ -4,9 +4,6 @@
  */
 package java_assignment2025;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -14,58 +11,51 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author User
  */
-public class AM_ManageUser extends javax.swing.JFrame {
-    private SalesManager salesmanager;
-    private SalesDataManager salesdatamanager;
-    private SupplierDataManager supplierdatamanager = new SupplierDataManager();
-    private InventoryDataManager inventorydatamanager;
-    private PurchaseRequisitionManager prmanager = new PurchaseRequisitionManager();
+public class AM_ManageUser extends javax.swing.JFrame implements CanManageUser{
+    private Administrator admin;
+    private UserDataManager userDataManager;
     
-    
-    public AM_ManageUser(SalesManager salesmanager,SalesDataManager salesdatamanager,InventoryDataManager inventorydatamanager) {
+    public AM_ManageUser() {
         initComponents();
-        this.salesmanager = salesmanager;
-        this.salesdatamanager = salesdatamanager;
-        this.inventorydatamanager = inventorydatamanager;
-        String generatedID = salesdatamanager.generatesalesId();
-        jTextField1.setText(generatedID);
-        jTextField1.setEditable(false);
-        jTextField1.setFocusable(false);
-        jDateChooser1.setDate(new Date());
-        fillTable1FromTxtFile();
+        setLocationRelativeTo(null);
+        this.admin = (Administrator)Session.getCurrentUser();
+        this.userDataManager = getUserDataManager();
+        loadTableData();
         fillComboBoxFromitemList();
     }
-    public void fillTable1FromTxtFile() {
+    
+    private void loadTableData() {
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
         model.setRowCount(0); 
-        for (IndividualSales sales : salesdatamanager.getindividualsaleslist()) {
-            String salesid = sales.getSalesid();
-            String itemid = sales.getItemid();
-            String qty = sales.getQuantity();
-            String amount = sales.getAmount();
-            String dateofsales = sales.getDateofsales();
-
-            Item item = inventorydatamanager.finditemid(itemid);
-            String itemname = (item != null) ? item.getItemname() : "Unknown Item";
-            String retailprice = (item != null) ? item.getRetailprice() : "Unknown retail price";
-
+        for (User user : userDataManager.getAllActiveUsers()) {
+            String userId = user.getUserId();
+            String username = user.getUsername();
+            String password = user.getPassword();
+            String fullname = user.getFullname();
+            String email = user.getEmail();
+            String contact = user.getContact();
+            String role = user.getRole().getRoleFullName();
             model.addRow(new Object[]{
-                salesid,itemid,itemname,qty,retailprice,amount,dateofsales
+                userId,username,password,fullname,email,contact,role
         });
         }
     }
-        private void fillComboBoxFromitemList() {
-    for (Item item : inventorydatamanager.getinventorylist()) {
-        String comboBoxItem = item.getItemid() + " - " + item.getItemname();
-        jComboBox1.addItem(comboBoxItem);
+
+    private void fillComboBoxFromitemList() {
+        for (Role role : Role.values()) {
+            jComboBox1.addItem(role.getRoleFullName());
         }
     }
     private void clearTextField(){
-        String generatedID = salesdatamanager.generatesalesId();
-        jTextField1.setText(generatedID);
-        jTextField2.setText("");
-        jDateChooser1.setDate(new Date());
+        jTextField1.setText("");
+        jTextField3.setText("");
+        jTextField4.setText("");
+        jTextField5.setText("");
+        jTextField6.setText("");
         jTable1.clearSelection();
+        jComboBox1.setEnabled(true);
+        jComboBox1.setSelectedIndex(0);
+        jButton11.setEnabled(true);
     }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -95,22 +85,25 @@ public class AM_ManageUser extends javax.swing.JFrame {
         jButton10 = new javax.swing.JButton();
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
+        jButton16 = new javax.swing.JButton();
         jTextField1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
         jButton11 = new javax.swing.JButton();
         jButton12 = new javax.swing.JButton();
         jButton13 = new javax.swing.JButton();
         jButton14 = new javax.swing.JButton();
-        jLabel12 = new javax.swing.JLabel();
         jLabel13 = new javax.swing.JLabel();
-        jButton15 = new javax.swing.JButton();
-        jDateChooser1 = new com.toedter.calendar.JDateChooser();
         jComboBox1 = new javax.swing.JComboBox<>();
+        jTextField3 = new javax.swing.JTextField();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        jTextField4 = new javax.swing.JTextField();
+        jTextField5 = new javax.swing.JTextField();
+        jLabel12 = new javax.swing.JLabel();
+        jTextField6 = new javax.swing.JTextField();
+        jLabel14 = new javax.swing.JLabel();
 
         jPanel2.setBackground(new java.awt.Color(238, 238, 253));
 
@@ -192,18 +185,24 @@ public class AM_ManageUser extends javax.swing.JFrame {
         );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setMaximumSize(new java.awt.Dimension(1283, 720));
+        setPreferredSize(new java.awt.Dimension(1283, 720));
+        getContentPane().setLayout(null);
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel1.setMaximumSize(new java.awt.Dimension(1283, 720));
+        jPanel1.setMinimumSize(new java.awt.Dimension(1283, 720));
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null, null, null},
                 {null, null, null, null, null, null, null},
                 {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
                 {null, null, null, null, null, null, null}
             },
             new String [] {
-                "Sales Id", "Item Id", "Item Name", "Quantity", "Retail price", "Total amount", "Date"
+                "UserID", "Username", "Password", "Full Name", "Email", "Contact", "Role"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -267,6 +266,13 @@ public class AM_ManageUser extends javax.swing.JFrame {
         jLabel9.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
         jLabel9.setText("(OWSB)");
 
+        jButton16.setText("User Management");
+        jButton16.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton16ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
@@ -278,18 +284,17 @@ public class AM_ManageUser extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(20, 20, 20)
+                        .addGap(79, 79, 79)
+                        .addComponent(jLabel9))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(24, 24, 24)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
-                                .addGap(4, 4, 4)
-                                .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                             .addComponent(jButton7, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jButton8, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 167, Short.MAX_VALUE)
                             .addComponent(jButton9, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton10, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(79, 79, 79)
-                        .addComponent(jLabel9)))
+                            .addComponent(jButton10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jButton16, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
@@ -301,7 +306,9 @@ public class AM_ManageUser extends javax.swing.JFrame {
                 .addComponent(jLabel9)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel8)
-                .addGap(52, 52, 52)
+                .addGap(44, 44, 44)
+                .addComponent(jButton16)
+                .addGap(18, 18, 18)
                 .addComponent(jButton6)
                 .addGap(18, 18, 18)
                 .addComponent(jButton7)
@@ -321,27 +328,14 @@ public class AM_ManageUser extends javax.swing.JFrame {
             }
         });
 
-        jTextField2.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        jTextField2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField2ActionPerformed(evt);
-            }
-        });
-
         jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel3.setText("Sales ID :");
+        jLabel3.setText("Username:");
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel4.setText("Item :");
-
-        jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel5.setText("Quantity Sold:");
-
-        jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel7.setText("Date of Sales :");
+        jLabel4.setText("Role:");
 
         jLabel11.setFont(new java.awt.Font("Algerian", 0, 24)); // NOI18N
-        jLabel11.setText("Daily Sales Management");
+        jLabel11.setText("User Account Management");
 
         jButton11.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jButton11.setText("Add");
@@ -377,18 +371,7 @@ public class AM_ManageUser extends javax.swing.JFrame {
             }
         });
 
-        jLabel12.setFont(new java.awt.Font("Times New Roman", 0, 18)); // NOI18N
-        jLabel12.setText("(Individual Sales Record)");
-
-        jLabel13.setText("Daily Sales Table");
-
-        jButton15.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
-        jButton15.setText("View Daily Summary");
-        jButton15.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton15ActionPerformed(evt);
-            }
-        });
+        jLabel13.setText("User Accounts");
 
         jComboBox1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] {}));
@@ -398,6 +381,46 @@ public class AM_ManageUser extends javax.swing.JFrame {
             }
         });
 
+        jTextField3.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jTextField3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField3ActionPerformed(evt);
+            }
+        });
+
+        jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel6.setText("Password:");
+
+        jLabel10.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel10.setText("Full Name:");
+
+        jTextField4.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jTextField4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField4ActionPerformed(evt);
+            }
+        });
+
+        jTextField5.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jTextField5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField5ActionPerformed(evt);
+            }
+        });
+
+        jLabel12.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel12.setText("Email:");
+
+        jTextField6.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jTextField6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField6ActionPerformed(evt);
+            }
+        });
+
+        jLabel14.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel14.setText("Contact:");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -405,106 +428,99 @@ public class AM_ManageUser extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel13)
+                        .addGap(267, 267, 267))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(378, 378, 378)
-                                .addComponent(jLabel12))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(318, 318, 318)
-                                .addComponent(jLabel11)))
-                        .addContainerGap())
+                        .addGap(291, 291, 291)
+                        .addComponent(jLabel11)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGap(57, 57, 57)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel3)
-                                    .addComponent(jLabel4)
-                                    .addComponent(jLabel5)
-                                    .addComponent(jLabel7)))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .addGap(19, 19, 19)
-                                .addComponent(jButton11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(jLabel4)
+                                        .addGap(76, 76, 76)
+                                        .addComponent(jComboBox1, 0, 174, Short.MAX_VALUE))
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(jLabel3)
+                                        .addGap(40, 40, 40)
+                                        .addComponent(jTextField1))
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jLabel6)
+                                            .addComponent(jLabel10)
+                                            .addComponent(jLabel12)
+                                            .addComponent(jLabel14))
+                                        .addGap(41, 41, 41)
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jTextField5)
+                                            .addComponent(jTextField4)
+                                            .addComponent(jTextField3)
+                                            .addComponent(jTextField6)))))
                             .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(36, 36, 36)
+                                .addComponent(jButton11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
                                 .addComponent(jButton12, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
                                 .addComponent(jButton13, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
-                                .addComponent(jButton14))
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(jComboBox1, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jDateChooser1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE)
-                                .addComponent(jTextField2, javax.swing.GroupLayout.Alignment.LEADING))
-                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel13)
-                                .addGap(278, 278, 278))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jButton15)
-                                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 588, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(25, 25, 25))))))
+                                .addComponent(jButton14)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 38, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 588, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(25, 25, 25))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(51, 51, 51)
+                .addGap(49, 49, 49)
                 .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(86, 86, 86)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel12)
-                        .addGap(67, 67, 67)
-                        .addComponent(jLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel4)
-                        .addGap(6, 6, 6))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel6))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel10))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel12))
+                .addGap(7, 7, 7)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel14))
                 .addGap(10, 10, 10)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel7)
-                        .addGap(99, 99, 99)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton12)
-                            .addComponent(jButton13)
-                            .addComponent(jButton14)))
-                    .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel4)
+                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(67, 67, 67)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton12)
+                    .addComponent(jButton13)
+                    .addComponent(jButton14))
                 .addGap(0, 0, Short.MAX_VALUE))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(109, 109, 109)
                 .addComponent(jLabel13)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 509, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton15)
-                .addContainerGap(44, Short.MAX_VALUE))
+                .addContainerGap(80, Short.MAX_VALUE))
         );
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
+        getContentPane().add(jPanel1);
+        jPanel1.setBounds(0, 0, 1271, 720);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -534,115 +550,112 @@ public class AM_ManageUser extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField1ActionPerformed
 
     private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
-//
-//        String salesid = jTextField1.getText();
-//        String qtystring = jTextField2.getText();
-//        String itemid = jComboBox1.getSelectedItem().toString().split("-")[0].trim();
-//        Date dateofsales = jDateChooser1.getDate();
-//        
-//        
-//        if (salesid.isEmpty()|| qtystring.isEmpty() || itemid.isEmpty()) {
-//            JOptionPane.showMessageDialog(this, "There is an unfilled field." , "Input Error", JOptionPane.ERROR_MESSAGE);
-//            return;
-//        }
-//        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-//        String date = df.format(dateofsales);
-//        try {
-//            int qty=Integer.parseInt(qtystring);
-//            if(qty<=0) throw new NumberFormatException();
-//            Item item = inventorydatamanager.finditemid(itemid);
-//            if (item==null){
-//                JOptionPane.showMessageDialog(null,"Item not found", "Eror",JOptionPane.ERROR_MESSAGE);
-//                return;
-//            }
-//            double retailprice = Double.parseDouble(item.getRetailprice());
-//            double amount = qty*retailprice;
-//            
-//            IndividualSales sales = new IndividualSales(salesid, itemid, qtystring, String.valueOf(amount), date);
-//            salesdatamanager.addIndividualSales(sales);
-//   
-//            JOptionPane.showMessageDialog(null, "Success","Information", JOptionPane.INFORMATION_MESSAGE);
-//            fillTable1FromTxtFile();
-//            clearTextField();
-//            }catch (Exception e){
-//                JOptionPane.showMessageDialog(null, "Error");
-//                 e.printStackTrace(); 
-//        }
+
+        String username = jTextField1.getText().trim();
+        String password = jTextField3.getText().trim();
+        String fullname = jTextField4.getText().trim();
+        String email = jTextField5.getText().trim();
+        String contact = jTextField6.getText().trim();
+        String role = jComboBox1.getSelectedItem().toString().trim();
+        
+        String errorMsg = userDataManager.validateUserDataAdd (username, password, fullname, email, contact, role);
+                
+        if (errorMsg.isEmpty()){
+            JOptionPane.showMessageDialog(
+                rootPane,
+                "User account successfully created!",
+                "User Account Creation Successful",
+                JOptionPane.INFORMATION_MESSAGE
+            );
+            userDataManager.addUser(username, password, fullname, email, contact, Role.convertFromFullName(role));
+            loadTableData();
+            clearTextField();
+        } else {
+            JOptionPane.showMessageDialog(
+                rootPane,
+                "Error(s):\n" + errorMsg,
+                "User Account Update Failed",
+                JOptionPane.INFORMATION_MESSAGE
+            );
+        }
     }//GEN-LAST:event_jButton11ActionPerformed
 
     private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton12ActionPerformed
-//        int selectedRow = jTable1.getSelectedRow();
-//
-//        if(selectedRow != -1){
-//            String salesid = jTextField1.getText();
-//            String itemid = jComboBox1.getSelectedItem().toString().split("-")[0].trim();
-//            String qtystr = jTextField2.getText();
-//            Date date = jDateChooser1.getDate();
-//
-//            if (salesid.isEmpty()|| itemid.isEmpty() || qtystr.isEmpty() || date==null) {
-//                JOptionPane.showMessageDialog(this, "There is an unfilled field." , "Input Error", JOptionPane.ERROR_MESSAGE);
-//                return;
-//            }
-//            IndividualSales oldsales = salesdatamanager.findsalesid(salesid);
-//            if (oldsales == null){
-//                JOptionPane.showMessageDialog(this, "old sales not found" , "Error",JOptionPane.ERROR_MESSAGE);
-//                return;
-//            }
-//            int qty;
-//            double amount;
-//            try{
-//                qty=Integer.parseInt(qtystr);
-//                if(qty<=0) throw new NumberFormatException();
-//                Item item = inventorydatamanager.finditemid(itemid);
-//                if (item==null){
-//                    JOptionPane.showMessageDialog(null,"Item not found", "Eror",JOptionPane.ERROR_MESSAGE);
-//                    return;
-//                }
-//                double retailprice = Double.parseDouble(item.getRetailprice());
-//                amount = qty*retailprice;
-//            }catch(NumberFormatException e){
-//                JOptionPane.showMessageDialog(null, "Invalid quantity", "error", JOptionPane.ERROR_MESSAGE);
-//                return;
-//            }
-//            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-//            String dateformated = df.format(date);
-//            salesdatamanager.updateindividualsales(salesid,itemid,String.valueOf(qty),String.valueOf(amount), dateformated);
-//            fillTable1FromTxtFile();
-//            clearTextField();
-//            JOptionPane.showMessageDialog(this, "Update Successfully!");
-//            clearTextField();
-//        }else{
-//            JOptionPane.showMessageDialog(this, "Please select single row for update");
-//        }
+        int selectedRow = jTable1.getSelectedRow();
+        
+        if(selectedRow != -1){
+            String username = jTextField1.getText().trim();
+            String password = jTextField3.getText().trim();
+            String fullname = jTextField4.getText().trim();
+            String email = jTextField5.getText().trim();
+            String contact = jTextField6.getText().trim();
+            String userId = jTable1.getValueAt(selectedRow, 0).toString().trim();
+            
+            User userToUpdate = userDataManager.findUserByID(userId);
+            if (userToUpdate.getUsername().equals(username)
+                    && userToUpdate.getPassword().equals(password)
+                    && userToUpdate.getFullname().equals(fullname)
+                    && userToUpdate.getEmail().equals(email)
+                    && userToUpdate.getContact().equals(contact)){
+                JOptionPane.showMessageDialog(
+                    rootPane,
+                    "There are no changes made!",
+                    "User Account Update Error",
+                    JOptionPane.INFORMATION_MESSAGE
+                );
+            } else {
+                String errorMsg = userDataManager.validateUserDataEdit(userToUpdate, username, password, fullname, email, contact);
+
+                if (errorMsg.isEmpty()){
+                    JOptionPane.showMessageDialog(
+                        rootPane,
+                        "User account successfully edited!",
+                        "User Account Update Successful",
+                        JOptionPane.INFORMATION_MESSAGE
+                    );
+                    userDataManager.editUser(userId, username, password, fullname, email, contact);
+                    loadTableData();
+                    clearTextField();
+                    jComboBox1.setEnabled(true);
+                    jButton11.setEnabled(true);
+                } else {
+                    JOptionPane.showMessageDialog(
+                        rootPane,
+                        "Error(s):\n" + errorMsg,
+                        "User Account Update Failed",
+                        JOptionPane.INFORMATION_MESSAGE
+                    );
+                }
+            }
+        }else{
+            JOptionPane.showMessageDialog(this, "Please select single row for update");
+        }
              
     }//GEN-LAST:event_jButton12ActionPerformed
 
     private void jButton13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton13ActionPerformed
         // TODO add your handling code here:
-        int selectedrow = jTable1.getSelectedRow();
-        if (selectedrow != -1){
-            String itemid = jTable1.getValueAt(selectedrow, 0).toString();
-            int YesOrNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this item?" + itemid , "Confirm Delete", JOptionPane.YES_NO_OPTION);
-            
-            if (YesOrNo == JOptionPane.YES_OPTION){
-                salesdatamanager.deleteindividualsales(itemid);
-                fillTable1FromTxtFile();
-                clearTextField();
-                JOptionPane.showMessageDialog(null, "This sales deleted successfully");
-            }
+        int selectedRow = jTable1.getSelectedRow();
+        if(selectedRow != -1){
+            String userId = jTable1.getValueAt(selectedRow, 0).toString().trim();
+            User userToUpdate = userDataManager.findUserByID(userId);
+            userDataManager.deleteUser(userToUpdate);
+            JOptionPane.showMessageDialog(
+                        rootPane,
+                        "User account successfully deleted!",
+                        "User Account Deletion Successful",
+                        JOptionPane.INFORMATION_MESSAGE
+                    );
+            clearTextField();
+            loadTableData();
         }else{
                 JOptionPane.showMessageDialog(null, "Please select a sales from the table");
-            }  
+            }
     }//GEN-LAST:event_jButton13ActionPerformed
 
     private void jButton14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton14ActionPerformed
         clearTextField();
     }//GEN-LAST:event_jButton14ActionPerformed
-
-    private void jButton15ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton15ActionPerformed
-        new SM_DailySummary(salesdatamanager,inventorydatamanager).setVisible(true);
-        this.dispose();     
-    }//GEN-LAST:event_jButton15ActionPerformed
 
     private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
 //        new SM_PurchaseOrder(salesmanager).setVisible(true);
@@ -650,56 +663,52 @@ public class AM_ManageUser extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton10ActionPerformed
 
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
-        new SM_PurchaseRequisition(prmanager, inventorydatamanager).setVisible(true);
+//        new SM_PurchaseRequisition(salesmanager, prmanager, inventorydatamanager).setVisible(true);
         this.dispose();
     }//GEN-LAST:event_jButton9ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-        new AM_ManageUser(salesmanager, salesdatamanager, inventorydatamanager).setVisible(true);
+//        new AM_ManageUser(salesmanager, salesdatamanager, inventorydatamanager).setVisible(true);
         this.dispose();
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-        new SM_SupplierEntry(supplierdatamanager).setVisible(true);
+//        new SM_SupplierEntry(salesmanager,supplierdatamanager).setVisible(true);
         this.dispose();  
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        new SM_ItemEntry(inventorydatamanager,supplierdatamanager).setVisible(true);
+//        new SM_ItemEntry(salesmanager,inventorydatamanager,supplierdatamanager).setVisible(true);
         this.dispose();
     }//GEN-LAST:event_jButton6ActionPerformed
-
-    private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField2ActionPerformed
 
     private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
         int selectedRow = jTable1.getSelectedRow();
 
         if (selectedRow >= 0 && selectedRow < jTable1.getRowCount()) {
-            String salesid = jTable1.getValueAt(selectedRow, 0).toString();
-            String itemId = jTable1.getValueAt(selectedRow, 1).toString();
-            String itemname = jTable1.getValueAt(selectedRow, 2).toString();
-            String qty = jTable1.getValueAt(selectedRow, 3).toString();
-            String date = jTable1.getValueAt(selectedRow, 6).toString();
+            String username = jTable1.getValueAt(selectedRow, 1).toString();
+            String password = jTable1.getValueAt(selectedRow, 2).toString();
+            String fullname = jTable1.getValueAt(selectedRow, 3).toString();
+            String email = jTable1.getValueAt(selectedRow, 4).toString();
+            String contact = jTable1.getValueAt(selectedRow, 5).toString();
+            String role = jTable1.getValueAt(selectedRow, 6).toString();
 
-            jTextField1.setText(salesid);
-            jTextField2.setText(qty);
-            String formatteditem = itemId + " - " + itemname;
+            jTextField1.setText(username);
+            jTextField3.setText(password);
+            jTextField4.setText(fullname);
+            jTextField5.setText(email);
+            jTextField6.setText(contact);
 
             for (int i = 0; i < jComboBox1.getItemCount(); i++) {
-                if (jComboBox1.getItemAt(i).equals(formatteditem)) {
+                if (jComboBox1.getItemAt(i).equals(role)) {
                     jComboBox1.setSelectedIndex(i); 
                     break;
                 }
             }
-            try{
-                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-                Date parsedDate = df.parse(date);
-                jDateChooser1.setDate(parsedDate);
-            }catch(ParseException e){
-                System.err.println("Invalid date format"+ e.getMessage());
-            }
+           
+            jComboBox1.setEnabled(false);
+            jButton11.setEnabled(false);
+            
             try{
                 jTable1.setRowSelectionInterval(selectedRow, selectedRow);
             }catch (IllegalArgumentException e){
@@ -713,6 +722,26 @@ public class AM_ManageUser extends javax.swing.JFrame {
     private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jComboBox1ActionPerformed
+
+    private void jButton16ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton16ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton16ActionPerformed
+
+    private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField3ActionPerformed
+
+    private void jTextField4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField4ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField4ActionPerformed
+
+    private void jTextField5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField5ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField5ActionPerformed
+
+    private void jTextField6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField6ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField6ActionPerformed
 
 //    /**
 //     * @param args the command line arguments
@@ -756,7 +785,7 @@ public class AM_ManageUser extends javax.swing.JFrame {
     private javax.swing.JButton jButton12;
     private javax.swing.JButton jButton13;
     private javax.swing.JButton jButton14;
-    private javax.swing.JButton jButton15;
+    private javax.swing.JButton jButton16;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
@@ -766,16 +795,16 @@ public class AM_ManageUser extends javax.swing.JFrame {
     private javax.swing.JButton jButton8;
     private javax.swing.JButton jButton9;
     private javax.swing.JComboBox<String> jComboBox1;
-    private com.toedter.calendar.JDateChooser jDateChooser1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
@@ -784,6 +813,9 @@ public class AM_ManageUser extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
+    private javax.swing.JTextField jTextField3;
+    private javax.swing.JTextField jTextField4;
+    private javax.swing.JTextField jTextField5;
+    private javax.swing.JTextField jTextField6;
     // End of variables declaration//GEN-END:variables
 }
