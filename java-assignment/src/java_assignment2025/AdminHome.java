@@ -10,16 +10,11 @@ package java_assignment2025;
  */
 public class AdminHome extends javax.swing.JFrame {
     private Administrator admin;
-
-    /**
-     * Creates new form AdminHome
-     */
+    
+    //constructor:
     public AdminHome() {
         this.admin = (Administrator)Session.getCurrentUser(); 
         initComponents();
-        
-        
-//        admin.manageuser();
     }
 
     /**

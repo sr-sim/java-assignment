@@ -5,6 +5,8 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.time.format.TextStyle;
+
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -82,6 +84,22 @@ public class FinanceReport {
 //                })
 //                .collect(Collectors.toList());
 //    }
+    public List<PurchaseOrder> filterByWeek(String weekNumberStr) {
+        int targetWeek = Integer.parseInt(weekNumberStr);
+        return getPaidOrders().stream()
+                .filter(po -> {
+                    try {
+                        Date date = dateFormat.parse(po.getOrderDate());
+                        Calendar cal = Calendar.getInstance();
+                        cal.setTime(date);
+                        int week = cal.get(Calendar.WEEK_OF_MONTH);
+                        return week == targetWeek;
+                    } catch (ParseException e) {
+                        return false;
+                    }
+                })
+                .collect(Collectors.toList());
+    }
 
     // ✅ Calculate total amount for a list of POs
     public double calculateTotalAmount(List<PurchaseOrder> poList) {
@@ -229,8 +247,7 @@ public class FinanceReport {
         e.printStackTrace();
         JOptionPane.showMessageDialog(null, "Export failed: " + e.getMessage());
     }
-}
-    
+}    
     public static void exportDailySumToJasper(JTable table) {
     try {
         List<Map<String, ?>> data = new ArrayList<>();
@@ -423,6 +440,4 @@ public class FinanceReport {
 }
 
 
-        
-
-
+    

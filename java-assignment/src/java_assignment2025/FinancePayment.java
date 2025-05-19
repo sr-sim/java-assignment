@@ -18,7 +18,7 @@ import java.util.Date;
 public class FinancePayment {
     
     public void markAsPaid(String poId) throws IOException {
-        File poFile = new File("C:\\Users\\Isaac\\OneDrive - Asia Pacific University\\Documents\\NetBeansProjects\\java-assignment\\java-assignment\\src\\java_assignment2025\\PurchaseOrder.txt");
+        File poFile = new File("src/java_assignment2025/PurchaseOrder.txt");
         List<String> lines = Files.readAllLines(poFile.toPath());
         List<String> updatedLines = new ArrayList<>();
 

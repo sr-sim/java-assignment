@@ -193,72 +193,6 @@ public class Login extends javax.swing.JFrame {
     }
 }
     
-    
-//public static User authenticate(String inputUsername, String inputPassword) {
-//    try {
-//        java.util.List<String> lines = Files.readAllLines(Paths.get(FILE_PATH));
-//
-//        for (String line : lines) {
-//            String[] userData = line.split(",");
-//
-//            if (userData.length == 5) {
-//                String userId = userData[0].trim();
-//                String username = userData[1].trim();
-//                String password = userData[2].trim();
-//                String contact = userData[3].trim();
-//                String role = userData[4].trim();
-//
-//                if (username.equals(inputUsername)){
-//                    if(password.equals(inputPassword)){
-//                        // Return the appropriate subclass based on the role
-//                        switch (role) {
-//                            case "Administrator":
-//                                return new Administrator(userId, username, contact, password);
-//                            case "Sales Manager":
-//                                return new SalesManager(userId, username, contact, password);
-//                            case "Finance Manager":
-//                                return new FinanceManager(userId, username, contact, password);
-//                            case "Inventory Manager":
-//                                return new InventoryManager(userId, username, contact, password);
-//                            case "Purchase Manager":
-//                                return new PurchaseManager(userId, username, contact, password);
-//                            default:
-//                                return new User(userId, username, password,contact, role); // Default to User if role is unknown
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//
-//    } catch (IOException e) {
-//        JOptionPane.showMessageDialog(null, "Error reading user file: " + e.getMessage(), "File Error", JOptionPane.ERROR_MESSAGE);
-//    }
-//    return null; // If no user found or invalid credentials
-//}
-
-// private void openHomePage(String role, User user) {
-//        this.dispose();
-//
-//        switch (role) {
-//            case "Sales Manager":
-//                new SalesManagerHome(user).setVisible(true);
-//                break;
-//            case "Finance Manager":
-//                new FinanceManagerHome(user).setVisible(true);
-//                break;
-//            case "Inventory Manager":
-//                new InventoryManagerHome(user).setVisible(true);
-//                break;
-//            case "Purchase Manager":
-//                new PurchaseManagerHome(user).setVisible(true);
-//                break;
-//            case "Administrator":
-//                new AdminHome(user).setVisible(true);
-//                break;
-//            default:
-//                JOptionPane.showMessageDialog(this, "Unknown role", "Login Error", JOptionPane.ERROR_MESSAGE);
-//                break;
-//      
 public void openHomePage(User user) {
     this.dispose();
     Role role = user.getRole();
@@ -266,7 +200,7 @@ public void openHomePage(User user) {
 
     switch (role) {
         case ADMIN:
-            new AdminHome().setVisible(true); //By casting (Administrator) user, you're telling the program, "I know this user object is actually an instance of Administrator, so please treat it as such."
+            new AM_ManageUser().setVisible(true); //By casting (Administrator) user, you're telling the program, "I know this user object is actually an instance of Administrator, so please treat it as such."
             break;
         case SALES_MANAGER:
             new SM_MainPage().setVisible(true);
