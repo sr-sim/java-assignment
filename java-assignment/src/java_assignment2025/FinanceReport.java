@@ -2,6 +2,9 @@ package java_assignment2025;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import java.time.format.TextStyle;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -63,22 +66,22 @@ public class FinanceReport {
     }
 
     // ✅ Filter by Week number (e.g., "1", "2", ...)
-    public List<PurchaseOrder> filterByWeek(String weekNumberStr) {
-        int targetWeek = Integer.parseInt(weekNumberStr);
-        return getPaidOrders().stream()
-                .filter(po -> {
-                    try {
-                        Date date = dateFormat.parse(po.getOrderDate());
-                        Calendar cal = Calendar.getInstance();
-                        cal.setTime(date);
-                        int week = cal.get(Calendar.WEEK_OF_MONTH);
-                        return week == targetWeek;
-                    } catch (ParseException e) {
-                        return false;
-                    }
-                })
-                .collect(Collectors.toList());
-    }
+//    public List<PurchaseOrder> filterByWeek(String weekNumberStr) {
+//        int targetWeek = Integer.parseInt(weekNumberStr);
+//        return getPaidOrders().stream()
+//                .filter(po -> {
+//                    try {
+//                        Date date = dateFormat.parse(po.getOrderDate());
+//                        Calendar cal = Calendar.getInstance();
+//                        cal.setTime(date);
+//                        int week = cal.get(Calendar.WEEK_OF_MONTH);
+//                        return week == targetWeek;
+//                    } catch (ParseException e) {
+//                        return false;
+//                    }
+//                })
+//                .collect(Collectors.toList());
+//    }
 
     // ✅ Calculate total amount for a list of POs
     public double calculateTotalAmount(List<PurchaseOrder> poList) {
@@ -87,68 +90,68 @@ public class FinanceReport {
                 .sum();
     }
 
-    public List<DailySalesSummary> getDailySalesSummary(String targetDate, InventoryDataManager inventoryManager) {
-        List<DailySales> dailyList = salesDataManager.getdailysaleslist();
-        List<IndividualSales> individualList = salesDataManager.getindividualsaleslist();
-
-
-        List<DailySalesSummary> summaries = new ArrayList<>();
-
-        for (DailySales daily : dailyList) {
-            if (!daily.getDateofsales().equals(targetDate)) continue;
-
-            String itemId = daily.getItemid();
-            String total = daily.getTotalsales();
-
-            int qty = 0;
-            for (IndividualSales indiv : individualList) {
-                if (indiv.getItemid().equals(itemId) && indiv.getDateofsales().equals(targetDate)) {
-                    qty += Integer.parseInt(indiv.getQuantity());
-                }
-            }
-
-            Item item = inventoryManager.finditemid(itemId);
-            String itemName = (item != null) ? item.getItemname() : "Unknown Item";
-
-            summaries.add(new DailySalesSummary(itemId, itemName, qty, Double.parseDouble(total), targetDate));
-    }
-
-    return summaries;
-}
-    public List<DailySalesSummary> getMonthlySalesSummary(String monthName, InventoryDataManager inventoryManager) {
-    List<DailySalesSummary> allSummaries = new ArrayList<>();
-    List<DailySales> dailyList = salesDataManager.getdailysaleslist();
-    List<IndividualSales> individualList = salesDataManager.getindividualsaleslist();
-
-    for (DailySales daily : dailyList) {
-        try {
-            Date date = new SimpleDateFormat("yyyy-MM-dd").parse(daily.getDateofsales());
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(date);
-            String entryMonth = cal.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.ENGLISH);
-
-            if (!entryMonth.equalsIgnoreCase(monthName)) continue;
-
-            String itemId = daily.getItemid();
-            double total = Double.parseDouble(daily.getTotalsales());
-            int qty = 0;
-            for (IndividualSales indiv : individualList) {
-                if (indiv.getItemid().equals(itemId) && indiv.getDateofsales().equals(daily.getDateofsales())) {
-                    qty += Integer.parseInt(indiv.getQuantity());
-                }
-            }
-
-            Item item = inventoryManager.finditemid(itemId);
-            String itemName = (item != null) ? item.getItemname() : "Unknown Item";
-
-            allSummaries.add(new DailySalesSummary(itemId, itemName, qty, total, daily.getDateofsales()));
-        } catch (Exception e) {
-            System.out.println("Error parsing date: " + daily.getDateofsales());
-        }
-    }
-
-    return allSummaries;
-}
+//    public List<DailySalesSummary> getDailySalesSummary(String targetDate, InventoryDataManager inventoryManager) {
+//        List<DailySales> dailyList = salesDataManager.getdailysaleslist();
+//        List<IndividualSales> individualList = salesDataManager.getindividualsaleslist();
+//
+//
+//        List<DailySalesSummary> summaries = new ArrayList<>();
+//
+//        for (DailySales daily : dailyList) {
+//            if (!daily.getDateofsales().equals(targetDate)) continue;
+//
+//            String itemId = daily.getItemid();
+//            String total = daily.getTotalsales();
+//
+//            int qty = 0;
+//            for (IndividualSales indiv : individualList) {
+//                if (indiv.getItemid().equals(itemId) && indiv.getDateofsales().equals(targetDate)) {
+//                    qty += Integer.parseInt(indiv.getQuantity());
+//                }
+//            }
+//
+//            Item item = inventoryManager.finditemid(itemId);
+//            String itemName = (item != null) ? item.getItemname() : "Unknown Item";
+//
+//            summaries.add(new DailySalesSummary(itemId, itemName, qty, Double.parseDouble(total), targetDate));
+//    }
+//
+//    return summaries;
+//}
+//    public List<DailySalesSummary> getMonthlySalesSummary(String monthName, InventoryDataManager inventoryManager) {
+//    List<DailySalesSummary> allSummaries = new ArrayList<>();
+//    List<DailySales> dailyList = salesDataManager.getdailysaleslist();
+//    List<IndividualSales> individualList = salesDataManager.getindividualsaleslist();
+//
+//    for (DailySales daily : dailyList) {
+//        try {
+//            Date date = new SimpleDateFormat("yyyy-MM-dd").parse(daily.getDateofsales());
+//            Calendar cal = Calendar.getInstance();
+//            cal.setTime(date);
+//            String entryMonth = cal.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.ENGLISH);
+//
+//            if (!entryMonth.equalsIgnoreCase(monthName)) continue;
+//
+//            String itemId = daily.getItemid();
+//            double total = Double.parseDouble(daily.getTotalsales());
+//            int qty = 0;
+//            for (IndividualSales indiv : individualList) {
+//                if (indiv.getItemid().equals(itemId) && indiv.getDateofsales().equals(daily.getDateofsales())) {
+//                    qty += Integer.parseInt(indiv.getQuantity());
+//                }
+//            }
+//
+//            Item item = inventoryManager.finditemid(itemId);
+//            String itemName = (item != null) ? item.getItemname() : "Unknown Item";
+//
+//            allSummaries.add(new DailySalesSummary(itemId, itemName, qty, total, daily.getDateofsales()));
+//        } catch (Exception e) {
+//            System.out.println("Error parsing date: " + daily.getDateofsales());
+//        }
+//    }
+//
+//    return allSummaries;
+//}
     public static void exportJTableToJasper(JTable table) {
     try {
 //        System.setProperty("net.sf.jasperreports.export.pdf.force.linebreak.policy", "false");
@@ -351,8 +354,75 @@ public class FinanceReport {
         JOptionPane.showMessageDialog(null, "Export failed: " + e.getMessage());
     }
 }
+    
+    public static List<Object[]> filterByDate(List<IndividualSales> individualList, Date selectedDate, InventoryDataManager inventoryDataManager) {
+        Map<String, Object[]> grouped = new LinkedHashMap<>();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String selected = sdf.format(selectedDate);
+
+        for (IndividualSales ind : individualList) {
+            if (ind.getDateofsales().equals(selected)) {
+                String itemId = ind.getItemid();
+                String key = itemId + "_" + selected;
+
+                Item item = inventoryDataManager.finditemid(itemId);
+                String itemName = (item != null) ? item.getItemname() : "Unknown Item";
+
+                int quantity = Integer.parseInt(ind.getQuantity());
+                double amount = Double.parseDouble(ind.getAmount());
+
+                if (!grouped.containsKey(key)) {
+                    grouped.put(key, new Object[]{itemId, itemName, quantity, amount, selected});
+                } else {
+                    Object[] row = grouped.get(key);
+                    row[2] = (int) row[2] + quantity;
+                    row[3] = (double) row[3] + amount;
+                }
+            }
+        }
+
+        return new ArrayList<>(grouped.values());
+    }
+
+
+    public static List<Object[]> filterByMonth(List<IndividualSales> individualList, String monthName, InventoryDataManager inventoryDataManager) {
+        Map<String, Object[]> grouped = new LinkedHashMap<>();
+
+        for (IndividualSales ind : individualList) {
+            try {
+                LocalDate date = LocalDate.parse(ind.getDateofsales());
+                String saleMonth = date.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH);
+
+                if (saleMonth.equalsIgnoreCase(monthName)) {
+                    String itemId = ind.getItemid();
+                    String dateStr = ind.getDateofsales();
+                    String key = itemId + "_" + dateStr;
+
+                    Item item = inventoryDataManager.finditemid(itemId);
+                    String itemName = (item != null) ? item.getItemname() : "Unknown Item";
+
+                    int quantity = Integer.parseInt(ind.getQuantity());
+                    double amount = Double.parseDouble(ind.getAmount());
+
+                    if (!grouped.containsKey(key)) {
+                        grouped.put(key, new Object[]{itemId, itemName, quantity, amount, dateStr});
+                    } else {
+                        Object[] row = grouped.get(key);
+                        row[2] = (int) row[2] + quantity;
+                        row[3] = (double) row[3] + amount;
+                    }
+                }
+            } catch (DateTimeParseException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return new ArrayList<>(grouped.values());
+    }
+
+}
 
 
         
-}
+
 

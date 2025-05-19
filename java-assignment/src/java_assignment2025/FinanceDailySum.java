@@ -4,9 +4,11 @@
  */
 package java_assignment2025;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import static java_assignment2025.FinanceReport.exportDailySumToJasper;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
@@ -15,67 +17,90 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Isaac
  */
-public class FinanceDailySumReport extends javax.swing.JFrame {
-    private final InventoryDataManager inventorydatamanager = new InventoryDataManager();
-    private final FinanceReport financeReport = new FinanceReport(null); // no need for PO manager here
-    private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-    private enum FilterType { DATE, MONTH }
-    private FilterType currentFilter = FilterType.DATE;
-
+public class FinanceDailySum extends javax.swing.JFrame {
+    private SalesDataManager salesdatamanager = new SalesDataManager();
+    private InventoryDataManager inventorydatamanager = new InventoryDataManager();
+    private enum FilterMode { DATE, MONTH }
+    private FilterMode currentFilter = FilterMode.DATE;
     /**
-     * Creates new form FinanceDailySumReport
+     * Creates new form FinanceDailySum
      */
-    public FinanceDailySumReport() {
+    public FinanceDailySum() {
         initComponents();
-        jDateChooser1.setDate(new Date()); // set calendar to today
-        currentFilter = FinanceDailySumReport.FilterType.DATE;   // default filter is date
-        jDateChooser1.addPropertyChangeListener("date", evt -> {
-            currentFilter = FinanceDailySumReport.FilterType.DATE;
-            fillTableBasedOnFilter();
+
+        // default = today
+        jDateChooser1.setDate(new java.util.Date());
+        filterByDate(jDateChooser1.getDate());
+
+        jDateChooser1.getDateEditor().addPropertyChangeListener(evt -> {
+            if ("date".equals(evt.getPropertyName())) {
+                currentFilter = FilterMode.DATE;
+                filterByDate(jDateChooser1.getDate());
+            }
         });
 
-        jComboBox2.addActionListener(evt -> {
-            currentFilter = FinanceDailySumReport.FilterType.MONTH;
-            fillTableBasedOnFilter();
+        jComboBox2.addActionListener(e -> {
+            String selectedMonth = (String) jComboBox2.getSelectedItem();
+            if (selectedMonth != null) {
+                currentFilter = FilterMode.MONTH;
+                filterByMonth(selectedMonth);
+            }
         });
-
-        fillTableBasedOnFilter(); // show today's sales on launch
-
     }
-    private void fillTableBasedOnFilter() {
-    DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-    model.setRowCount(0);
+    
+    private void filterByDate(Date selectedDate) {
+        List<Object[]> rows = FinanceReport.filterByDate(
+            salesdatamanager.getindividualsaleslist(),
+            selectedDate,
+            inventorydatamanager
+        );
 
-    List<DailySalesSummary> summaries;
-
-    if (currentFilter == FinanceDailySumReport.FilterType.DATE) {
-        Date selectedDate = jDateChooser1.getDate();
-        if (selectedDate == null) return;
-        String dateStr = sdf.format(selectedDate);
-        System.out.println("Filtering by DATE: " + dateStr);
-        summaries = financeReport.getDailySalesSummary(dateStr, inventorydatamanager);
-
-    } else {
-        String selectedMonth = (String) jComboBox2.getSelectedItem();
-        System.out.println("Filtering by MONTH: " + selectedMonth);
-        summaries = financeReport.getMonthlySalesSummary(selectedMonth, inventorydatamanager);
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        model.setRowCount(0);
+        for (Object[] row : rows) {
+            model.addRow(row);
+        }
+        updateTotalAmountLabel();
     }
 
-    double total = 0.0;
-    for (DailySalesSummary summary : summaries) {
-        model.addRow(new Object[]{
-            summary.getItemId(),
-            summary.getItemName(),
-            summary.getQuantity(),
-            summary.getTotalAmount(),
-            summary.getDate()
-        });
+    private void filterByMonth(String monthName) {
+        List<Object[]> rows = FinanceReport.filterByMonth(
+            salesdatamanager.getindividualsaleslist(),
+            monthName,
+            inventorydatamanager
+        );
 
-        total += summary.getTotalAmount();
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        model.setRowCount(0);
+        for (Object[] row : rows) {
+            model.addRow(row);
+        }
+        updateTotalAmountLabel();
     }
-    jLabel3.setText("Total Revenue: RM " + String.format("%.2f", total));
+    
+    private void updateTotalAmountLabel(){
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        double total = 0.0;
+        
+        for (int i = 0; i < model.getRowCount(); i++){
+            Object value = model.getValueAt(i, 3);
+            if(value instanceof Number){
+                total += ((Number) value).doubleValue();
+            }else{
+                try{
+                    total += Double.parseDouble(value.toString());
+                }catch (NumberFormatException e){
+                    
+                }
+            }
+        }
+        
+        jLabel3.setText(String.format("Total Revenue: RM%.2f", total));
+    }
 
-}
+
+
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -86,9 +111,10 @@ public class FinanceDailySumReport extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel11 = new javax.swing.JLabel();
         jLabel13 = new javax.swing.JLabel();
+        approveBtn = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
+        jComboBox2 = new javax.swing.JComboBox<>();
         jPanel3 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jButton6 = new javax.swing.JButton();
@@ -98,21 +124,32 @@ public class FinanceDailySumReport extends javax.swing.JFrame {
         jButton10 = new javax.swing.JButton();
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
-        approveBtn = new javax.swing.JButton();
-        jComboBox2 = new javax.swing.JComboBox<>();
         jDateChooser1 = new com.toedter.calendar.JDateChooser();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
+        jLabel11 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        jLabel11.setFont(new java.awt.Font("Algerian", 0, 24)); // NOI18N
-        jLabel11.setText("Purchase ORDER");
 
         jLabel13.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel13.setText("Purchase Order Table");
 
+        approveBtn.setFont(new java.awt.Font("Segoe UI Black", 1, 13)); // NOI18N
+        approveBtn.setText("Generate PDF");
+        approveBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                approveBtnActionPerformed(evt);
+            }
+        });
+
         jLabel3.setText("");
+
+        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" }));
+        jComboBox2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBox2ActionPerformed(evt);
+            }
+        });
 
         jPanel3.setBackground(new java.awt.Color(238, 238, 253));
 
@@ -207,16 +244,6 @@ public class FinanceDailySumReport extends javax.swing.JFrame {
                 .addContainerGap(192, Short.MAX_VALUE))
         );
 
-        approveBtn.setFont(new java.awt.Font("Segoe UI Black", 1, 13)); // NOI18N
-        approveBtn.setText("Generate PDF");
-        approveBtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                approveBtnActionPerformed(evt);
-            }
-        });
-
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" }));
-
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {},
             new String [] {
@@ -236,6 +263,9 @@ public class FinanceDailySumReport extends javax.swing.JFrame {
     jTable1.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS);
     jTable1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
     jScrollPane1.setViewportView(jTable1);
+
+    jLabel11.setFont(new java.awt.Font("Algerian", 0, 24)); // NOI18N
+    jLabel11.setText("Purchase ORDER");
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
@@ -267,12 +297,12 @@ public class FinanceDailySumReport extends javax.swing.JFrame {
                         .addGroup(layout.createSequentialGroup()
                             .addGap(18, 18, 18)
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 806, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGap(0, 78, Short.MAX_VALUE))))
+                    .addGap(0, 3, Short.MAX_VALUE))))
     );
     layout.setVerticalGroup(
         layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-            .addGap(0, 12, Short.MAX_VALUE)
+            .addGap(0, 0, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                 .addGroup(layout.createSequentialGroup()
                     .addGap(22, 22, 22)
@@ -295,6 +325,14 @@ public class FinanceDailySumReport extends javax.swing.JFrame {
 
     pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void approveBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_approveBtnActionPerformed
+        exportDailySumToJasper(jTable1);
+    }//GEN-LAST:event_approveBtnActionPerformed
+
+    private void jComboBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox2ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jComboBox2ActionPerformed
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
         //        new SM_ItemEntry(salesmanager).setVisible(true);
@@ -321,10 +359,6 @@ public class FinanceDailySumReport extends javax.swing.JFrame {
         //        this.dispose();
     }//GEN-LAST:event_jButton10ActionPerformed
 
-    private void approveBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_approveBtnActionPerformed
-        exportDailySumToJasper(jTable1);
-    }//GEN-LAST:event_approveBtnActionPerformed
-
     /**
      * @param args the command line arguments
      */
@@ -342,20 +376,20 @@ public class FinanceDailySumReport extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(FinanceDailySumReport.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(FinanceDailySum.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(FinanceDailySumReport.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(FinanceDailySum.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(FinanceDailySumReport.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(FinanceDailySum.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(FinanceDailySumReport.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(FinanceDailySum.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new FinanceDailySumReport().setVisible(true);
+                new FinanceDailySum().setVisible(true);
             }
         });
     }
