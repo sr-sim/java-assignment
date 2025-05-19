@@ -11,7 +11,7 @@ import java.util.List;
  *
  * @author User
  */
-public class InventoryDataManager {
+public class InventoryDataManager extends DataManager{
     private final List<Item>itemlist;
     private final List<Item>itemlistbysupplier;
     private final TextFile textfile;

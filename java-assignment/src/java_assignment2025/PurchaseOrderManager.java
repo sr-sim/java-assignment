@@ -12,7 +12,7 @@ import java.util.List;
  *
  * @author Macy Khoo
  */
-public class PurchaseOrderManager {
+public class PurchaseOrderManager extends DataManager {
     private final List<PurchaseOrder>polist;
     private final TextFile textfile;
     private final String pofilepath = "src/java_assignment2025/PurchaseOrder.txt";

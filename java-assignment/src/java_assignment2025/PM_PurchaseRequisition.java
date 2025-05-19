@@ -26,6 +26,7 @@ import javax.swing.table.TableRowSorter;
 public class PM_PurchaseRequisition extends javax.swing.JFrame {
     private PurchaseRequisitionManager prmanager;
     private InventoryDataManager inventorydatamanager;
+    private PurchaseManager pm;
    
      //search functionfrom Pr list
     public void search(String str){
@@ -41,6 +42,7 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
      */
     public PM_PurchaseRequisition() {
         initComponents();
+        this.pm = (PurchaseManager)Session.getCurrentUser();
         this.prmanager = new PurchaseRequisitionManager();
         this.inventorydatamanager = new InventoryDataManager();
         fillTableFromTxtFile();
