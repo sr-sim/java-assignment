@@ -11,26 +11,31 @@ import java.util.List;
  *
  * @author User
  */
-public class InventoryDataManager {
+public class InventoryDataManager extends DataManager{
     private final List<Item>itemlist;
+    private final List<Item>itemlistbysupplier;
     private final TextFile textfile;
-    private final String inventoryfilepath = "C:\\JPL9\\java-assignment\\java-assignment\\src\\java_assignment2025\\inventory.txt";
+    private final String inventoryfilepath = "src/java_assignment2025/inventory.txt";
+    
     
     
     public InventoryDataManager() {
         this.itemlist = new ArrayList<>();
+        this.itemlistbysupplier = new ArrayList<>();
         this.textfile = new TextFile();
         loadAllinventoryfromtxtfile();
     }
     public List<Item> getinventorylist(){
         return itemlist;
     }
-    public void loadAllinventoryfromtxtfile(){
+    public void loadAllinventoryfromtxtfile(){  
+        itemlist.clear();
         List<String> lines = textfile.readFile(inventoryfilepath);
         for(String line : lines){
-            String[] parts = line.split(",", 10);
-            if(parts.length == 10){
-                itemlist.add(new Item( // one by one add to list
+            String[] parts = line.split(",", 11);
+            if(parts.length == 11){
+                boolean isdeleted = Boolean.parseBoolean(parts[10].trim());
+                    itemlist.add(new Item( // one by one add to list
                         parts[0].trim(),
                         parts[1].trim(),
                         parts[2].trim(),
@@ -40,7 +45,8 @@ public class InventoryDataManager {
                         parts[6].trim(),
                         parts[7].trim(),
                         parts[8].trim(),
-                        parts[9].trim()
+                        parts[9].trim(),
+                        isdeleted
                 ));
             }
         }
@@ -71,29 +77,47 @@ public class InventoryDataManager {
             System.out.println("item exist already ya");
         }
     }
-    public void deleteItem(String itemid){
+    public void markitemasDeleted(String itemid){
         Item item = finditemid(itemid);
             if (item != null){
-                itemlist.remove(item);
-                textfile.deleteLine(inventoryfilepath, item.toString());
+                item.setDeleted(true);
+                textfile.rewriteFile(inventoryfilepath, itemlist);
                 System.out.println("delete successful");
                 return;
             }else{
                 System.out.println("item not found");
             } 
     }
-    public void updateItem(Item olditem, Item newitem){
-        if(itemlist.contains(olditem)){
-            itemlist.remove(olditem);
-            itemlist.add(newitem);
-            textfile.replaceLine(inventoryfilepath, olditem.toString(), newitem.toString());
-            System.out.println("Updating item: " + olditem.getItemid() + " to " + newitem.getItemid());
-
-            System.out.println("successful edit");
-        }else{
-            System.out.println("failed to edit");
+    public void updateItem(String itemid, String itemname, String itemdesc, String supplierid, String unitprice, String retailprice,String instockquantity,String reorderlevel,String reorderstatus,String lastmodifieddate,boolean deleted) {
+        Item existingitem = finditemid(itemid);
+        if (existingitem != null) {
+            existingitem.setItemid(itemid);
+            existingitem.setItemname(itemname);
+            existingitem.setItemdesc(itemdesc);
+            existingitem.setSupplierid(supplierid);
+            existingitem.setUnitprice(unitprice);
+            existingitem.setInstockquantity(instockquantity);
+            existingitem.setRetailprice(retailprice);
+            existingitem.setReorderlevel(reorderlevel);
+            existingitem.setReorderstatus(reorderstatus);
+            existingitem.setLastmodifieddate(lastmodifieddate);
+            existingitem.setDeleted(deleted);
+            textfile.rewriteFile(inventoryfilepath, itemlist);
+            System.out.println("Supplier updated successfully.");
+        } else {
+            System.out.println("Supplier not found.");
         }
     }
+//        private String itemid;
+//    private String itemname;
+//    private String itemdesc;
+//    private String supplierid;
+//    private String unitprice;
+//    private String instockquantity;
+//    private String retailprice;
+//    private String reorderlevel;
+//    private String reorderstatus;
+//    private String lastmodifieddate;
     
     private boolean duplicateditem(Item item){
         for (Item existitem : itemlist){
@@ -112,5 +136,58 @@ public class InventoryDataManager {
         return null;
     }
     
+    public String findItemNameById(String itemid) {
+    Item item = finditemid(itemid);
+    return (item != null) ? item.getItemname() : "Unknown";
+}
+
     
+public String getItemDeletionStatus(String itemId) {
+    PurchaseRequisitionManager prManager = new PurchaseRequisitionManager();
+    PurchaseOrderManager poManager = new PurchaseOrderManager();
+
+    for (PurchaseRequisition pr : prManager.getprlist()) {
+        List<String> itemIds = pr.getItemids();
+
+        if (itemIds.contains(itemId)&&!pr.isDeleted()) {
+            PurchaseRequisition.ApproveStatus prStatus = pr.getApprovestatus();
+
+            if (prStatus == PurchaseRequisition.ApproveStatus.pending) {
+                return "cannot_delete_pending_pr";
+            } else if (prStatus == PurchaseRequisition.ApproveStatus.reject) {
+                return "cannot_delete_rejected_pr";
+            } else if (prStatus == PurchaseRequisition.ApproveStatus.approved) {
+                for (PurchaseOrder po : poManager.getpolist()) {
+                    if (po.getRequestId().equals(pr.getPrid()) && po.getItemIds().contains(itemId)) {
+                        String poStatus = po.getOrderStatus().trim();
+                        boolean isPaid = po.getPaymentStatus().trim().equalsIgnoreCase("paid");
+
+                        if (poStatus.equalsIgnoreCase("approved") && isPaid) {
+                        } else if (poStatus.equalsIgnoreCase("reject")) {
+                            continue; 
+                        } else {
+                            return "cannot_delete_approved_pr_po_not_paid"; 
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return "can_delete"; // No blocking PRs or POs found
+}
+
+public List<Item> getItemsBySupplier(String supplierId) {
+    List<Item> supplierItems = new ArrayList<>();
+    System.out.println("Looking for items for supplier: " + supplierId);
+    for(Item item : this.itemlist) {
+        if(item.getSupplierid().equalsIgnoreCase(supplierId) && !item.isDeleted()) {
+            System.out.println("Found item: " + item.getItemid() + " Supplier: " + item.getSupplierid());
+            supplierItems.add(item);
+        }
+    }
+    return supplierItems;
+}
+
+
 }

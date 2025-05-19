@@ -3,6 +3,8 @@ package java_assignment2025;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java_assignment2025.Item;
 import java_assignment2025.Supplier;
 import java_assignment2025.TextFile;
@@ -16,12 +18,14 @@ import java_assignment2025.TextFile;
  *
  * @author User
  */
-public class SupplierDataManager {
+public class SupplierDataManager extends DataManager{
     private final List<Supplier>supplierlist;
     private final TextFile textfile;
-    private final String supplierfilepath = "C:\\Users\\User\\OneDrive\\Documents\\NetBeansProjects\\java-assignment\\java-assignment\\src\\java_assignment2025\\supplier.txt";
+    private final String supplierfilepath = "src/java_assignment2025/supplier.txt";
+    private final String inventoryfilepath = "src/java_assignment2025/inventory.txt";
     
     public SupplierDataManager() {
+        super();
         this.supplierlist = new ArrayList<>();
         this.textfile = new TextFile();
         loadAllsupplierfromtxtfile();
@@ -30,8 +34,8 @@ public class SupplierDataManager {
         public void loadAllsupplierfromtxtfile(){
         List<String> lines = textfile.readFile(supplierfilepath);
         for(String line : lines){
-            String[] parts = line.split(",", 7);
-            if(parts.length == 7){
+            String[] parts = line.split(",", 8);
+            if(parts.length == 8){
                 supplierlist.add(new Supplier( // one by one add to list
                         parts[0].trim(),
                         parts[1].trim(),
@@ -39,7 +43,8 @@ public class SupplierDataManager {
                         parts[3].trim(),
                         parts[4].trim(),
                         parts[5].trim(),
-                        Boolean.parseBoolean(parts[6].trim())
+                        Boolean.parseBoolean(parts[6].trim()),
+                        Boolean.parseBoolean(parts[7].trim())
                 ));
             }
         }
@@ -73,28 +78,78 @@ public class SupplierDataManager {
             System.out.println("supplier exist already ya");
         }
     }
-    public void deleteSupplier(String supplierid){
+    public void marksupplierasDeleted(String supplierid,InventoryDataManager inventorydatamanager) {
+        InventoryDataManager inventoryManager = new InventoryDataManager();
+        List<Item> items = inventoryManager.getinventorylist();
+
+        List<String> blockingItems = new ArrayList<>();
+        for (Item item : items) {
+            if (!item.isDeleted() && item.getSupplierid().equals(supplierid)) {
+                String status = inventoryManager.getItemDeletionStatus(item.getItemid());
+                if (!"can_delete".equals(status)) {
+                    blockingItems.add(item.getItemid() + " - " + status.replace('_', ' '));
+                }
+            }
+        }
+
+        if (!blockingItems.isEmpty()) {
+            for (String bi : blockingItems) {
+                System.out.println("Item ID: " + bi);
+            }
+            return; 
+        }
+            Supplier supplier = findsupplierid(supplierid);
+            if (supplier != null) {
+                supplier.setDeleted(true);
+                textfile.rewriteFile(supplierfilepath, supplierlist);
+                System.out.println("Supplier deleted successfully.");
+                boolean anyChanges = false;
+                for (Item item : items) {
+                    if (!item.isDeleted() && item.getSupplierid().equals(supplierid)) {
+                        item.setDeleted(true);
+                        anyChanges = true;
+                    }
+                }
+
+                if (anyChanges) {
+                    textfile.rewriteFile(inventoryfilepath, items); 
+                    inventorydatamanager.loadAllinventoryfromtxtfile();
+                    System.out.println("Related items also marked as deleted.");
+                }
+            } else {
+                System.out.println("Supplier not found.");
+            }
+        }
+
+    public void marknewsupplierinitemasRead(String supplierid, boolean status){
         Supplier supplier = findsupplierid(supplierid);
             if (supplier != null){
-                supplierlist.remove(supplier);
-                textfile.deleteLine(supplierfilepath, supplier.toString());
-                System.out.println("delete successful");
+                supplier.setReadDescrptionStatus(status);
+                textfile.rewriteFile(supplierfilepath, supplierlist);
+                System.out.println("Updated read status for " + supplierid + " to " + status);
                 return;
             }else{
                 System.out.println("supplier not found");
             } 
     }
-    public void updateSupplier(Supplier oldsupplier, Supplier newsupplier){
-        if(supplierlist.contains(oldsupplier)){
-            supplierlist.remove(oldsupplier);
-            supplierlist.add(newsupplier);
-            textfile.replaceLine(supplierfilepath, oldsupplier.toString(), newsupplier.toString());
-            System.out.println("successful edit");
-        }else{
-            System.out.println("failed to edit");
+    public void updateSupplier(String supplierId, String supplierName, String address, String contact, String email, String itemDesc, boolean readDescriptionStatus, boolean deleted) {
+        Supplier existingsupplier = findsupplierid(supplierId);
+        if (existingsupplier != null) {
+            existingsupplier.setSupplierid(supplierId);
+            existingsupplier.setSuppliername(supplierName);
+            existingsupplier.setContact(contact);
+            existingsupplier.setEmail(email);
+            existingsupplier.setAddress(address);
+            existingsupplier.setItemdescription(itemDesc);
+            existingsupplier.setReadDescrptionStatus(readDescriptionStatus);
+            existingsupplier.setDeleted(deleted);
+            textfile.rewriteFile(supplierfilepath, supplierlist);
+            System.out.println("Supplier updated successfully.");
+        } else {
+            System.out.println("Supplier not found.");
         }
     }
-    
+//    supplierid, suppliername , contact, email, address, itemdesc, readDescrptionStatus
     private boolean duplicatedsupplier(Supplier supplier){
         for (Supplier existsupplier : supplierlist){
             if (existsupplier.getSupplierid().equals(supplier.getSupplierid())){
@@ -103,16 +158,13 @@ public class SupplierDataManager {
         }
         return false;
     }
-public Supplier findsupplierid(String supplierId) {
-    for (Supplier supplier : supplierlist) {
-        if (supplier.getSupplierid().equals(supplierId)) {
-            return supplier;
+    public Supplier findsupplierid(String supplierId) {
+        for (Supplier supplier : supplierlist) {
+            if (supplier.getSupplierid().equals(supplierId)) {
+                return supplier;
+            }
         }
+        return null;
     }
-    return null;
-}
-
-    
-    
 }
 

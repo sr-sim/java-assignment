@@ -17,11 +17,13 @@ public class PurchaseRequisition {
     private List<String> itemids;
     private String userid;
     private List<String> quantities;
+    private List<String> unitPrices;
     private String total;
     private String requestdate;
     private String expecteddeliverydate;
     private ApproveStatus approvestatus;
     private String note;
+    private boolean deleted;
     
     public enum ApproveStatus {
     pending, approved, reject;
@@ -40,16 +42,18 @@ public class PurchaseRequisition {
     }
 }
 
-    public PurchaseRequisition(String prid, List<String> itemids, String userid,List<String> quantities,String total,String requestdate, String expecteddeliverydate, ApproveStatus approvestatus, String note){
+    public PurchaseRequisition(String prid, List<String> itemids, String userid,List<String> quantities,List<String> unitPrices,String total,String requestdate, String expecteddeliverydate, ApproveStatus approvestatus, String note,boolean deleted){
         this.prid = prid;
         this.itemids = itemids;
         this.userid = userid;
         this.quantities = quantities;
+        this.unitPrices=unitPrices;
         this.total = total;
         this.requestdate = requestdate;
         this.expecteddeliverydate = expecteddeliverydate;
         this.approvestatus = approvestatus;
-        this.note =note;
+        this.note = note;
+        this.deleted = deleted;
     }
     public PurchaseRequisition() {
         this.itemids = new ArrayList<>();
@@ -97,7 +101,7 @@ public class PurchaseRequisition {
         this.quantities = quantities;
     }
 
-
+    
     public String getTotal() {
         return total;
     }
@@ -142,7 +146,27 @@ public class PurchaseRequisition {
     
     @Override
     public String toString(){
-        return prid + "," + String.join("|", itemids) + "," + userid + "," + String.join("|", quantities) +"," + total+ "," + requestdate + "," + expecteddeliverydate + "," + approvestatus + "," + note;
+        return prid + "," + String.join("|", itemids) + "," + userid + "," + String.join("|", quantities) +","+ String.join("|",unitPrices)+"," + total+ "," + requestdate + "," + expecteddeliverydate + "," + approvestatus + "," + note + ","+deleted;
     } 
+
+    
+    public List<String> getUnitPrices() {
+        return unitPrices;
+    }
+
+   
+    public void setUnitPrices(List<String> unitPrices) {
+        this.unitPrices = unitPrices;
+    }
+
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
 
 }

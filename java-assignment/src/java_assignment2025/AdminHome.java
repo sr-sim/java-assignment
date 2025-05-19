@@ -10,16 +10,11 @@ package java_assignment2025;
  */
 public class AdminHome extends javax.swing.JFrame {
     private Administrator admin;
-
-    /**
-     * Creates new form AdminHome
-     */
-    public AdminHome(Administrator admin) {
-        this.admin = admin; 
+    
+    //constructor:
+    public AdminHome() {
+        this.admin = (Administrator)Session.getCurrentUser(); 
         initComponents();
-        
-        
-        admin.manageuser();
     }
 
     /**
@@ -39,7 +34,7 @@ public class AdminHome extends javax.swing.JFrame {
 
         jLabel1.setText("AdminHome");
 
-        jLabel2.setText("Welcome, " + admin.getUsername() + " (" + admin.getUserId() + ") - " + admin.getRole());
+        jLabel2.setText("Welcome, " + admin.getUsername()+ " (" + admin.getUserId() + ") - " + admin.getRole());
 
         jButton1.setText("jButton1");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
