@@ -15,7 +15,8 @@ public class InventoryDataManager {
     private final List<Item>itemlist;
     private final List<Item>itemlistbysupplier;
     private final TextFile textfile;
-    private final String inventoryfilepath = "C:\\JPL9\\java-assignment\\java-assignment\\src\\java_assignment2025\\inventory.txt";
+    private final String inventoryfilepath = "src/java_assignment2025/inventory.txt";
+    
     
     
     public InventoryDataManager() {
@@ -28,10 +29,12 @@ public class InventoryDataManager {
         return itemlist;
     }
     public void loadAllinventoryfromtxtfile(){  
+        itemlist.clear();
         List<String> lines = textfile.readFile(inventoryfilepath);
         for(String line : lines){
             String[] parts = line.split(",", 11);
             if(parts.length == 11){
+                boolean isdeleted = Boolean.parseBoolean(parts[10].trim());
                     itemlist.add(new Item( // one by one add to list
                         parts[0].trim(),
                         parts[1].trim(),
@@ -43,7 +46,7 @@ public class InventoryDataManager {
                         parts[7].trim(),
                         parts[8].trim(),
                         parts[9].trim(),
-                        Boolean.parseBoolean(parts[10].trim())
+                        isdeleted
                 ));
             }
         }
@@ -133,97 +136,58 @@ public class InventoryDataManager {
         return null;
     }
     
+    public String findItemNameById(String itemid) {
+    Item item = finditemid(itemid);
+    return (item != null) ? item.getItemname() : "Unknown";
+}
+
+    
 public String getItemDeletionStatus(String itemId) {
     PurchaseRequisitionManager prManager = new PurchaseRequisitionManager();
-    PurchaseRequisition pr = null;
-
-    // Step 1: Look for PR that contains the exact itemId
-    for (PurchaseRequisition p : prManager.getprlist()) {
-        List<String> itemIds = p.getItemids(); // List<String>
-        for (String id : itemIds) {
-            if (id.trim().equalsIgnoreCase(itemId)) {
-                pr = p;
-                break;
-            }
-        }
-        if (pr != null) break; // Exit loop if PR found
-    }
-
-    // Step 2: If no PR contains the item, allow delete
-    if (pr == null) {
-        return "can_delete";
-    }
-
-    // Step 3: Get PR status
-    PurchaseRequisition.ApproveStatus prStatus = pr.getApprovestatus();
-
-    // Step 4: Look for PO containing the item
     PurchaseOrderManager poManager = new PurchaseOrderManager();
-    PurchaseOrder po = null;
-    for (PurchaseOrder order : poManager.getpolist()) {
-        List<String> itemIds = order.getItemIds(); // List<String>
-        for (String id : itemIds) {
-            if (id.trim().equalsIgnoreCase(itemId)) {
-                po = order;
-                break;
+
+    for (PurchaseRequisition pr : prManager.getprlist()) {
+        List<String> itemIds = pr.getItemids();
+
+        if (itemIds.contains(itemId)&&!pr.isDeleted()) {
+            PurchaseRequisition.ApproveStatus prStatus = pr.getApprovestatus();
+
+            if (prStatus == PurchaseRequisition.ApproveStatus.pending) {
+                return "cannot_delete_pending_pr";
+            } else if (prStatus == PurchaseRequisition.ApproveStatus.reject) {
+                return "cannot_delete_rejected_pr";
+            } else if (prStatus == PurchaseRequisition.ApproveStatus.approved) {
+                for (PurchaseOrder po : poManager.getpolist()) {
+                    if (po.getRequestId().equals(pr.getPrid()) && po.getItemIds().contains(itemId)) {
+                        String poStatus = po.getOrderStatus().trim();
+                        boolean isPaid = po.getPaymentStatus().trim().equalsIgnoreCase("paid");
+
+                        if (poStatus.equalsIgnoreCase("approved") && isPaid) {
+                        } else if (poStatus.equalsIgnoreCase("reject")) {
+                            continue; 
+                        } else {
+                            return "cannot_delete_approved_pr_po_not_paid"; 
+                        }
+                    }
+                }
             }
         }
-        if (po != null) break; // Exit loop if PO found
     }
 
-    // Step 5: If no PO found, handle based on PR status
-    if (po == null) {
-        if (prStatus == PurchaseRequisition.ApproveStatus.pending) {
-            return "cannot_delete_pending_pr";
-        } else if (prStatus == PurchaseRequisition.ApproveStatus.reject) {
-            return "cannot_delete_rejected_pr";
-        } else {
-            return "can_delete"; // Approved PR but no PO
-        }
-    }
-
-    // Step 6: PO found, check PO status
-    String poStatus = po.getVerifyStatus().trim();  // Ensure no extra spaces
-    boolean isPaid = po.getPaymentStatus().trim().equalsIgnoreCase("paid");
-
-    // Debugging PO status explicitly
-    System.out.println("DEBUG: poStatus = [" + poStatus + "]");  // Show exactly what poStatus is
-    System.out.println("DEBUG: isPaid = " + isPaid);
-
-    // PR Approved
-    if (prStatus == PurchaseRequisition.ApproveStatus.approved) {
-        // Check if PO is rejected
-        if (poStatus.equalsIgnoreCase("reject")) {
-            System.out.println("DEBUG: PO is rejected, allowing deletion.");
-            return "can_delete"; // PR approved but PO rejected
-        }
-        // Check if PO is approved and paid
-        if (poStatus.equalsIgnoreCase("approved") && isPaid) {
-            System.out.println("DEBUG: PO is approved and paid, allowing deletion.");
-            return "can_delete"; // PR approved and PO approved & paid
-        }
-        System.out.println("DEBUG: PO is not approved or paid, not allowed to delete.");
-        return "cannot_delete_approved_pr_po_not_paid"; // PR approved but PO not paid or not approved
-    }
-
-    // PR Pending or Rejected
-    if (prStatus == PurchaseRequisition.ApproveStatus.pending) {
-        return "cannot_delete_pending_pr";
-    } else if (prStatus == PurchaseRequisition.ApproveStatus.reject) {
-        return "cannot_delete_rejected_pr";
-    }
-
-    return "cannot_delete_unknown"; // If something goes wrong
+    return "can_delete"; // No blocking PRs or POs found
 }
 
 public List<Item> getItemsBySupplier(String supplierId) {
     List<Item> supplierItems = new ArrayList<>();
-    for(Item item : this.itemlistbysupplier) {  // assume itemList holds all items
+    System.out.println("Looking for items for supplier: " + supplierId);
+    for(Item item : this.itemlist) {
         if(item.getSupplierid().equalsIgnoreCase(supplierId) && !item.isDeleted()) {
+            System.out.println("Found item: " + item.getItemid() + " Supplier: " + item.getSupplierid());
             supplierItems.add(item);
         }
     }
     return supplierItems;
 }
+
 
 }

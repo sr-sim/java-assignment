@@ -15,15 +15,16 @@ import java.util.List;
 public class PurchaseOrderManager {
     private final List<PurchaseOrder>polist;
     private final TextFile textfile;
-    private final String pofilepath = "C:\\JPL9\\java-assignment\\java-assignment\\src\\java_assignment2025\\PurchaseOrder.txt";
+    private final String pofilepath = "src/java_assignment2025/PurchaseOrder.txt";
     
     public PurchaseOrderManager() {
         this.polist = new ArrayList<>();
         this.textfile = new TextFile();
-        loadAllpofromtxtfile();
+                loadAllpofromtxtfile();
     }
     
-     public void loadAllpofromtxtfile() {
+    public void loadAllpofromtxtfile() {
+        polist.clear();
          
         List<String> lines = textfile.readFile(pofilepath);
         for (String line : lines) {
@@ -60,7 +61,7 @@ public class PurchaseOrderManager {
     }
     
     public static String findSupplierNameById(String supplierId) {
-    String supplierFilePath = "C:\\JPL9\\java-assignment\\java-assignment\\src\\java_assignment2025\\supplier.txt";
+    String supplierFilePath = "src/java_assignment2025/supplier.txt";
     List<String> lines = TextFile.readFile(supplierFilePath);
     
     for (String line : lines) {
@@ -72,35 +73,7 @@ public class PurchaseOrderManager {
     return "Unknown Supplier";
     }
 
-//    public void deletepo(String orderId) {
-//        PurchaseOrder po = findpoid(orderId);
-//        if (po != null) {
-//            String poString = po.toString().trim();
-//            List<String> allLines = textfile.readFile(pofilepath);
-//            String lineToDelete = null;
-//
-//            for (String line : allLines) {
-//                if (line.trim().equals(poString)) {
-//                    lineToDelete = line; // Use exact line from file
-//                    break;
-//                }
-//            }
-//
-//            if (lineToDelete != null) {
-//                System.out.println("Deleting: [" + lineToDelete + "]");
-//                System.out.println("po:" +po);
-//                polist.remove(po);
-//                
-//                textfile.deleteLine(pofilepath, lineToDelete);
-//                System.out.println("Delete successful");
-//            } else {
-//                System.out.println("Line not found in file.");
-//            }
-//
-//        } else {
-//            System.out.println("Purchase order not found");
-//        }
-//}
+
     public void deletepo(String poid){
         PurchaseOrder po = findpoid(poid);
             if (po != null){
@@ -122,6 +95,20 @@ public class PurchaseOrderManager {
         }
         return null;
         }
+    
+    public void updatePOStatus(String orderId, String newStatus) {
+    PurchaseOrder po = findpoid(orderId);
+    if (po != null) {
+        String oldLine = po.toString();
+        po.setOrderStatus(newStatus);
+        String newLine = po.toString();
+        textfile.replaceLineByPOId(pofilepath, po.getOrderId(), newLine);
+        System.out.println("Status updated to " + newStatus + " for PO: " + orderId);
+    } else {
+        System.out.println("PO not found for ID: " + orderId);
+    }
+}
+
      public static String getCurrentDate() {
         java.time.LocalDate today = java.time.LocalDate.now();
         java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd");

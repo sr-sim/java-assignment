@@ -23,6 +23,7 @@ public class PurchaseRequisition {
     private String expecteddeliverydate;
     private ApproveStatus approvestatus;
     private String note;
+    private boolean deleted;
     
     public enum ApproveStatus {
     pending, approved, reject;
@@ -41,7 +42,7 @@ public class PurchaseRequisition {
     }
 }
 
-    public PurchaseRequisition(String prid, List<String> itemids, String userid,List<String> quantities,List<String> unitPrices,String total,String requestdate, String expecteddeliverydate, ApproveStatus approvestatus, String note){
+    public PurchaseRequisition(String prid, List<String> itemids, String userid,List<String> quantities,List<String> unitPrices,String total,String requestdate, String expecteddeliverydate, ApproveStatus approvestatus, String note,boolean deleted){
         this.prid = prid;
         this.itemids = itemids;
         this.userid = userid;
@@ -51,7 +52,8 @@ public class PurchaseRequisition {
         this.requestdate = requestdate;
         this.expecteddeliverydate = expecteddeliverydate;
         this.approvestatus = approvestatus;
-        this.note =note;
+        this.note = note;
+        this.deleted = deleted;
     }
     public PurchaseRequisition() {
         this.itemids = new ArrayList<>();
@@ -144,7 +146,7 @@ public class PurchaseRequisition {
     
     @Override
     public String toString(){
-        return prid + "," + String.join("|", itemids) + "," + userid + "," + String.join("|", quantities) +","+ String.join("|",unitPrices)+"," + total+ "," + requestdate + "," + expecteddeliverydate + "," + approvestatus + "," + note;
+        return prid + "," + String.join("|", itemids) + "," + userid + "," + String.join("|", quantities) +","+ String.join("|",unitPrices)+"," + total+ "," + requestdate + "," + expecteddeliverydate + "," + approvestatus + "," + note + ","+deleted;
     } 
 
     
@@ -157,7 +159,14 @@ public class PurchaseRequisition {
         this.unitPrices = unitPrices;
     }
 
-    
-   
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
 
 }
