@@ -541,10 +541,10 @@ public class SM_DailySalesEntry extends javax.swing.JFrame {
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel13)
-                                .addGap(73, 73, 73)
+                                .addGap(49, 49, 49)
                                 .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jDateChooser2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(jDateChooser2, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jButton15)
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 588, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(25, 25, 25))))
@@ -645,7 +645,7 @@ public class SM_DailySalesEntry extends javax.swing.JFrame {
         
         
         if (qtystring.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Quantity cannot be empty." , "Input Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Quantity cannot be empty.");
             return;
         }
         if (salesdatamanager.findsalesid(salesid) != null) {
@@ -672,14 +672,16 @@ public class SM_DailySalesEntry extends javax.swing.JFrame {
             }
             int currentstock = Integer.parseInt(item.getInstockquantity());
             if (qty > currentstock){
-                 JOptionPane.showMessageDialog(null,"No enough stock.Current stock: "+currentstock,"Stock Error",JOptionPane.ERROR_MESSAGE);
+                 JOptionPane.showMessageDialog(null,"No enough stock.Current stock: "+currentstock,"Stock Error",JOptionPane.WARNING_MESSAGE);
                  return;
             }
 
             double unitretailprice = Double.parseDouble(item.getRetailprice());
             double amount = qty*unitretailprice;
+            String formattedretailprice = String.format("%.2f", unitretailprice);
+            String formattedamount= String.format("%.2f", amount);
             
-            IndividualSales sales = new IndividualSales(salesid, itemid, qtystring, String.valueOf(unitretailprice),String.valueOf(amount), date);
+            IndividualSales sales = new IndividualSales(salesid, itemid, qtystring,formattedretailprice,formattedamount,date);
             inventorydatamanager.deductQuantityAfterSale(itemid, qty);
             salesdatamanager.addIndividualSales(sales);
             JOptionPane.showMessageDialog(null, "Success","Information", JOptionPane.INFORMATION_MESSAGE);
@@ -696,8 +698,8 @@ public class SM_DailySalesEntry extends javax.swing.JFrame {
             String qtystr = jTextField2.getText();
             Date date = jDateChooser1.getDate();
 
-            if (salesid.isEmpty()|| itemid.isEmpty() || qtystr.isEmpty() || date==null) {
-                JOptionPane.showMessageDialog(this, "There is an unfilled field." , "Input Error", JOptionPane.ERROR_MESSAGE);
+            if (qtystr.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Quantity cannot be empty.");
                 return;
             }
             IndividualSales oldsales = salesdatamanager.findsalesid(salesid);
@@ -743,7 +745,7 @@ public class SM_DailySalesEntry extends javax.swing.JFrame {
             int revertQty = currentInStockQty + (itemid.equals(oldsales.getItemid()) ? oldQty : 0); // Only revert if item is same
 
             if (qty > revertQty) {
-                JOptionPane.showMessageDialog(this, "Entered quantity exceeds available stock (" + revertQty + ").", "Stock Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Entered quantity exceeds available stock (" + revertQty + ").", "Stock Error", JOptionPane.WARNING_MESSAGE);
                 return;
             }           
             if (!itemid.equals(oldsales.getItemid())) {
@@ -769,17 +771,19 @@ public class SM_DailySalesEntry extends javax.swing.JFrame {
             }
 
             amount = qty * retailprice;
-
+            String formattedretailprice = String.format("%.2f", retailprice);
+            String formattedamount= String.format("%.2f", amount);
+            
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
             String dateFormatted = df.format(date);
             inventorydatamanager.updateItemQuantityAfterSaleEdit(oldsales.getItemid(), oldQty, itemid, qty);
-            salesdatamanager.updateindividualsales(salesid, itemid, String.valueOf(qty), String.valueOf(retailprice), String.valueOf(amount), dateFormatted);
+            salesdatamanager.updateindividualsales(salesid, itemid, String.valueOf(qty),formattedretailprice,formattedamount, dateFormatted);
 
             fillTable1FromTxtFile();
             clearTextField();
             JOptionPane.showMessageDialog(this, "Sales record updated successfully!");
         } else {
-            JOptionPane.showMessageDialog(this, "Please select a single row to update.", "Selection Error", JOptionPane.WARNING_MESSAGE);   
+            JOptionPane.showMessageDialog(this, "Please select a single row to update.");   
                 }
     }//GEN-LAST:event_jButton12ActionPerformed
 
@@ -812,10 +816,10 @@ public class SM_DailySalesEntry extends javax.swing.JFrame {
                 salesdatamanager.deleteindividualsales(salesid);
                 fillTable1FromTxtFile();
                 clearTextField();
-                JOptionPane.showMessageDialog(null, "This sales deleted successfully");
+                JOptionPane.showMessageDialog(null, "This sales deleted successfully.");
             }
         }else{
-                JOptionPane.showMessageDialog(null, "Please select a sales from the table");
+                JOptionPane.showMessageDialog(null, "Please select a sales from the table.");
             }  
     }//GEN-LAST:event_jButton13ActionPerformed
 

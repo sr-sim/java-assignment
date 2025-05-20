@@ -18,7 +18,8 @@ public class SM_ViewPurchaseOrder extends javax.swing.JFrame{
     private InventoryDataManager inventorydatamanager;
     private SupplierDataManager supplierdatamanager = new SupplierDataManager();
     private SalesDataManager salesdatamanager = new SalesDataManager();
-    private PurchaseRequisitionManager prmanager = new PurchaseRequisitionManager();;
+    private PurchaseRequisitionManager prmanager = new PurchaseRequisitionManager();
+    private UserDataManager userManager = new UserDataManager();
     private boolean isEditMode;
     /**
      * Creates new form PM_Edit_Purchase_Order
@@ -42,12 +43,28 @@ public class SM_ViewPurchaseOrder extends javax.swing.JFrame{
         poId.setText("Purchase Requisition ID: " + selectedPO.getOrderId());
         prId.setText("Purchase OrderID: " + selectedPO.getRequestId());
         orderDate.setText("Order date: " + selectedPO.getOrderDate());
-        prCreator.setText("Created by: " +selectedPO.getUserId());
-        poCreator.setText("Authorized by: " + selectedPO.getPoCreator());
+        String prcreator = selectedPO.getUserId();
+        String pocreator = selectedPO.getPoCreator();
+        User userofprcreator = userManager.findUserByID(prcreator);
+        User userofpocreator = userManager.findUserByID(pocreator);
+        String prusername = (userofprcreator != null) ? userofprcreator.getFullname() : prcreator;
+        String pousername = (userofpocreator != null) ? userofpocreator.getFullname() : pocreator;
+        prCreator.setText("PR Created by: " + prusername);
+        poCreator.setText("Authorized by: " + pousername);
         subtotal.setText(String.format("Subtotal: " + "%.2f", selectedPO.getAmount()));
         receivedStatus.setText("Order Received Status:  " + selectedPO.getVerifyStatus());
         paymentStatus.setText("Payment Status:  " + selectedPO.getPaymentStatus());
-        
+        String status = selectedPO.getOrderStatus();
+        if ("approved".equals(status) || "reject".equals(status)) {
+            String statuschangeby = selectedPO.getPostatuschangeby();
+            User user = userManager.findUserByID(statuschangeby);
+            String username = (user != null) ? user.getFullname() : statuschangeby;
+
+            String labelPrefix = ("approved".equals(status)) ? "Approved by: " : "Rejected by: ";
+            StatusChangeBy.setText(labelPrefix + username);
+        } else {
+            StatusChangeBy.setText(""); 
+        }
         
         List<String> itemIds = selectedPO.getItemIds();
         List<String> quantities = selectedPO.getQuantities();
@@ -130,6 +147,7 @@ public class SM_ViewPurchaseOrder extends javax.swing.JFrame{
         jLabel5 = new javax.swing.JLabel();
         receivedStatus = new javax.swing.JLabel();
         paymentStatus = new javax.swing.JLabel();
+        StatusChangeBy = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -291,7 +309,7 @@ public class SM_ViewPurchaseOrder extends javax.swing.JFrame{
         jScrollPane1.setViewportView(jTable1);
 
         prCreator.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 14)); // NOI18N
-        prCreator.setText("Created by: ");
+        prCreator.setText("PR Created by: ");
 
         subtotal.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 14)); // NOI18N
         subtotal.setText("Subtotal: RM");
@@ -312,6 +330,9 @@ public class SM_ViewPurchaseOrder extends javax.swing.JFrame{
 
         paymentStatus.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 14)); // NOI18N
         paymentStatus.setText("Payment Status: ");
+
+        StatusChangeBy.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 14)); // NOI18N
+        StatusChangeBy.setText("");
 
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
         jPanel7.setLayout(jPanel7Layout);
@@ -346,7 +367,9 @@ public class SM_ViewPurchaseOrder extends javax.swing.JFrame{
                                         .addComponent(jLabel4)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(subtotal))
-                                    .addComponent(jLabel10))
+                                    .addComponent(jLabel10)
+                                    .addComponent(poCreator)
+                                    .addComponent(StatusChangeBy))
                                 .addGap(110, 110, 110))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
                                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -363,14 +386,11 @@ public class SM_ViewPurchaseOrder extends javax.swing.JFrame{
                                             .addComponent(orderDate)
                                             .addComponent(prCreator))))
                                 .addGap(63, 63, 63))))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
-                        .addComponent(receivedStatus)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanel7Layout.createSequentialGroup()
-                        .addComponent(paymentStatus)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(poCreator)
-                        .addGap(85, 85, 85))))
+                        .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(receivedStatus)
+                            .addComponent(paymentStatus))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -408,7 +428,9 @@ public class SM_ViewPurchaseOrder extends javax.swing.JFrame{
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel7Layout.createSequentialGroup()
-                        .addGap(0, 44, Short.MAX_VALUE)
+                        .addGap(0, 18, Short.MAX_VALUE)
+                        .addComponent(StatusChangeBy)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(paymentStatus)
                             .addComponent(poCreator))
@@ -536,6 +558,7 @@ public class SM_ViewPurchaseOrder extends javax.swing.JFrame{
 //    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel StatusChangeBy;
     private javax.swing.JButton jButton10;
     private javax.swing.JButton jButton17;
     private javax.swing.JButton jButton18;
