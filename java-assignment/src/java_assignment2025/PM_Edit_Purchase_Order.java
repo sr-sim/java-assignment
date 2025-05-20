@@ -495,25 +495,29 @@ public class PM_Edit_Purchase_Order extends javax.swing.JFrame {
         poId.setText("Purchase Requisition ID: " + selectedPO.getOrderId());
         prId.setText("Purchase OrderID: " + selectedPO.getRequestId());
         orderDate.setText("Order date: " + selectedPO.getOrderDate());
-        prCreator.setText("Created by: " +selectedPO.getUserId());
-        poCreator.setText("Authorized by: " + selectedPO.getPoCreator());
+        String prcreator = selectedPO.getUserId();
+        String pocreator = selectedPO.getPoCreator();
+        User userofprcreator = userManager.findUserByID(prcreator);
+        User userofpocreator = userManager.findUserByID(pocreator);
+        String prusername = (userofprcreator != null) ? userofprcreator.getFullname() : prcreator;
+        String pousername = (userofpocreator != null) ? userofpocreator.getFullname() : pocreator;
+        prCreator.setText("PR Created by: " + prusername);
+        poCreator.setText("Authorized by: " + pousername);
         subtotal.setText(String.format("Subtotal: " + "%.2f", selectedPO.getAmount()));
         receivedStatus.setText("Order Received Status:  " + selectedPO.getVerifyStatus());
         paymentStatus.setText("Payment Status:  " + selectedPO.getPaymentStatus());
         String status = selectedPO.getOrderStatus();
         if ("approved".equals(status) || "reject".equals(status)) {
             String statuschangeby = selectedPO.getPostatuschangeby();
-            User poCreatorUser = userManager.findUserByID(statuschangeby);
-            String poCreatorName = (poCreatorUser != null) ? poCreatorUser.getFullname() : statuschangeby;
+            User user = userManager.findUserByID(statuschangeby);
+            String userName = (user != null) ? user.getFullname() : statuschangeby;
 
             String labelPrefix = ("approved".equals(status)) ? "Approved by: " : "Rejected by: ";
-            jLabel6.setText(labelPrefix + poCreatorName);
+            jLabel6.setText(labelPrefix + userName);
         } else {
             jLabel6.setText(""); 
         }
 
-        
-        
         List<String> itemIds = selectedPO.getItemIds();
         List<String> quantities = selectedPO.getQuantities();
         List<String> unitPrices = selectedPO.getUnitPrices();

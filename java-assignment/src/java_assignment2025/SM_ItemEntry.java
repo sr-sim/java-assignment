@@ -716,35 +716,35 @@ public class SM_ItemEntry extends javax.swing.JFrame {
                     inventorydatamanager.markitemasDeleted(itemId);
                     fillTable1FromTxtFile();
                     clearTextField();
-                    JOptionPane.showMessageDialog(null, "Item deleted successfully.");
+                    JOptionPane.showMessageDialog(null, "Item deleted successfully");
                 }
                 break;
 
                 case "cannot_delete_pending_pr":
                 JOptionPane.showMessageDialog(null,
-                    "Cannot delete this item because it is in a pending Purchase Requisition.\n" +
-                    "Please delete the pending PR first.");
+                    "Cannot delete this item because it is in a pending Purchase Requisition\n" +
+                    "Please delete the pending PR first");
                 break;
 
                 case "cannot_delete_approved_pr_po_not_paid":
                 JOptionPane.showMessageDialog(null,
-                    "Cannot delete this item because its PR is approved and PO is not paid or not fully approved.");
+                    "Cannot delete this item because its PR is approved and PO is not paid or not fully approved");
                 break;
 
                 case "cannot_delete_rejected_pr":
                 JOptionPane.showMessageDialog(null,
-                    "Cannot delete this item because it is in a rejected PR.\n" +
-                    "Please delete the PR first.");
+                    "Cannot delete this item because it is in a rejected PR\n" +
+                    "Please delete the PR first");
                 break;
 
                 default:
                 JOptionPane.showMessageDialog(null,
-                    "This item cannot be deleted due to unknown status.");
+                    "This item cannot be deleted due to unknown status");
                 break;
             }
 
         } else {
-            JOptionPane.showMessageDialog(null, "Please select an item from the table.");
+            JOptionPane.showMessageDialog(null, "Please select an item from the table");
         }
     }//GEN-LAST:event_jButton3ActionPerformed
 
@@ -761,15 +761,15 @@ public class SM_ItemEntry extends javax.swing.JFrame {
             String itemdesc = jTextArea1.getText();
 
             if (itemname.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Item name cannot be empty.");
+                JOptionPane.showMessageDialog(this, "Item name cannot be empty");
                 return;
             }
             if (unitpricestr.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Unit price cannot be empty.");
+                JOptionPane.showMessageDialog(this, "Unit price cannot be empty");
                 return;
             }
             if (retailpricestr.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Retail price cannot be empty.");
+                JOptionPane.showMessageDialog(this, "Retail price cannot be empty");
                 return;
             }
 
@@ -779,17 +779,17 @@ public class SM_ItemEntry extends javax.swing.JFrame {
             try{
                 unitprice = Double.parseDouble(unitpricestr);
             }catch(NumberFormatException e){
-                JOptionPane.showMessageDialog(this, "Unit price must be numeric.");
+                JOptionPane.showMessageDialog(this, "Unit price must be numeric");
                 return;
             }
             try{
                 retailprice = Double.parseDouble(retailpricestr);
             }catch(NumberFormatException e){
-                JOptionPane.showMessageDialog(this, "Retail price must be numeric.");
+                JOptionPane.showMessageDialog(this, "Retail price must be numeric");
                 return;
             }
             if(unitprice > retailprice){
-                JOptionPane.showMessageDialog(this, "Unit price cannot be more than retail price.");
+                JOptionPane.showMessageDialog(this, "Unit price cannot be more than retail price");
                 return;
             }
 
@@ -816,7 +816,7 @@ public class SM_ItemEntry extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Update Successfully!");
             clearTextField();
         }else{
-            JOptionPane.showMessageDialog(this, "Please select single row for update");
+            JOptionPane.showMessageDialog(this, "Please select single row to update");
         }
     }//GEN-LAST:event_jButton2ActionPerformed
 
@@ -835,20 +835,20 @@ public class SM_ItemEntry extends javax.swing.JFrame {
         boolean deleted = false;
 
         if (inventorydatamanager.finditemid(itemid) != null) {
-            JOptionPane.showMessageDialog(this, "Item ID already exists.", "Duplicate ID", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Item ID already exists", "Duplicate ID", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         if (itemname.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Item name cannot be empty.");
+            JOptionPane.showMessageDialog(this, "Item name cannot be empty");
             return;
         }
         if (unitpricestr.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Unit price cannot be empty.");
+            JOptionPane.showMessageDialog(this, "Unit price cannot be empty");
             return;
         }
         if (retailpricestr.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Retail price cannot be empty.");
+            JOptionPane.showMessageDialog(this, "Retail price cannot be empty");
             return;
         }
         double unitprice;
@@ -856,17 +856,17 @@ public class SM_ItemEntry extends javax.swing.JFrame {
         try{
             unitprice = Double.parseDouble(unitpricestr);
         }catch(NumberFormatException e){
-            JOptionPane.showMessageDialog(this, "Unit price must be numeric.");
+            JOptionPane.showMessageDialog(this, "Unit price must be numeric","Unit Price Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
         try{
             retailprice = Double.parseDouble(retailpricestr);
         }catch(NumberFormatException e){
-            JOptionPane.showMessageDialog(this, "Retail price must be numeric.");
+            JOptionPane.showMessageDialog(this, "Retail price must be numeric","Retail Price Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
         if(unitprice > retailprice){
-            JOptionPane.showMessageDialog(this, "Unit price cannot be more than retail price.");
+            JOptionPane.showMessageDialog(this, "Unit price cannot be more than retail price","Input Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
         String formattedUnitPrice = String.format("%.2f", unitprice);

@@ -202,10 +202,10 @@
                           <Group type="103" groupAlignment="1" attributes="0">
                               <Group type="102" attributes="0">
                                   <Component id="jLabel13" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace min="-2" pref="73" max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" pref="49" max="-2" attributes="0"/>
                                   <Component id="jComboBox2" min="-2" pref="86" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="jDateChooser2" min="-2" max="-2" attributes="0"/>
+                                  <Component id="jDateChooser2" min="-2" pref="112" max="-2" attributes="0"/>
                               </Group>
                               <Component id="jButton15" min="-2" max="-2" attributes="0"/>
                               <Component id="jScrollPane1" min="-2" pref="588" max="-2" attributes="0"/>
