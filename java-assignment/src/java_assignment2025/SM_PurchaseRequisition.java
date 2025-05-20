@@ -389,8 +389,8 @@ public class SM_PurchaseRequisition extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton9ActionPerformed
 
     private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
-//        new SM_PurchaseOrder(salesmanager).setVisible(true);
-//        this.dispose();
+        new SM_PurchaseOrder().setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_jButton10ActionPerformed
 
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
@@ -406,6 +406,7 @@ public class SM_PurchaseRequisition extends javax.swing.JFrame {
         PurchaseRequisition selectedpr = getselectedPR();
         if (selectedpr != null){
             new SM_Create_Purchase_Requisition(prmanager,inventorydatamanager,PRformMode.view,selectedpr).setVisible(true);
+            this.dispose();
         }
     }//GEN-LAST:event_jButton2ActionPerformed
 
@@ -420,6 +421,7 @@ public class SM_PurchaseRequisition extends javax.swing.JFrame {
                 return;
             }
             new SM_Create_Purchase_Requisition(prmanager,inventorydatamanager,PRformMode.edit,selectedpr).setVisible(true);
+            this.dispose();
         }
     }//GEN-LAST:event_jButton3ActionPerformed
 

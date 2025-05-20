@@ -19,6 +19,7 @@ public class PM_Edit_Purchase_Order extends javax.swing.JFrame {
     private PurchaseOrder selectedPO;
     private PurchaseOrderManager pomanager;
     private InventoryDataManager inventorydatamanager;
+    private UserDataManager userManager = new UserDataManager();
     private boolean isEditMode;
     /**
      * Creates new form PM_Edit_Purchase_Order
@@ -75,6 +76,7 @@ public class PM_Edit_Purchase_Order extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         receivedStatus = new javax.swing.JLabel();
         paymentStatus = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
         btnSave = new javax.swing.JButton();
         jLabel20 = new javax.swing.JLabel();
         supplierList = new javax.swing.JComboBox<>();
@@ -157,18 +159,12 @@ public class PM_Edit_Purchase_Order extends javax.swing.JFrame {
         paymentStatus.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 14)); // NOI18N
         paymentStatus.setText("Payment Status: ");
 
+        jLabel6.setText("jLabel6");
+
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
         jPanel7.setLayout(jPanel7Layout);
         jPanel7Layout.setHorizontalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel15)
-                    .addGroup(jPanel7Layout.createSequentialGroup()
-                        .addGap(163, 163, 163)
-                        .addComponent(jLabel3)))
-                .addGap(478, 478, 478))
             .addGroup(jPanel7Layout.createSequentialGroup()
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel7Layout.createSequentialGroup()
@@ -215,6 +211,19 @@ public class PM_Edit_Purchase_Order extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(poCreator)
                         .addGap(85, 85, 85))))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
+                        .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel15)
+                            .addGroup(jPanel7Layout.createSequentialGroup()
+                                .addGap(163, 163, 163)
+                                .addComponent(jLabel3)))
+                        .addGap(478, 478, 478))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
+                        .addComponent(jLabel6)
+                        .addGap(160, 160, 160))))
         );
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -247,8 +256,10 @@ public class PM_Edit_Purchase_Order extends javax.swing.JFrame {
                     .addComponent(jLabel4))
                 .addGap(34, 34, 34)
                 .addComponent(jLabel5)
-                .addGap(30, 30, 30)
-                .addComponent(jLabel10)
+                .addGap(14, 14, 14)
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel10)
+                    .addComponent(jLabel6))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel7Layout.createSequentialGroup()
@@ -416,7 +427,7 @@ public class PM_Edit_Purchase_Order extends javax.swing.JFrame {
                                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                             .addComponent(jLabel20, javax.swing.GroupLayout.Alignment.TRAILING)
                                             .addComponent(jLabel21))
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 24, Short.MAX_VALUE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 37, Short.MAX_VALUE)
                                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                             .addComponent(supplierList, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
                                             .addComponent(txtQuantity, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -489,6 +500,18 @@ public class PM_Edit_Purchase_Order extends javax.swing.JFrame {
         subtotal.setText(String.format("Subtotal: " + "%.2f", selectedPO.getAmount()));
         receivedStatus.setText("Order Received Status:  " + selectedPO.getVerifyStatus());
         paymentStatus.setText("Payment Status:  " + selectedPO.getPaymentStatus());
+        String status = selectedPO.getOrderStatus();
+        if ("approved".equals(status) || "reject".equals(status)) {
+            String statuschangeby = selectedPO.getPostatuschangeby();
+            User poCreatorUser = userManager.findUserByID(statuschangeby);
+            String poCreatorName = (poCreatorUser != null) ? poCreatorUser.getFullname() : statuschangeby;
+
+            String labelPrefix = ("approved".equals(status)) ? "Approved by: " : "Rejected by: ";
+            jLabel6.setText(labelPrefix + poCreatorName);
+        } else {
+            jLabel6.setText(""); 
+        }
+
         
         
         List<String> itemIds = selectedPO.getItemIds();
@@ -785,6 +808,7 @@ public class PM_Edit_Purchase_Order extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel3;

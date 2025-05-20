@@ -13,6 +13,7 @@ public class SalesDataManager {
     private final List<IndividualSales>individualsaleslist;
     private final List<DailySales>dailysaleslist;
     private final TextFile textfile;
+    private final InventoryDataManager inventorydatamanager = new InventoryDataManager();
     private final String individualsalesfilepath = "src/java_assignment2025/sales.txt";
     private final String dailysalesfilepath = "src/java_assignment2025/dailysales.txt";
     
@@ -92,6 +93,7 @@ public class SalesDataManager {
                 String itemid = individualsales.getItemid();
                 String date = individualsales.getDateofsales();
                 String amount = individualsales.getAmount();
+                String qtyStr = individualsales.getQuantity();
                 individualsaleslist.remove(individualsales);
                 textfile.deleteLine(individualsalesfilepath, individualsales.toString());
                 System.out.println("delete successful");
@@ -100,6 +102,7 @@ public class SalesDataManager {
                 System.out.println("individualsales not found");
             } 
     }
+
 //    public void updateindividualsales(IndividualSales oldindividualsales, IndividualSales newindividualsales){
 //        if(individualsaleslist.contains(oldindividualsales)){
 //            String oldItemId = oldindividualsales.getItemid();
