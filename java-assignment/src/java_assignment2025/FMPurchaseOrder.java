@@ -91,7 +91,7 @@ public class FMPurchaseOrder extends javax.swing.JFrame {
     
     
 }
-    private void updatePOStatus(String newStatus) {
+    private void updatePOStatus(String userid,String newStatus) {
     int selectedRow = jTable1.getSelectedRow();
 
     if (selectedRow == -1) {
@@ -112,6 +112,7 @@ public class FMPurchaseOrder extends javax.swing.JFrame {
         }
         
         String oldLine = po.toString();
+        po.setPostatuschangeby(userid);
         po.setOrderStatus(newStatus);
         String newLine = po.toString();
 
@@ -485,11 +486,13 @@ public class FMPurchaseOrder extends javax.swing.JFrame {
     }//GEN-LAST:event_donDeleteMeActionPerformed
 
     private void approveBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_approveBtnActionPerformed
-        updatePOStatus("approved");
+        String userid = fm.getUserId();        
+        updatePOStatus(userid,"approved");
     }//GEN-LAST:event_approveBtnActionPerformed
 
     private void rejectBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rejectBtnActionPerformed
-        updatePOStatus("rejected");
+        String userid = fm.getUserId();
+        updatePOStatus(userid,"rejected");
     }//GEN-LAST:event_rejectBtnActionPerformed
 
     private void donDeleteMe1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_donDeleteMe1ActionPerformed

@@ -28,8 +28,8 @@ public class PurchaseOrderManager extends DataManager {
          
         List<String> lines = textfile.readFile(pofilepath);
         for (String line : lines) {
-            String[] parts = line.split(",", 13);
-            if (parts.length == 13) {
+            String[] parts = line.split(",", 14);
+            if (parts.length == 14) {
                 List<String> itemids = Arrays.asList(parts[4].trim().split("\\|"));
                 List<String> unitPrices = Arrays.asList(parts[5].trim().split("\\|"));
                 List<String> quantities = Arrays.asList(parts[6].trim().split("\\|"));
@@ -47,7 +47,8 @@ public class PurchaseOrderManager extends DataManager {
                         parts[9].trim(),
                         parts[10].trim(),
                         parts[11].trim(),
-                        parts[12].trim())
+                        parts[12].trim(),
+                        parts[13].trim())
                        
                 );
             }

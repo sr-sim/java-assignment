@@ -5,6 +5,7 @@
 package java_assignment2025;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
@@ -31,17 +32,50 @@ public class SM_DailySummary extends javax.swing.JFrame {
         jComboBox1.setSelectedItem("All");
         Date today = new Date();
         jDateChooser1.setDate(today);
-        jDateChooser1.addPropertyChangeListener("date", evt -> fillTable1FromTxtFile());
+                jDateChooser1.addPropertyChangeListener("date", evt -> {
+                fillComboBoxFromitemList();
+                jComboBox1.setSelectedItem("All");
+                fillTable1FromTxtFile();
+        });
+        fillComboBoxFromitemList();
+        jComboBox1.setSelectedItem("All");
         fillTable1FromTxtFile();
     }
     
     private void fillComboBoxFromitemList() {
+        jComboBox1.removeAllItems();
         jComboBox1.addItem("All");
-        for (Item item : inventorydatamanager.getinventorylist()) {
-            String comboBoxItem = item.getItemid() + " - " + item.getItemname();
-            jComboBox1.addItem(comboBoxItem);
+        
+        java.util.Date selectedDate = jDateChooser1.getDate();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String formattedSelectedDate = (selectedDate != null) ? sdf.format(selectedDate) : null;
+        
+        ArrayList<String> addeditems = new ArrayList<>();
+        for (IndividualSales sales : salesdatamanager.getindividualsaleslist()) {
+        String dateofsales = sales.getDateofsales();
+
+        if (formattedSelectedDate != null && dateofsales.equals(formattedSelectedDate)) {
+            String itemid = sales.getItemid();
+
+            boolean alreadyExists = false;
+            for (String id : addeditems) {
+                if (id.equals(itemid)) {
+                    alreadyExists = true;
+                    break;
+                }
             }
+
+            if (!alreadyExists) {
+                Item item = inventorydatamanager.finditemid(itemid);
+                if (item != null) {
+                    String comboBoxItem = item.getItemid() + " - " + item.getItemname();
+                    jComboBox1.addItem(comboBoxItem);
+                    addeditems.add(itemid);
+                }
+            }
+        }
     }
+}
     
     public void fillTable1FromTxtFile() {
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
@@ -50,7 +84,7 @@ public class SM_DailySummary extends javax.swing.JFrame {
         String selected =(String)jComboBox1.getSelectedItem();
         String selectedItemId = null;
 
-        if (!"All".equals(selected)) {
+        if (selected != null && !"All".equals(selected)) {
             selectedItemId = selected.split(" - ")[0];
         }
         
@@ -65,7 +99,7 @@ public class SM_DailySummary extends javax.swing.JFrame {
         for (DailySales sales : dailyList) {
             String itemid = sales.getItemid();
             String date = sales.getDateofsales();
-            if (selectedItemId != null && !itemid.equals(selectedItemId) || (formattedSelectedDate != null && !date.equals(formattedSelectedDate))) {
+            if ((selectedItemId != null && !itemid.equals(selectedItemId)) || (formattedSelectedDate != null && !date.equals(formattedSelectedDate))) {
                 continue;
             }
             String total = sales.getTotalsales();
@@ -331,8 +365,8 @@ public class SM_DailySummary extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
-//        new SM_PurchaseOrder(salesmanager).setVisible(true);
-//        this.dispose();
+        new SM_PurchaseOrder().setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_jButton10ActionPerformed
 
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
