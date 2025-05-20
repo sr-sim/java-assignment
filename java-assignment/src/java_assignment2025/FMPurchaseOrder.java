@@ -5,6 +5,8 @@
 package java_assignment2025;
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
 import java.util.List;
@@ -12,6 +14,7 @@ import static java_assignment2025.FinanceReport.exportJTableToJasper;
 import static java_assignment2025.PurchaseOrderManager.findSupplierNameById;
 import javax.swing.BorderFactory;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -232,6 +235,7 @@ public class FMPurchaseOrder extends javax.swing.JFrame {
         donDeleteMe1 = new javax.swing.JButton();
         rejectBtn1 = new javax.swing.JButton();
         jComboBox2 = new javax.swing.JComboBox<>();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -382,6 +386,13 @@ public class FMPurchaseOrder extends javax.swing.JFrame {
     jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" }));
     jComboBox2.setPreferredSize(new java.awt.Dimension(72, 25));
 
+    jButton1.setText("Edit");
+    jButton1.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            jButton1ActionPerformed(evt);
+        }
+    });
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
@@ -400,6 +411,10 @@ public class FMPurchaseOrder extends javax.swing.JFrame {
             .addGap(49, 49, 49)
             .addComponent(rejectBtn1)
             .addGap(25, 25, 25))
+        .addGroup(layout.createSequentialGroup()
+            .addGap(336, 336, 336)
+            .addComponent(jButton1)
+            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
@@ -420,7 +435,9 @@ public class FMPurchaseOrder extends javax.swing.JFrame {
     layout.setVerticalGroup(
         layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
         .addGroup(layout.createSequentialGroup()
-            .addContainerGap(522, Short.MAX_VALUE)
+            .addGap(54, 54, 54)
+            .addComponent(jButton1)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 445, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                 .addComponent(approveBtn)
                 .addComponent(rejectBtn)
@@ -497,6 +514,38 @@ public class FMPurchaseOrder extends javax.swing.JFrame {
 
     }//GEN-LAST:event_rejectBtn1ActionPerformed
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        int selectedRow = jTable1.getSelectedRow();
+        if (selectedRow != -1) {
+            String approvedStatus = jTable1.getValueAt(selectedRow, 11).toString();
+
+            if ("pending".equalsIgnoreCase(approvedStatus)) {
+                String poId = jTable1.getValueAt(selectedRow, 0).toString();
+                PurchaseOrder selectedPO = poManager.findpoid(poId);
+
+                // Create and show edit frame
+                PM_Edit_Purchase_Order editFrame = new PM_Edit_Purchase_Order(selectedPO, poManager, inventoryManager, true);
+                editFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+                // Show main PO frame again after edit frame is closed
+                editFrame.addWindowListener(new WindowAdapter() {
+                    @Override
+                    public void windowClosed(WindowEvent e) {
+                        setVisible(true); // This refers to the current PO JFrame
+                        refreshTable();
+                    }
+                });
+
+                setVisible(false); // Hide main PO frame
+                editFrame.setVisible(true);
+            } else {
+                JOptionPane.showMessageDialog(null, "Approved PO cannot be edited");
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Please select a row to edit.");
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -536,6 +585,7 @@ public class FMPurchaseOrder extends javax.swing.JFrame {
     private javax.swing.JButton approveBtn;
     private javax.swing.JButton donDeleteMe;
     private javax.swing.JButton donDeleteMe1;
+    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
     private javax.swing.JButton jButton8;

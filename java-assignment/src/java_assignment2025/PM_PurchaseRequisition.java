@@ -508,7 +508,8 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
             System.out.println(poLine);
             TextFile.appendTo("src/java_assignment2025/PurchaseOrder.txt", poLine);
             JOptionPane.showMessageDialog(null, "Purchase Order generated successfully.");
-             new PMPurchaseOrder().setVisible(true);
+            this.dispose();
+            new PMPurchaseOrder().setVisible(true);
         } else {
             JOptionPane.showMessageDialog(null, "No valid items to generate PO. All were duplicates.");
         }
