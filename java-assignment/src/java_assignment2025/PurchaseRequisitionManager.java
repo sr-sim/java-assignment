@@ -26,8 +26,8 @@ public class PurchaseRequisitionManager {
     public void loadAllprfromtxtfile() {
         List<String> lines = textfile.readFile(prfilepath);
         for (String line : lines) {
-            String[] parts = line.split(",", 11);
-            if (parts.length == 11) {
+            String[] parts = line.split(",", 12);
+            if (parts.length == 12) {
                 boolean isdeleted = Boolean.parseBoolean(parts[10].trim());
                     List<String> itemids = Arrays.asList(parts[1].trim().split("\\|"));
                     List<String> quantities = Arrays.asList(parts[3].trim().split("\\|"));
@@ -43,6 +43,7 @@ public class PurchaseRequisitionManager {
                             parts[7].trim(),
                             PurchaseRequisition.ApproveStatus.fromString(parts[8].trim()),
                             parts[9].trim(),
+                            parts[10].trim(),
                             isdeleted
                     ));
             }
@@ -88,7 +89,7 @@ public class PurchaseRequisitionManager {
                 System.out.println("pr not found");
             } 
     }
-    public void updatepr(String prid, List<String> itemids, String userid, List<String> quantities,List<String> unitprices, String total,String requestdate,String expecteddeliverydate,PurchaseRequisition.ApproveStatus status,String note, boolean isdeleted) {
+    public void updatepr(String prid, List<String> itemids, String userid, List<String> quantities,List<String> unitprices, String total,String requestdate,String expecteddeliverydate,PurchaseRequisition.ApproveStatus status,String statuschangeby,String note, boolean isdeleted) {
         PurchaseRequisition existingpr= findprid(prid);
         if (existingpr != null) {
             existingpr.setPrid(prid);
@@ -100,6 +101,7 @@ public class PurchaseRequisitionManager {
             existingpr.setRequestdate(requestdate);
             existingpr.setExpecteddeliverydate(expecteddeliverydate);
             existingpr.setApprovestatus(status);
+            existingpr.setStatuschangeby(statuschangeby);
             existingpr.setNote(note);
             existingpr.setDeleted(isdeleted);
             textfile.rewriteFile(prfilepath, prlist);

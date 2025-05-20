@@ -26,6 +26,7 @@ import javax.swing.table.TableRowSorter;
 public class PM_PurchaseRequisition extends javax.swing.JFrame {
     private PurchaseRequisitionManager prmanager;
     private InventoryDataManager inventorydatamanager;
+    private PurchaseManager pm;
    
      //search functionfrom Pr list
     public void search(String str){
@@ -41,6 +42,7 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
      */
     public PM_PurchaseRequisition() {
         initComponents();
+        this.pm = (PurchaseManager)Session.getCurrentUser();
         this.prmanager = new PurchaseRequisitionManager();
         this.inventorydatamanager = new InventoryDataManager();
         fillTableFromTxtFile();
@@ -109,7 +111,6 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
         jButton7 = new javax.swing.JButton();
         jButton8 = new javax.swing.JButton();
         jButton9 = new javax.swing.JButton();
-        jButton10 = new javax.swing.JButton();
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
@@ -145,7 +146,7 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
         jLabel2.setFont(new java.awt.Font("Times New Roman", 1, 16)); // NOI18N
         jLabel2.setText("  Omega Wholesale Sdn Bhd ");
 
-        jButton6.setText("Item LIst");
+        jButton6.setText("Item List");
         jButton6.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton6ActionPerformed(evt);
@@ -173,13 +174,6 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
             }
         });
 
-        jButton10.setText("Received Order");
-        jButton10.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton10ActionPerformed(evt);
-            }
-        });
-
         jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel8.setText("______________________________________________");
 
@@ -197,18 +191,18 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(20, 20, 20)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
-                                .addGap(4, 4, 4)
-                                .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addComponent(jButton7, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton8, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton9, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton10, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGap(79, 79, 79)
-                        .addComponent(jLabel9)))
+                        .addComponent(jLabel9))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(20, 20, 20)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
+                                    .addGap(4, 4, 4)
+                                    .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addComponent(jButton8, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jButton9, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
@@ -220,16 +214,14 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
                 .addComponent(jLabel9)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel8)
-                .addGap(52, 52, 52)
+                .addGap(65, 65, 65)
                 .addComponent(jButton6)
-                .addGap(18, 18, 18)
+                .addGap(31, 31, 31)
                 .addComponent(jButton7)
-                .addGap(18, 18, 18)
+                .addGap(36, 36, 36)
                 .addComponent(jButton8)
-                .addGap(18, 18, 18)
+                .addGap(38, 38, 38)
                 .addComponent(jButton9)
-                .addGap(18, 18, 18)
-                .addComponent(jButton10)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -278,29 +270,30 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(604, 604, 604)
-                        .addComponent(saveMe)
-                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(479, 479, 479))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(57, 57, 57)
-                        .addComponent(jLabel4)
-                        .addGap(127, 127, 127)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(249, 249, 249)
-                                .addComponent(jLabel13)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(createPurchaseOrder))
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 946, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addContainerGap(133, Short.MAX_VALUE))))
+                                .addGap(57, 57, 57)
+                                .addComponent(jLabel4)
+                                .addGap(118, 118, 118)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(249, 249, 249)
+                                        .addComponent(jLabel13)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(createPurchaseOrder))
+                                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 946, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(604, 604, 604)
+                                .addComponent(saveMe)))
+                        .addContainerGap(142, Short.MAX_VALUE))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -368,34 +361,30 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
         //        this.dispose();
     }//GEN-LAST:event_jButton9ActionPerformed
 
-    private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
-        //        new SM_PurchaseOrder(salesmanager).setVisible(true);
-        //        this.dispose();
-    }//GEN-LAST:event_jButton10ActionPerformed
-
     private void saveMeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveMeActionPerformed
         // save changes button
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
         System.out.println("Column count at initialization: " + model.getColumnCount());
-        boolean savedChanges = false;
-        
 
-        for(int i=0; i< model.getRowCount(); i++){ //studpid me waste 30min solve this
-            String prid = model.getValueAt(i,0).toString();
-            String updatedStatus = model.getValueAt(i,9).toString();
-            
-            
+        boolean savedChanges = false;
+
+        for (int i = 0; i < model.getRowCount(); i++) {
+            String prid = model.getValueAt(i, 0).toString();
+            String updatedStatus = model.getValueAt(i, 10).toString(); // Column 10 = status
+
             PurchaseRequisition oldpr = prmanager.findprid(prid);
-            if (oldpr != null && !oldpr.getApprovestatus().toString().equals(updatedStatus)) {
-                // Status has changed, confirm before saving
+
+            if (oldpr != null && !oldpr.getApprovestatus().toString().equalsIgnoreCase(updatedStatus)) {
+                // Status changed — ask user
                 int confirm = JOptionPane.showConfirmDialog(
                     null,
-                    "Do you want to change the status of PR ID " + prid + " to " + updatedStatus + "?",
+                    "Do you want to change the status of " + prid + " to " + updatedStatus + "?",
                     "Confirm Save",
                     JOptionPane.YES_NO_OPTION
                 );
-                
+
                 if (confirm == JOptionPane.YES_OPTION) {
+                    // Use the manager's update method (it handles rewrite automatically)
                     prmanager.updatepr(
                         oldpr.getPrid(),
                         oldpr.getItemids(),
@@ -406,25 +395,25 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
                         oldpr.getRequestdate(),
                         oldpr.getExpecteddeliverydate(),
                         PurchaseRequisition.ApproveStatus.fromString(updatedStatus),
+                        pm.getUserId(),
                         oldpr.getNote(),
                         oldpr.isDeleted()
                     );
+
                     savedChanges = true;
                 } else {
-                    // Revert change visually if cancelled
-                    model.setValueAt(oldpr.getApprovestatus().toString(), i, 9);
+                    // Revert change in the table
+                    model.setValueAt(oldpr.getApprovestatus().toString(), i, 10);
                 }
-                
-                if (savedChanges) {
-                    JOptionPane.showMessageDialog(null, "Changes saved successfully.");
-                } else {
-                    JOptionPane.showMessageDialog(null, "No changes were saved.");
-                }
-
-             }
-            
-            
+            }
         }
+
+        if (savedChanges) {
+            JOptionPane.showMessageDialog(null, "Changes saved successfully.");
+        } else {
+            JOptionPane.showMessageDialog(null, "No changes were saved.");
+        }
+
         
     }//GEN-LAST:event_saveMeActionPerformed
 
@@ -443,12 +432,8 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
             return;
         }
 
-        // Check if status is approved
-        String status = jTable1.getValueAt(selectedRow, 10).toString().trim().toLowerCase();
-        if (!status.equals("approved")) {
-            JOptionPane.showMessageDialog(null, "Only approved requests can generate a Purchase Order.");
-            return;
-        }
+        
+
         // Confirm with user before proceeding
         int confirm = JOptionPane.showConfirmDialog(null, "Are you sure you want to generate the PO?", "Confirmation", JOptionPane.YES_NO_OPTION);
         if (confirm != JOptionPane.YES_OPTION) {
@@ -471,23 +456,22 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
         List<String> validQuantities = new ArrayList<>();
         List<String> validUnitPrices = new ArrayList<>();
         List<String> supplierIds = new ArrayList<>();
-
+        
         List<String> existingPOs = TextFile.readFile("src/java_assignment2025/PurchaseOrder.txt");
 
         for (int i = 0; i < itemIdList.length; i++) {
             String itemId = itemIdList[i].trim();
             String unitprice= unitPriceList[i].trim();
             String quantity = quantityList[i].trim();
-            
 
-            // Check for duplicate PO (based on requestId and itemId)
+            // Check for duplicate PO (based on requestId )
             boolean isDuplicate = existingPOs.stream().anyMatch(line -> {
                 String[] parts = line.split(",");
-                return parts.length >= 4 && parts[1].equals(requestId) && Arrays.asList(parts[3].split("\\|")).contains(itemId);
+                return parts.length >= 4 && parts[2].equals(requestId);
             });
 
             if (isDuplicate) {
-                JOptionPane.showMessageDialog(null, "PO for Request ID " + requestId + " and Item ID " + itemId + " already exists. Skipping this item...");
+                JOptionPane.showMessageDialog(null, "PO for Request ID " + requestId  + " already exists. ");
                 return;
             }
 
@@ -504,7 +488,7 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
         // Only create PO if there are valid items
         if (!validItemIds.isEmpty()) {
             String nextPoId = PurchaseOrder.getNextOrderId();
-            String poCreator = "MACY";
+            String poCreator = pm.getUserId();
             PurchaseOrder po = new PurchaseOrder(
                 nextPoId,
                 poCreator,
@@ -518,7 +502,8 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
                 PurchaseOrderManager.getCurrentDate(),
                 "pending",
                 "pending",
-                "unpaid"
+                "unpaid",
+                "unknown"
             );
 
             // Write to file
@@ -526,7 +511,8 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
             System.out.println(poLine);
             TextFile.appendTo("src/java_assignment2025/PurchaseOrder.txt", poLine);
             JOptionPane.showMessageDialog(null, "Purchase Order generated successfully.");
-             new PMPurchaseOrder().setVisible(true);
+            this.dispose();
+            new PMPurchaseOrder().setVisible(true);
         } else {
             JOptionPane.showMessageDialog(null, "No valid items to generate PO. All were duplicates.");
         }
@@ -574,7 +560,6 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton createPurchaseOrder;
-    private javax.swing.JButton jButton10;
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
     private javax.swing.JButton jButton8;

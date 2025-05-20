@@ -6,18 +6,20 @@ package java_assignment2025;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
  *
  * @author ASUS
  */
-public class UserDataManager {
+public class UserDataManager extends DataManager{
     private final List<User> users;
     private int currentIndex;
-    private static final String FILEPATH = "src/java_assignment2025/user.txt";
+    private final String FILEPATH = "src/java_assignment2025/user.txt";
 
     public UserDataManager() {
+        super();
         this.users = loadAllUsers();
     }
 
@@ -27,7 +29,6 @@ public class UserDataManager {
             String[] parts = line.split("`", 8);
             if(parts.length == 8){
                 userList.add(createUserFromData(parts));
-                System.out.println(parts.length == 0 ? "Nothing here" : parts[1]);
             }
         }
         this.currentIndex = userList.isEmpty() ? 0 : 
@@ -58,7 +59,7 @@ public class UserDataManager {
     
     private User createUserFromData(String[] data) {
         boolean isActive = data[7].equalsIgnoreCase("active");
-        Role role = Role.convertFromData(data[6]);
+        Role role = Role.convertFromAbbr(data[6]);
         return switch (role) {
             case ADMIN -> new Administrator(data[0], data[1], data[2], data[3], data[4], data[5], isActive);
             case SALES_MANAGER -> new SalesManager(data[0], data[1], data[2], data[3], data[4], data[5], isActive);
@@ -68,8 +69,120 @@ public class UserDataManager {
         };
     }
     
+    private User checkUsernameExist(String username){
+        for (User user : getAllActiveUsers()){
+            if (user.getUsername().equals(username)){return user;}
+        }
+        return null;
+    }
+    
+    private User checkEmailExist(String email){
+        for (User user : getAllActiveUsers()){
+            if (user.getEmail().equals(email)){return user;}
+        }
+        return null;
+    }
+    
+    private User checkContactExist(String contact){
+        for (User user : getAllActiveUsers()){
+            if (user.getContact().equals(contact)){return user;}
+        }
+        return null;
+    }
+    
+    public String validateUsername(String username, User user) {
+        if (username.isEmpty()) return "- Username cannot be empty.\n";
+        if (username.matches(".*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/? ].*")) {
+            return "- Username should not contain special characters!\n";
+        }
+        if (checkUsernameExist(username) != null &&
+                (user == null || !Objects.equals(username, user.getUsername()))) {
+            return "- Username has been taken!\n";
+        }
+        return "";
+    }
+
+    public String validatePassword(String password) {
+        if (password.isEmpty()) return "- Password cannot be empty.\n";
+        if (password.length() < 8) return "- Password must be at least 8 characters long.\n";
+        if (password.contains("`") || password.contains("\"") || password.contains("\\")) {
+            return "- Password cannot contain special characters such as \", `, or \\.\n";
+        }
+        return "";
+    }
+
+    public String validateFullname(String fullname) {
+        if (fullname.isEmpty()) return "- Fullname cannot be empty.\n";
+        if (fullname.matches(".*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?].*") || fullname.matches(".*\\d.*")) {
+            return "- Fullname should not contain any numbers or special characters.\n";
+        }
+        return "";
+    }
+
+    public String validateEmail(String email, User user) {
+        if (email.isEmpty()) return "- Email cannot be empty.\n";
+        if (!email.contains("@") || (!email.endsWith(".com")
+                && !email.endsWith(".net") && !email.endsWith(".biz") && !email.endsWith(".us")
+                && !email.endsWith(".org") && !email.endsWith(".my") && !email.endsWith(".uk")
+                && !email.endsWith(".info"))) {
+            return "- Email format is invalid.\n";
+        }
+        if (checkEmailExist(email) != null &&
+                (user == null || !Objects.equals(email, user.getEmail()))) {
+            return "- Email has been used.\n";
+        }
+        return "";
+    }
+
+    public String validateContact(String contact, User user) {
+        if (contact.isEmpty()) return "- Contact number cannot be empty.\n";
+        int digitCount = 0, hyphenCount = 0, hyphenPosition = -1;
+        for (int i = 0; i < contact.length(); i++) {
+            char c = contact.charAt(i);
+            if (Character.isDigit(c)) digitCount++;
+            else if (c == '-') {
+                hyphenCount++;
+                hyphenPosition = i;
+            }
+        }
+        if (!(contact.length() < 13 && digitCount <= 11 && hyphenCount == 1 && (hyphenPosition == 2 || hyphenPosition == 3))) {
+            return "- Phone number format is invalid.\n";
+        }
+        if (checkContactExist(contact) != null &&
+                (user == null || !Objects.equals(contact, user.getContact()))) {
+            return "- Phone number has been used.\n";
+        }
+        return "";
+    }
+
+    public String validateRole(String role) {
+        if (role == null || role.isEmpty()) return "- Role cannot be empty.\n";
+        return "";
+    }
+
+    public String validateUserDataAdd(String username, String password, String fullname, String email, String contact, String role) {
+        StringBuilder errorMsg = new StringBuilder();
+        errorMsg.append(validateUsername(username, null));
+        errorMsg.append(validatePassword(password));
+        errorMsg.append(validateFullname(fullname));
+        errorMsg.append(validateEmail(email, null));
+        errorMsg.append(validateContact(contact, null));
+        errorMsg.append(validateRole(role));
+        return errorMsg.toString();
+    }
+
+    public String validateUserDataEdit(User user, String username, String password, String fullname, String email, String contact) {
+        StringBuilder errorMsg = new StringBuilder();
+        errorMsg.append(validateUsername(username, user));
+        errorMsg.append(validatePassword(password));
+        errorMsg.append(validateFullname(fullname));
+        errorMsg.append(validateEmail(email, user));
+        errorMsg.append(validateContact(contact, user));
+        return errorMsg.toString();
+    }
+    
     //before using this, remember to do validation on GUI side first
-    public void addUser(List<User> users, String userName, String password, String fullname, String email, String contact, Role role) {
+    public void addUser(String userName, String password, String fullname, String email, String contact, Role role) {
         switch (role) {
             case ADMIN -> users.add(new Administrator(assignNewIndex(), userName, password, fullname, email, contact));
             case SALES_MANAGER -> users.add(new SalesManager(assignNewIndex(), userName, password, fullname, email, contact));
@@ -81,7 +194,7 @@ public class UserDataManager {
     }
     
     //remember to perform validation checks on GUI side first
-    public void editUser(List<User> users, String userID, String userName, String password, String fullname, String email, String contact){
+    public void editUser(String userID, String userName, String password, String fullname, String email, String contact){
         for (User user : users){
             if (userID.equals(user.getUserId())){
                 user.setUsername(userName);
@@ -95,12 +208,11 @@ public class UserDataManager {
         writeAllUsers(users);
     }
     
-    public void deleteUser(List<User> users, User user){
+    public void deleteUser(User user){
         user.setUsername("N/A");
         user.setPassword("N/A");
         user.setActive(false);
         writeAllUsers(users);
-        users.remove(user);
     }
     
     private int extractNumberFromID(String id) {
@@ -149,13 +261,13 @@ public class UserDataManager {
 //        return null;
 //    }
     
-//    public User findUserByID(String userID){
-//        for (User user : userDataLoader.readData()){
-//            if (user.getUserID().equals(userID)){
-//                return user;
-//            }
-//        }
-//        return null;
-//    }
+    public User findUserByID(String userID){
+        for (User user : users){
+            if (user.getUserId().equals(userID)){
+                return user;
+            }
+        }
+        return null;
+    }
     
 }
