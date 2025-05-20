@@ -63,7 +63,10 @@ public class SM_Create_Purchase_Requisition extends javax.swing.JFrame {
         jLabel22.setVisible(false);
         }else if (existingPR != null) {
        jLabel3.setText(existingPR.getPrid());
-       jLabel10.setText(salesmanager.getUsername());
+        String prcreator = existingPR.getUserid();
+        User userofprcreator = userManager.findUserByID(prcreator);
+        String prusername = (userofprcreator != null) ? userofprcreator.getFullname() : prcreator;
+       jLabel10.setText(prcreator+" - "+prusername);
        jTextArea1.setText(existingPR.getNote());
        jLabel4.setText(existingPR.getTotal());
        jDateChooser1.setDate(java.sql.Date.valueOf(existingPR.getRequestdate()));
@@ -90,7 +93,7 @@ public class SM_Create_Purchase_Requisition extends javax.swing.JFrame {
             String poCreatorName = (poCreatorUser != null) ? poCreatorUser.getFullname() : statuschangeby;
 
             String labelPrefix = (status == PurchaseRequisition.ApproveStatus.approved) ? "Approved by: " : "Rejected by: ";
-            jLabel12.setText(labelPrefix + poCreatorName);
+            jLabel12.setText(labelPrefix + statuschangeby+" - "+poCreatorName);
         } else {
             jLabel12.setText(""); 
         }
@@ -324,13 +327,13 @@ public class SM_Create_Purchase_Requisition extends javax.swing.JFrame {
                                     .addComponent(jLabel4)
                                     .addGap(55, 55, 55))
                                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
-                                    .addComponent(jLabel22)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(jLabel11)
-                                    .addGap(54, 54, 54))
-                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
-                                    .addComponent(jLabel12)
-                                    .addGap(82, 82, 82))))
+                                    .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addComponent(jLabel12)
+                                        .addGroup(jPanel7Layout.createSequentialGroup()
+                                            .addComponent(jLabel22)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                            .addComponent(jLabel11)))
+                                    .addGap(54, 54, 54))))
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
                             .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                 .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel7Layout.createSequentialGroup()
@@ -378,11 +381,11 @@ public class SM_Create_Purchase_Requisition extends javax.swing.JFrame {
                             .addComponent(jLabel3))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(jPanel7Layout.createSequentialGroup()
-                        .addGap(73, 101, Short.MAX_VALUE)
+                        .addGap(73, 95, Short.MAX_VALUE)
                         .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel19)
-                            .addComponent(jLabel10))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(jLabel10))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel6))

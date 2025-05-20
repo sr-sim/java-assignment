@@ -501,8 +501,8 @@ public class PM_Edit_Purchase_Order extends javax.swing.JFrame {
         User userofpocreator = userManager.findUserByID(pocreator);
         String prusername = (userofprcreator != null) ? userofprcreator.getFullname() : prcreator;
         String pousername = (userofpocreator != null) ? userofpocreator.getFullname() : pocreator;
-        prCreator.setText("PR Created by: " + prusername);
-        poCreator.setText("Authorized by: " + pousername);
+        prCreator.setText("PR Created by: " + prcreator+" - "+prusername);
+        poCreator.setText("Authorized by: " + pocreator+" - "+pousername);
         subtotal.setText(String.format("Subtotal: " + "%.2f", selectedPO.getAmount()));
         receivedStatus.setText("Order Received Status:  " + selectedPO.getVerifyStatus());
         paymentStatus.setText("Payment Status:  " + selectedPO.getPaymentStatus());
@@ -513,7 +513,7 @@ public class PM_Edit_Purchase_Order extends javax.swing.JFrame {
             String userName = (user != null) ? user.getFullname() : statuschangeby;
 
             String labelPrefix = ("approved".equals(status)) ? "Approved by: " : "Rejected by: ";
-            jLabel6.setText(labelPrefix + userName);
+            jLabel6.setText(labelPrefix + statuschangeby+" - "+userName);
         } else {
             jLabel6.setText(""); 
         }
