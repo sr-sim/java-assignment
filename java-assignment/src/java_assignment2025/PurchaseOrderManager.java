@@ -12,7 +12,7 @@ import java.util.List;
  *
  * @author Macy Khoo
  */
-public class PurchaseOrderManager {
+public class PurchaseOrderManager extends DataManager {
     private final List<PurchaseOrder>polist;
     private final TextFile textfile;
     private final String pofilepath = "src/java_assignment2025/PurchaseOrder.txt";
@@ -28,8 +28,8 @@ public class PurchaseOrderManager {
          
         List<String> lines = textfile.readFile(pofilepath);
         for (String line : lines) {
-            String[] parts = line.split(",", 13);
-            if (parts.length == 13) {
+            String[] parts = line.split(",", 14);
+            if (parts.length == 14) {
                 List<String> itemids = Arrays.asList(parts[4].trim().split("\\|"));
                 List<String> unitPrices = Arrays.asList(parts[5].trim().split("\\|"));
                 List<String> quantities = Arrays.asList(parts[6].trim().split("\\|"));
@@ -47,7 +47,8 @@ public class PurchaseOrderManager {
                         parts[9].trim(),
                         parts[10].trim(),
                         parts[11].trim(),
-                        parts[12].trim())
+                        parts[12].trim(),
+                        parts[13].trim())
                        
                 );
             }
@@ -114,4 +115,5 @@ public class PurchaseOrderManager {
         java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd");
         return today.format(formatter);
     }
+
 }

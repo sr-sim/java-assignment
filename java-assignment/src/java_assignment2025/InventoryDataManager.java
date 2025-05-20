@@ -4,6 +4,8 @@
  */
 package java_assignment2025;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +13,7 @@ import java.util.List;
  *
  * @author User
  */
-public class InventoryDataManager {
+public class InventoryDataManager extends DataManager{
     private final List<Item>itemlist;
     private final List<Item>itemlistbysupplier;
     private final TextFile textfile;
@@ -137,57 +139,156 @@ public class InventoryDataManager {
     }
     
     public String findItemNameById(String itemid) {
-    Item item = finditemid(itemid);
-    return (item != null) ? item.getItemname() : "Unknown";
-}
+        Item item = finditemid(itemid);
+        return (item != null) ? item.getItemname() : "Unknown";
+    }
 
     
-public String getItemDeletionStatus(String itemId) {
-    PurchaseRequisitionManager prManager = new PurchaseRequisitionManager();
-    PurchaseOrderManager poManager = new PurchaseOrderManager();
+    public String getItemDeletionStatus(String itemId) {
+        PurchaseRequisitionManager prManager = new PurchaseRequisitionManager();
+        PurchaseOrderManager poManager = new PurchaseOrderManager();
 
-    for (PurchaseRequisition pr : prManager.getprlist()) {
-        List<String> itemIds = pr.getItemids();
+        for (PurchaseRequisition pr : prManager.getprlist()) {
+            List<String> itemIds = pr.getItemids();
 
-        if (itemIds.contains(itemId)&&!pr.isDeleted()) {
-            PurchaseRequisition.ApproveStatus prStatus = pr.getApprovestatus();
+            if (itemIds.contains(itemId)&&!pr.isDeleted()) {
+                PurchaseRequisition.ApproveStatus prStatus = pr.getApprovestatus();
 
-            if (prStatus == PurchaseRequisition.ApproveStatus.pending) {
-                return "cannot_delete_pending_pr";
-            } else if (prStatus == PurchaseRequisition.ApproveStatus.reject) {
-                return "cannot_delete_rejected_pr";
-            } else if (prStatus == PurchaseRequisition.ApproveStatus.approved) {
-                for (PurchaseOrder po : poManager.getpolist()) {
-                    if (po.getRequestId().equals(pr.getPrid()) && po.getItemIds().contains(itemId)) {
-                        String poStatus = po.getOrderStatus().trim();
-                        boolean isPaid = po.getPaymentStatus().trim().equalsIgnoreCase("paid");
+                if (prStatus == PurchaseRequisition.ApproveStatus.pending) {
+                    return "cannot_delete_pending_pr";
+                } else if (prStatus == PurchaseRequisition.ApproveStatus.reject) {
+                    return "cannot_delete_rejected_pr";
+                } else if (prStatus == PurchaseRequisition.ApproveStatus.approved) {
+                    for (PurchaseOrder po : poManager.getpolist()) {
+                        if (po.getRequestId().equals(pr.getPrid()) && po.getItemIds().contains(itemId)) {
+                            String poStatus = po.getOrderStatus().trim();
+                            boolean isPaid = po.getPaymentStatus().trim().equalsIgnoreCase("paid");
 
-                        if (poStatus.equalsIgnoreCase("approved") && isPaid) {
-                        } else if (poStatus.equalsIgnoreCase("reject")) {
-                            continue; 
-                        } else {
-                            return "cannot_delete_approved_pr_po_not_paid"; 
+                            if (poStatus.equalsIgnoreCase("approved") && isPaid) {
+                            } else if (poStatus.equalsIgnoreCase("reject")) {
+                                continue; 
+                            } else {
+                                return "cannot_delete_approved_pr_po_not_paid"; 
+                            }
                         }
                     }
                 }
             }
         }
+
+        return "can_delete"; // No blocking PRs or POs found
     }
 
-    return "can_delete"; // No blocking PRs or POs found
-}
-
-public List<Item> getItemsBySupplier(String supplierId) {
-    List<Item> supplierItems = new ArrayList<>();
-    System.out.println("Looking for items for supplier: " + supplierId);
-    for(Item item : this.itemlist) {
-        if(item.getSupplierid().equalsIgnoreCase(supplierId) && !item.isDeleted()) {
-            System.out.println("Found item: " + item.getItemid() + " Supplier: " + item.getSupplierid());
-            supplierItems.add(item);
+    public List<Item> getItemsBySupplier(String supplierId) {
+        List<Item> supplierItems = new ArrayList<>();
+        System.out.println("Looking for items for supplier: " + supplierId);
+        for(Item item : this.itemlist) {
+            if(item.getSupplierid().equalsIgnoreCase(supplierId) && !item.isDeleted()) {
+                System.out.println("Found item: " + item.getItemid() + " Supplier: " + item.getSupplierid());
+                supplierItems.add(item);
+            }
+        }
+        return supplierItems;
+    }
+    
+    public boolean deductQuantityAfterSale(String itemId, int quantitySold) {
+        Item item = finditemid(itemId);
+        if (item != null) {
+            int currentStock = Integer.parseInt(item.getInstockquantity());
+            if (quantitySold <= currentStock) {
+                int updatedStock = currentStock - quantitySold;
+                item.setInstockquantity(String.valueOf(updatedStock));
+                    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                    String formattedNow = LocalDateTime.now().format(dtf);
+                    item.setLastmodifieddate(formattedNow);
+                textfile.rewriteFile(inventoryfilepath, itemlist); // Save changes
+                System.out.println("Stock updated for item " + itemId + ". New quantity: " + updatedStock);
+                return true;
+            } else {
+                System.out.println("Insufficient stock for item " + itemId);
+                return false;
+            }
+        } else {
+            System.out.println("Item not found: " + itemId);
+            return false;
         }
     }
-    return supplierItems;
-}
+    public void updateItemQuantityAfterSaleEdit(String oldItemId, int oldQty, String newItemId, int newQty) {
+        if (oldItemId.equals(newItemId)) {
+            int diff = newQty - oldQty;
+            Item item = finditemid(oldItemId);
+            if (item != null) {
+                int currentQty = Integer.parseInt(item.getInstockquantity());
+                int revertedQty = currentQty + oldQty; 
 
+                int updatedQty = revertedQty - newQty;
+                if (updatedQty >= 0) {
+                    item.setInstockquantity(String.valueOf(updatedQty));
+                    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                    String formattedNow = LocalDateTime.now().format(dtf);
+                    item.setLastmodifieddate(formattedNow);
+                    textfile.rewriteFile(inventoryfilepath, itemlist);
+                    System.out.println("Quantity adjusted for same item: " + oldItemId + ". New Qty: " + updatedQty);
+                } else {
+                    System.out.println("Error: Not enough stock to reduce for item " + oldItemId);
+                }
+            }
+        } else {
+            Item oldItem = finditemid(oldItemId);
+            Item newItem = finditemid(newItemId);
+
+            boolean valid = true;
+
+            if (oldItem != null) {
+                int currentOldQty = Integer.parseInt(oldItem.getInstockquantity());
+                oldItem.setInstockquantity(String.valueOf(currentOldQty + oldQty));
+                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                String formattedNow = LocalDateTime.now().format(dtf);
+                oldItem.setLastmodifieddate(formattedNow);
+            } else {
+                System.out.println("Old item not found: " + oldItemId);
+                valid = false;
+            }
+
+            if (newItem != null) {
+                int currentNewQty = Integer.parseInt(newItem.getInstockquantity());
+                int updatedNewQty = currentNewQty - newQty;
+                if (updatedNewQty >= 0) {
+                    newItem.setInstockquantity(String.valueOf(updatedNewQty));
+                    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                    String formattedNow = LocalDateTime.now().format(dtf);
+                    newItem.setLastmodifieddate(formattedNow);
+                } else {
+                    System.out.println("Error: Not enough stock for new item: " + newItemId);
+                    valid = false;
+                }
+            } else {
+                System.out.println("New item not found: " + newItemId);
+                valid = false;
+            }
+
+            if (valid) {
+                textfile.rewriteFile(inventoryfilepath, itemlist);
+                System.out.println("Quantity adjusted between old and new item successfully.");
+            } else {
+                System.out.println("Quantity adjustment failed due to validation error.");
+            }
+        }
+    }
+    public void increaseItemQuantity(String itemId, int quantityToAdd) {
+        for (Item item : itemlist) {
+            if (item.getItemid().equals(itemId)) {
+                int currentQty = Integer.parseInt(item.getInstockquantity());
+                int newQty = currentQty + quantityToAdd;
+                item.setInstockquantity(String.valueOf(newQty));
+                textfile.rewriteFile(inventoryfilepath, itemlist);
+                System.out.println("increaseItemQuantity called for itemId: " + itemId + " quantity: " + quantityToAdd);
+
+                System.out.println("Inventory quantity updated for item: " + itemId);
+                return;
+            }
+        }
+        System.out.println("Item not found in inventory: " + itemId);
+    }
 
 }

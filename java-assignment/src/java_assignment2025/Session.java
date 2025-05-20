@@ -10,28 +10,18 @@ package java_assignment2025;
  */
 public class Session {
     private static User currentUser;
-//    private static SupplierDataManager supplierDataManager;
-//    private static UserFeatures features; 
 
     public static boolean initialize(User user) {
         currentUser = user;
         return user != null;
-        
-        //since we do not use data caching, i commented this out
-//        features = UserFeatureFactory.getUserFeatures(user);
-//        features.loadData();
     }
 
     public static User getCurrentUser() {
         return currentUser;
     }
 
-//    public static UserFeatures getFeatures() {
-//        return features;
-//    }
-
     public static void logout() {
         currentUser = null;
-//        features = null;
+        DataManagerFactory.clearAll();
     }
 }
