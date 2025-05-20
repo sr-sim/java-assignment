@@ -6,7 +6,7 @@ package java_assignment2025;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.util.ArrayList;
-import javax.swing.table.DefaultTableModel; // ✅ This is the key fix
+import javax.swing.table.DefaultTableModel;
 import java.util.List;
 import static java_assignment2025.FinanceReport.exportJTableToJasper;
 import static java_assignment2025.PurchaseOrderManager.findSupplierNameById;
@@ -19,7 +19,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
-// Optional if using Lists directly
 
 /**
  *
@@ -51,19 +50,19 @@ public class FMPurchaseOrder extends javax.swing.JFrame {
     
     public void loadPOsIntoTable() {
     DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-    model.setRowCount(0); // clear table
+    model.setRowCount(0); //clear table
 
     for (PurchaseOrder po : poManager.getpolist()) {
         String itemNames = "";
         for (String itemId : po.getItemIds()) {
             itemNames += inventoryManager.findItemNameById(itemId) + " | ";
         }
-        itemNames = itemNames.replaceAll(" \\| $", ""); // Remove trailing "|"
+        itemNames = itemNames.replaceAll(" \\| $", ""); //remove any leftover ""
 
         List<String> supplierIds = po.getSupplierIds();
             List<String> supplierNamesList = new ArrayList<>();
             for (String supplierId : supplierIds) {
-                String name = findSupplierNameById(supplierId); // No file path here
+                String name = findSupplierNameById(supplierId); 
                 supplierNamesList.add(name);
             }
             String supplierNames = String.join(",", supplierNamesList);
@@ -127,7 +126,7 @@ public class FMPurchaseOrder extends javax.swing.JFrame {
 
 
     private void refreshTable() {
-        poManager.loadAllpofromtxtfile(); // reload fresh manager
+        poManager.loadAllpofromtxtfile();
         loadPOsIntoTable();
 
     }
@@ -224,8 +223,6 @@ public class FMPurchaseOrder extends javax.swing.JFrame {
         jButton6 = new javax.swing.JButton();
         jButton7 = new javax.swing.JButton();
         jButton8 = new javax.swing.JButton();
-        jButton9 = new javax.swing.JButton();
-        jButton10 = new javax.swing.JButton();
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
         donDeleteMe = new javax.swing.JButton();
@@ -266,14 +263,14 @@ public class FMPurchaseOrder extends javax.swing.JFrame {
     jLabel2.setFont(new java.awt.Font("Times New Roman", 1, 16)); // NOI18N
     jLabel2.setText("  Omega Wholesale Sdn Bhd ");
 
-    jButton6.setText("Item LIst");
+    jButton6.setText("Purchase Order");
     jButton6.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(java.awt.event.ActionEvent evt) {
             jButton6ActionPerformed(evt);
         }
     });
 
-    jButton7.setText("Supplier List");
+    jButton7.setText("Daily Sales");
     jButton7.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(java.awt.event.ActionEvent evt) {
             jButton7ActionPerformed(evt);
@@ -284,20 +281,6 @@ public class FMPurchaseOrder extends javax.swing.JFrame {
     jButton8.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(java.awt.event.ActionEvent evt) {
             jButton8ActionPerformed(evt);
-        }
-    });
-
-    jButton9.setText("Purchase Order");
-    jButton9.addActionListener(new java.awt.event.ActionListener() {
-        public void actionPerformed(java.awt.event.ActionEvent evt) {
-            jButton9ActionPerformed(evt);
-        }
-    });
-
-    jButton10.setText("Received Order");
-    jButton10.addActionListener(new java.awt.event.ActionListener() {
-        public void actionPerformed(java.awt.event.ActionEvent evt) {
-            jButton10ActionPerformed(evt);
         }
     });
 
@@ -321,15 +304,13 @@ public class FMPurchaseOrder extends javax.swing.JFrame {
                     .addGap(79, 79, 79)
                     .addComponent(jLabel9))
                 .addGroup(jPanel3Layout.createSequentialGroup()
-                    .addGap(20, 20, 20)
+                    .addGap(35, 35, 35)
                     .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                         .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
                             .addGap(4, 4, 4)
                             .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addComponent(jButton7, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton8, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton9, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton10, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addComponent(jButton8, javax.swing.GroupLayout.Alignment.LEADING))))
             .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
     jPanel3Layout.setVerticalGroup(
@@ -341,16 +322,12 @@ public class FMPurchaseOrder extends javax.swing.JFrame {
             .addComponent(jLabel9)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(jLabel8)
-            .addGap(52, 52, 52)
+            .addGap(110, 110, 110)
             .addComponent(jButton6)
             .addGap(18, 18, 18)
             .addComponent(jButton7)
             .addGap(18, 18, 18)
             .addComponent(jButton8)
-            .addGap(18, 18, 18)
-            .addComponent(jButton9)
-            .addGap(18, 18, 18)
-            .addComponent(jButton10)
             .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
@@ -486,16 +463,6 @@ public class FMPurchaseOrder extends javax.swing.JFrame {
         //        this.dispose();
     }//GEN-LAST:event_jButton8ActionPerformed
 
-    private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
-        //        new SM_PurchaseRequisition(salesmanager).setVisible(true);
-        //        this.dispose();
-    }//GEN-LAST:event_jButton9ActionPerformed
-
-    private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
-        //        new SM_PurchaseOrder(salesmanager).setVisible(true);
-        //        this.dispose();
-    }//GEN-LAST:event_jButton10ActionPerformed
-
     private void donDeleteMeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_donDeleteMeActionPerformed
         exportJTableToJasper(jTable1);
     }//GEN-LAST:event_donDeleteMeActionPerformed
@@ -523,10 +490,10 @@ public class FMPurchaseOrder extends javax.swing.JFrame {
             String poId = jTable1.getValueAt(selectedRow, 0).toString();
             new FinancePayment().processPayment(poId);
             refreshTable();
-            // now use poId
+            //now use poId
         } else {
             JOptionPane.showMessageDialog(this, "Please select a row.");
-        } // example: "PO01"
+        } //example: "PO01"
 
     }//GEN-LAST:event_rejectBtn1ActionPerformed
 
@@ -569,11 +536,9 @@ public class FMPurchaseOrder extends javax.swing.JFrame {
     private javax.swing.JButton approveBtn;
     private javax.swing.JButton donDeleteMe;
     private javax.swing.JButton donDeleteMe1;
-    private javax.swing.JButton jButton10;
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
     private javax.swing.JButton jButton8;
-    private javax.swing.JButton jButton9;
     private javax.swing.JComboBox<String> jComboBox2;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel13;

@@ -43,14 +43,12 @@ public class FinanceReport {
         this.poManager = poManager;
     }
 
-    // ✅ Returns all paid POs
     public List<PurchaseOrder> getPaidOrders() {
         return poManager.getpolist().stream()
                 .filter(po -> "paid".equalsIgnoreCase(po.getPaymentStatus()))
                 .collect(Collectors.toList());
     }
 
-    // ✅ Filter by Month (e.g., "May")
     public List<PurchaseOrder> filterByMonth(String monthName) {
         return getPaidOrders().stream()
                 .filter(po -> {
@@ -67,7 +65,6 @@ public class FinanceReport {
                 .collect(Collectors.toList());
     }
 
-    // ✅ Filter by Week number (e.g., "1", "2", ...)
 //    public List<PurchaseOrder> filterByWeek(String weekNumberStr) {
 //        int targetWeek = Integer.parseInt(weekNumberStr);
 //        return getPaidOrders().stream()
@@ -101,7 +98,6 @@ public class FinanceReport {
                 .collect(Collectors.toList());
     }
 
-    // ✅ Calculate total amount for a list of POs
     public double calculateTotalAmount(List<PurchaseOrder> poList) {
         return poList.stream()
                 .mapToDouble(PurchaseOrder::getAmount)
@@ -177,15 +173,14 @@ public class FinanceReport {
 //        System.setProperty("net.sf.jasperreports.default.pdf.encoding", "Cp1252");
 //        System.setProperty("net.sf.jasperreports.default.pdf.embedded", "false");
 
-        // Step 1: Extract JTable data into a list of maps
         List<Map<String, ?>> data = new ArrayList<>();
         
         double totalAmount = 0.0;
         
         for (int row = 0; row < table.getRowCount(); row++) {
-            Object statusObj = table.getValueAt(row, 13); // 
+            Object statusObj = table.getValueAt(row, 13); 
             if (statusObj == null || !"paid".equalsIgnoreCase(statusObj.toString().trim())) {
-                continue; // skip non-paid rows
+                continue; //skip nonpaid rows
             }
             //injecting
             Map<String, Object> record = new HashMap<>();
@@ -216,7 +211,7 @@ public class FinanceReport {
         params.put("DATA_SOURCE", dataSource);
         
         String today = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-        params.put("DateCreated", today); // make sure it's a PARAMETER in the JRXML
+        params.put("DateCreated", today); 
         
         params.put("GrandTotal", String.format("RM %.2f", totalAmount));
 
@@ -262,35 +257,30 @@ public class FinanceReport {
             record.put("amount", amtObj);
             record.put("orderDate", table.getValueAt(row, 4));    // Date
 
-            // Safely sum amount
             if (amtObj instanceof Number) {
                 totalAmount += ((Number) amtObj).doubleValue();
             } else {
                 try {
                     totalAmount += Double.parseDouble(amtObj.toString().replace("RM", "").trim());
                 } catch (NumberFormatException e) {
-                    // Ignore malformed amount
+                  
                 }
             }
 
             data.add(record);
         }
 
-        // Create JRMapCollectionDataSource
         JRMapCollectionDataSource dataSource = new JRMapCollectionDataSource(data);
 
-        // Parameters
         Map<String, Object> params = new HashMap<>();
         params.put("DATA_SOURCE", dataSource);
         params.put("DateCreated", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
         params.put("GrandTotal", String.format("RM %.2f", totalAmount));
 
-        // Load compiled Jasper file
         JasperReport report = (JasperReport) JRLoader.loadObjectFromFile(
             "src/java_assignment2025/Jasper/DailySumReport.jasper"
         );
 
-        // Fill and export report
         JasperPrint filled = JasperFillManager.fillReport(report, params, new JREmptyDataSource());
         String path = "Daily_Sales_Report_" + System.currentTimeMillis() + ".pdf";
 
@@ -330,7 +320,6 @@ public class FinanceReport {
                 try {
                     amountValue = Double.parseDouble(amtObj.toString().trim().replace("RM", "").trim());
                 } catch (NumberFormatException e) {
-                    // Skip if invalid
                     continue;
                 }
             }

@@ -632,8 +632,7 @@ public class PM_Edit_Purchase_Order extends javax.swing.JFrame {
     // write into PO text file
     TextFile.rewriteFile(pomanager.getpofilepath(), updatedPoLines);
     JOptionPane.showMessageDialog(null, "Changes saved to file successfully.");
-    new PMPurchaseOrder().setVisible(true);
-
+    this.dispose();
     }//GEN-LAST:event_btnSaveActionPerformed
 
     private void supplierListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_supplierListActionPerformed
