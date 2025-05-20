@@ -48,16 +48,15 @@ public class FinancePayment {
     for (String line : poLines) {
         String[] parts = line.split(",");
         if (parts[0].equals(poId)) {
-            // ✅ Check if "verified" before proceeding
             if (!parts[11].equalsIgnoreCase("received")) {
                 JOptionPane.showMessageDialog(null,
                         "Payment cannot proceed. Status is not 'received' for PO: " + poId);
                 return false;
             }
 
-            String itemIds = parts[4];        // I002|I003|I004
-            String unitPrices = parts[5];     // 2.5|3.0|5.0
-            String quantities = parts[6];     // 2|3|5
+            String itemIds = parts[4];        
+            String unitPrices = parts[5];     
+            String quantities = parts[6];     
 
             String[] qtyArr = quantities.split("\\|");
             String[] priceArr = unitPrices.split("\\|");

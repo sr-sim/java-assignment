@@ -477,8 +477,8 @@ public class SM_SupplierEntry extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton9ActionPerformed
 
     private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
-//        new SM_PurchaseOrder(supplierdatamanager).setVisible(true);
-//        this.dispose();
+        new SM_PurchaseOrder().setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_jButton10ActionPerformed
 
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
@@ -513,20 +513,20 @@ public class SM_SupplierEntry extends javax.swing.JFrame {
         boolean deleted = false;
         
         if (supplierdatamanager.findsupplierid(supplierid) != null) {
-            JOptionPane.showMessageDialog(this, "Supplier ID already exists.", "Duplicate ID", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Supplier ID already exists", "Duplicate ID", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         if (suppliername.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Supplier name cannot be empty.");
+            JOptionPane.showMessageDialog(this, "Supplier name cannot be empty");
             return;
         }
         if (contact.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Contact cannot be empty.");
+            JOptionPane.showMessageDialog(this, "Contact cannot be empty");
             return;
         }
         if (email.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Email cannot be empty.");
+            JOptionPane.showMessageDialog(this, "Email cannot be empty");
             return;
         }
         if (address.isEmpty()){
@@ -578,15 +578,15 @@ public class SM_SupplierEntry extends javax.swing.JFrame {
             String itemdesc = jTextArea1.getText();
 
         if (suppliername.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Supplier name cannot be empty.");
+            JOptionPane.showMessageDialog(this, "Supplier name cannot be empty");
             return;
         }
         if (contact.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Contact cannot be empty.");
+            JOptionPane.showMessageDialog(this, "Contact cannot be empty");
             return;
         }
         if (email.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Email cannot be empty.");
+            JOptionPane.showMessageDialog(this, "Email cannot be empty");
             return;
         }
         if (address.isEmpty()){
@@ -661,10 +661,10 @@ if (selectedrow != -1) {
         supplierdatamanager.marksupplierasDeleted(supplierid,inventorydatamanager);
         fillTable1FromTxtFile();
         clearTextField();
-        JOptionPane.showMessageDialog(null, "This Supplier was deleted successfully.");
+        JOptionPane.showMessageDialog(null, "This Supplier was deleted successfully");
     }
 } else {
-    JOptionPane.showMessageDialog(null, "Please select a supplier from the table.");
+    JOptionPane.showMessageDialog(null, "Please select a supplier from the table");
 }
 
     }//GEN-LAST:event_jButton3ActionPerformed
