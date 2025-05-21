@@ -8,6 +8,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.swing.JOptionPane;
@@ -38,19 +39,74 @@ public class SM_DailySalesEntry extends javax.swing.JFrame {
         Date today = new Date();
         jDateChooser1.setDate(today);
         jDateChooser1.setMinSelectableDate(today);
-        
+        jDateChooser2.setDate(today);
+        jDateChooser2.addPropertyChangeListener("date", evt -> {
+                fillFILTERcomboboxFromitemList();
+                jComboBox2.setSelectedItem("All");
+                fillTable1FromTxtFile();
+        });
+        fillFILTERcomboboxFromitemList();
+        jComboBox2.setSelectedItem("All");
         fillTable1FromTxtFile();
         fillComboBoxFromitemList();
     }
+    private void fillFILTERcomboboxFromitemList() {
+        jComboBox2.removeAllItems();
+        jComboBox2.addItem("All");
+        
+        java.util.Date selectedDate = jDateChooser2.getDate();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String formattedSelectedDate = (selectedDate != null) ? sdf.format(selectedDate) : null;
+        
+        ArrayList<String> addeditems = new ArrayList<>();
+        for (IndividualSales sales : salesdatamanager.getindividualsaleslist()) {
+        String dateofsales = sales.getDateofsales();
+
+        if (formattedSelectedDate != null && dateofsales.equals(formattedSelectedDate)) {
+            String itemid = sales.getItemid();
+
+            boolean alreadyExists = false;
+            for (String id : addeditems) {
+                if (id.equals(itemid)) {
+                    alreadyExists = true;
+                    break;
+                }
+            }
+
+            if (!alreadyExists) {
+                Item item = inventorydatamanager.finditemid(itemid);
+                if (item != null) {
+                    String comboBoxItem = item.getItemid() + " - " + item.getItemname();
+                    jComboBox2.addItem(comboBoxItem);
+                    addeditems.add(itemid);
+                }
+            }
+        }
+    }
+}
+    
     public void fillTable1FromTxtFile() {
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
         model.setRowCount(0); 
+        String selected =(String)jComboBox2.getSelectedItem();
+        String selectedItemId = null;
+        
+        if (selected != null && !"All".equals(selected)) {
+            selectedItemId = selected.split(" - ")[0];
+        }
+        java.util.Date selectedDate = jDateChooser2.getDate();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String formattedSelectedDate = (selectedDate != null) ? sdf.format(selectedDate) : null;
+        
         for (IndividualSales sales : salesdatamanager.getindividualsaleslist()) {
-            String salesid = sales.getSalesid();
             String itemid = sales.getItemid();
+            String dateofsales = sales.getDateofsales();
+             if ((selectedItemId != null && !itemid.equals(selectedItemId)) || (formattedSelectedDate != null && !dateofsales.equals(formattedSelectedDate))) {
+                continue;
+            }
+            String salesid = sales.getSalesid();
             String qty = sales.getQuantity();
             String amount = sales.getAmount();
-            String dateofsales = sales.getDateofsales();
             String retailprice = sales.getretailprice();
 
             Item item = inventorydatamanager.finditemid(itemid);
@@ -122,6 +178,8 @@ public class SM_DailySalesEntry extends javax.swing.JFrame {
         jButton15 = new javax.swing.JButton();
         jDateChooser1 = new com.toedter.calendar.JDateChooser();
         jComboBox1 = new javax.swing.JComboBox<>();
+        jDateChooser2 = new com.toedter.calendar.JDateChooser();
+        jComboBox2 = new javax.swing.JComboBox<>();
 
         jPanel2.setBackground(new java.awt.Color(238, 238, 253));
 
@@ -432,6 +490,12 @@ public class SM_DailySalesEntry extends javax.swing.JFrame {
             }
         });
 
+        jComboBox2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBox2ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -447,7 +511,7 @@ public class SM_DailySalesEntry extends javax.swing.JFrame {
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGap(318, 318, 318)
                                 .addComponent(jLabel11)))
-                        .addContainerGap())
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
@@ -474,15 +538,16 @@ public class SM_DailySalesEntry extends javax.swing.JFrame {
                                 .addComponent(jTextField2, javax.swing.GroupLayout.Alignment.LEADING))
                             .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel13)
-                                .addGap(278, 278, 278))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jButton15)
-                                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 588, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(25, 25, 25))))))
+                                .addGap(49, 49, 49)
+                                .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jDateChooser2, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jButton15)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 588, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(25, 25, 25))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -520,8 +585,12 @@ public class SM_DailySalesEntry extends javax.swing.JFrame {
                     .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 0, Short.MAX_VALUE))
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(109, 109, 109)
-                .addComponent(jLabel13)
+                .addGap(103, 103, 103)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel13)
+                        .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jDateChooser2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 509, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -576,7 +645,7 @@ public class SM_DailySalesEntry extends javax.swing.JFrame {
         
         
         if (qtystring.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Quantity cannot be empty." , "Input Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Quantity cannot be empty.");
             return;
         }
         if (salesdatamanager.findsalesid(salesid) != null) {
@@ -594,7 +663,6 @@ public class SM_DailySalesEntry extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Quantity must be a valid whole number.", "Input Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         String date = df.format(dateofsales);
         Item item = inventorydatamanager.finditemid(itemid);
@@ -602,12 +670,20 @@ public class SM_DailySalesEntry extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null,"Item not found", "Eror",JOptionPane.ERROR_MESSAGE);
                 return;
             }
+            int currentstock = Integer.parseInt(item.getInstockquantity());
+            if (qty > currentstock){
+                 JOptionPane.showMessageDialog(null,"No enough stock.Current stock: "+currentstock,"Stock Error",JOptionPane.WARNING_MESSAGE);
+                 return;
+            }
+
             double unitretailprice = Double.parseDouble(item.getRetailprice());
             double amount = qty*unitretailprice;
+            String formattedretailprice = String.format("%.2f", unitretailprice);
+            String formattedamount= String.format("%.2f", amount);
             
-            IndividualSales sales = new IndividualSales(salesid, itemid, qtystring, String.valueOf(unitretailprice),String.valueOf(amount), date);
+            IndividualSales sales = new IndividualSales(salesid, itemid, qtystring,formattedretailprice,formattedamount,date);
+            inventorydatamanager.deductQuantityAfterSale(itemid, qty);
             salesdatamanager.addIndividualSales(sales);
-   
             JOptionPane.showMessageDialog(null, "Success","Information", JOptionPane.INFORMATION_MESSAGE);
             fillTable1FromTxtFile();
             clearTextField();
@@ -622,19 +698,34 @@ public class SM_DailySalesEntry extends javax.swing.JFrame {
             String qtystr = jTextField2.getText();
             Date date = jDateChooser1.getDate();
 
-            if (salesid.isEmpty()|| itemid.isEmpty() || qtystr.isEmpty() || date==null) {
-                JOptionPane.showMessageDialog(this, "There is an unfilled field." , "Input Error", JOptionPane.ERROR_MESSAGE);
+            if (qtystr.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Quantity cannot be empty.");
                 return;
             }
             IndividualSales oldsales = salesdatamanager.findsalesid(salesid);
             if (oldsales == null){
-                JOptionPane.showMessageDialog(this, "old sales not found" , "Error",JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Old sales not found" , "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
+
+            // ❗Prevent editing if the date is before today
+            try {
+                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                Date today = df.parse(df.format(new Date()));
+                Date salesDate = df.parse(oldsales.getDateofsales());
+
+                if (salesDate.before(today)) {
+                    JOptionPane.showMessageDialog(this, "Editing past sales records is not allowed.", "Edit Not Allowed", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+            } catch (ParseException e) {
+                JOptionPane.showMessageDialog(this, "Invalid date format in existing sales record.", "Date Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
             int qty;
             double amount;
             double retailprice;
-
             try {
                 qty = Integer.parseInt(qtystr);
                 if (qty <= 0) throw new NumberFormatException();
@@ -642,6 +733,21 @@ public class SM_DailySalesEntry extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "Invalid quantity in existing sales record", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
+            Item selectedItem = inventorydatamanager.finditemid(itemid);
+            if (selectedItem == null) {
+                JOptionPane.showMessageDialog(this, "Selected item not found.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            int currentInStockQty = Integer.parseInt(selectedItem.getInstockquantity());
+            int oldQty = Integer.parseInt(oldsales.getQuantity());
+
+            int revertQty = currentInStockQty + (itemid.equals(oldsales.getItemid()) ? oldQty : 0); // Only revert if item is same
+
+            if (qty > revertQty) {
+                JOptionPane.showMessageDialog(this, "Entered quantity exceeds available stock (" + revertQty + ").", "Stock Error", JOptionPane.WARNING_MESSAGE);
+                return;
+            }           
             if (!itemid.equals(oldsales.getItemid())) {
                 Item newItem = inventorydatamanager.finditemid(itemid);
                 if (newItem == null) {
@@ -665,16 +771,19 @@ public class SM_DailySalesEntry extends javax.swing.JFrame {
             }
 
             amount = qty * retailprice;
-
+            String formattedretailprice = String.format("%.2f", retailprice);
+            String formattedamount= String.format("%.2f", amount);
+            
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
             String dateFormatted = df.format(date);
-            salesdatamanager.updateindividualsales(salesid, itemid, String.valueOf(qty), String.valueOf(retailprice), String.valueOf(amount), dateFormatted);
+            inventorydatamanager.updateItemQuantityAfterSaleEdit(oldsales.getItemid(), oldQty, itemid, qty);
+            salesdatamanager.updateindividualsales(salesid, itemid, String.valueOf(qty),formattedretailprice,formattedamount, dateFormatted);
 
             fillTable1FromTxtFile();
             clearTextField();
             JOptionPane.showMessageDialog(this, "Sales record updated successfully!");
         } else {
-            JOptionPane.showMessageDialog(this, "Please select a single row to update.", "Selection Error", JOptionPane.WARNING_MESSAGE);   
+            JOptionPane.showMessageDialog(this, "Please select a single row to update.");   
                 }
     }//GEN-LAST:event_jButton12ActionPerformed
 
@@ -682,17 +791,35 @@ public class SM_DailySalesEntry extends javax.swing.JFrame {
         // TODO add your handling code here:
         int selectedrow = jTable1.getSelectedRow();
         if (selectedrow != -1){
-            String itemid = jTable1.getValueAt(selectedrow, 0).toString();
-            int YesOrNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this item?" + itemid , "Confirm Delete", JOptionPane.YES_NO_OPTION);
+            String salesid = jTable1.getValueAt(selectedrow, 0).toString();
+            String itemid = jTable1.getValueAt(selectedrow, 1).toString();
+            String qty = jTable1.getValueAt(selectedrow, 3).toString();
+            String dateStr = jTable1.getValueAt(selectedrow, 6).toString(); // Assuming column 5 holds the date
+
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                Date salesDate = sdf.parse(dateStr);
+                Date today = new Date();
+
+                if (salesDate.before(sdf.parse(sdf.format(today)))) {
+                    JOptionPane.showMessageDialog(this, "Deleting past sales records is not allowed.", "Edit Not Allowed", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+            } catch (ParseException e) {
+                JOptionPane.showMessageDialog(this, "Invalid date format in the table.", "Date Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            int YesOrNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this sales?" + salesid , "Confirm Delete", JOptionPane.YES_NO_OPTION);
             
             if (YesOrNo == JOptionPane.YES_OPTION){
-                salesdatamanager.deleteindividualsales(itemid);
+                inventorydatamanager.increaseItemQuantity(itemid, Integer.parseInt(qty));
+                salesdatamanager.deleteindividualsales(salesid);
                 fillTable1FromTxtFile();
                 clearTextField();
-                JOptionPane.showMessageDialog(null, "This sales deleted successfully");
+                JOptionPane.showMessageDialog(null, "This sales deleted successfully.");
             }
         }else{
-                JOptionPane.showMessageDialog(null, "Please select a sales from the table");
+                JOptionPane.showMessageDialog(null, "Please select a sales from the table.");
             }  
     }//GEN-LAST:event_jButton13ActionPerformed
 
@@ -706,8 +833,8 @@ public class SM_DailySalesEntry extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton15ActionPerformed
 
     private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
-//        new SM_PurchaseOrder(salesmanager).setVisible(true);
-//        this.dispose();
+        new SM_PurchaseOrder().setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_jButton10ActionPerformed
 
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
@@ -785,6 +912,10 @@ public class SM_DailySalesEntry extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_jButton16ActionPerformed
 
+    private void jComboBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox2ActionPerformed
+        fillTable1FromTxtFile();
+    }//GEN-LAST:event_jComboBox2ActionPerformed
+
 //    /**
 //     * @param args the command line arguments
 //     */
@@ -839,7 +970,9 @@ public class SM_DailySalesEntry extends javax.swing.JFrame {
     private javax.swing.JButton jButton8;
     private javax.swing.JButton jButton9;
     private javax.swing.JComboBox<String> jComboBox1;
+    private javax.swing.JComboBox<String> jComboBox2;
     private com.toedter.calendar.JDateChooser jDateChooser1;
+    private com.toedter.calendar.JDateChooser jDateChooser2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;

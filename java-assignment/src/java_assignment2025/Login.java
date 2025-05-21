@@ -206,13 +206,13 @@ public void openHomePage(User user) {
             new SM_MainPage().setVisible(true);
             break;
         case FINANCE_MANAGER:
-            new FinanceManagerHome().setVisible(true);
+            new FMPurchaseOrder().setVisible(true);
             break;
         case INVENTORY_MANAGER:
             new InventoryManagerHome().setVisible(true);
             break;
         case PURCHASE_MANAGER:
-            new PurchaseManagerHome().setVisible(true);
+             new PM_MainPage().setVisible(true);
             break;
         default:
             JOptionPane.showMessageDialog(this, "Unknown role: " + role, "Login Error", JOptionPane.ERROR_MESSAGE);
