@@ -1,3 +1,3 @@
 PR001,I001,UID001,23,3.00,69.00,2025-05-20,2025-05-21,approved,UID003,No description,false
 PR002,I003|I001,UID001,4|5,2.00|3.00,23.00,2025-05-20,2025-05-21,approved,UID003,No description,false
-PR003,I001,UID001,4,3.00,12.00,2025-05-20,2025-05-21,pending,unknown,No description,false
+PR003,I001,UID001,4,3.00,12.00,2025-05-20,2025-05-21,approved,UID003,No description,false
