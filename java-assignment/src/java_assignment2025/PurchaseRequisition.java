@@ -26,6 +26,7 @@ public class PurchaseRequisition {
     private String note;
     private boolean deleted;
     
+    
     public enum ApproveStatus {
     pending, approved, reject;
 
@@ -56,6 +57,7 @@ public class PurchaseRequisition {
         this.statuschangeby = statuschangeby;
         this.note = note;
         this.deleted = deleted;
+        
     }
     public PurchaseRequisition() {
         this.itemids = new ArrayList<>();
@@ -148,7 +150,7 @@ public class PurchaseRequisition {
     
     @Override
     public String toString(){
-        return prid + "," + String.join("|", itemids) + "," + userid + "," + String.join("|", quantities) +","+ String.join("|",unitPrices)+"," + total+ "," + requestdate + "," + expecteddeliverydate + "," + approvestatus + "," + statuschangeby + ","+ note + ","+deleted;
+        return prid + "," + String.join("|", getItemids()) + "," + userid + "," + String.join("|", quantities) +","+ String.join("|",unitPrices)+"," + total+ "," + requestdate + "," + expecteddeliverydate + "," + approvestatus + "," + statuschangeby + ","+ note + ","+deleted;
     } 
 
     
@@ -179,5 +181,7 @@ public class PurchaseRequisition {
     public void setStatuschangeby(String statuschangeby) {
         this.statuschangeby = statuschangeby;
     }
+
+    
 
 }
