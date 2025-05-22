@@ -62,7 +62,7 @@ public class SM_PurchaseRequisition extends javax.swing.JFrame {
             String itemids = String.join(",", itemidslist);
             List<String> quantitieslist = pr.getQuantities();
             String quantity = String.join(",", quantitieslist);
-            String totalprice = pr.getTotal();
+            double totalprice = pr.getTotal();
             String reqdate = pr.getRequestdate();
             String expecteddate = pr.getExpecteddeliverydate();
             String status = pr.getApprovestatus().toString();

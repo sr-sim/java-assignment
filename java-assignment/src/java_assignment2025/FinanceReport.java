@@ -374,8 +374,8 @@ public class FinanceReport {
                 Item item = inventoryDataManager.finditemid(itemId);
                 String itemName = (item != null) ? item.getItemname() : "Unknown Item";
 
-                int quantity = Integer.parseInt(ind.getQuantity());
-                double amount = Double.parseDouble(ind.getAmount());
+                int quantity = ind.getQuantity();
+                double amount = ind.getAmount();
 
                 if (!grouped.containsKey(key)) {
                     grouped.put(key, new Object[]{itemId, itemName, quantity, amount, selected});
@@ -407,8 +407,8 @@ public class FinanceReport {
                     Item item = inventoryDataManager.finditemid(itemId);
                     String itemName = (item != null) ? item.getItemname() : "Unknown Item";
 
-                    int quantity = Integer.parseInt(ind.getQuantity());
-                    double amount = Double.parseDouble(ind.getAmount());
+                    int quantity = ind.getQuantity();
+                    double amount = ind.getAmount();
 
                     if (!grouped.containsKey(key)) {
                         grouped.put(key, new Object[]{itemId, itemName, quantity, amount, dateStr});
