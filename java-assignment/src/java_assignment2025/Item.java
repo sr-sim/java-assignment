@@ -27,8 +27,8 @@ public class Item {
         this.itemdesc = itemdesc;
         this.supplierid = supplierid;
         this.unitprice = unitprice;
-        this.instockquantity = instockquantity;
         this.retailprice = retailprice;
+        this.instockquantity = instockquantity;
         this.reorderlevel = reorderlevel;
         this.reorderstatus = reorderstatus;
         this.lastmodifieddate = lastmodifieddate;

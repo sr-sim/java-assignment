@@ -1,6 +1,6 @@
 I001,Labubu,No description,SUP001,2.00,3.00,0,0,null,2025-05-22 03:48:29,false
-I002,Mcd,No description,SUP001,5.00,7.00,30,0,null,2025-05-20 17:10:48,true
-I003,ERWW,No description,SUP001,5.00,10.00,14,0,null,2025-05-22 03:50:14,false
+I002,Mcd,No description,SUP001,5.00,7.00,60,0,null,2025-05-22,true
+I003,ERWW,No description,SUP001,5.00,10.00,34,0,null,2025-05-22,false
 I004,ZCC,No description,SUP001,4.00,6.00,0,0,null,2025-05-22 02:26:48,true
 I005,FGD,No description,SUP001,8.68,9.50,0,0,null,2025-05-22 02:27:27,false
 I006,DS,GF,SUP001,3.00,5.00,0,0,null,2025-05-22 02:41:07,false
