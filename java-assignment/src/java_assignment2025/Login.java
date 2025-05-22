@@ -212,7 +212,7 @@ public void openHomePage(User user) {
             new InventoryManagerHome().setVisible(true);
             break;
         case PURCHASE_MANAGER:
-            new PM_PurchaseRequisition().setVisible(true);
+             new PM_MainPage().setVisible(true);
             break;
         default:
             JOptionPane.showMessageDialog(this, "Unknown role: " + role, "Login Error", JOptionPane.ERROR_MESSAGE);

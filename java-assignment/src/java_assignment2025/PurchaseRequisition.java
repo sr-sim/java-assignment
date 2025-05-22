@@ -18,7 +18,7 @@ public class PurchaseRequisition {
     private String userid;
     private List<String> quantities;
     private List<String> unitPrices;
-    private String total;
+    private double total;
     private String requestdate;
     private String expecteddeliverydate;
     private ApproveStatus approvestatus;
@@ -43,7 +43,7 @@ public class PurchaseRequisition {
     }
 }
 
-    public PurchaseRequisition(String prid, List<String> itemids, String userid,List<String> quantities,List<String> unitPrices,String total,String requestdate, String expecteddeliverydate, ApproveStatus approvestatus, String statuschangeby,String note,boolean deleted){
+    public PurchaseRequisition(String prid, List<String> itemids, String userid,List<String> quantities,List<String> unitPrices,double total,String requestdate, String expecteddeliverydate, ApproveStatus approvestatus, String statuschangeby,String note,boolean deleted){
         this.prid = prid;
         this.itemids = itemids;
         this.userid = userid;
@@ -104,12 +104,12 @@ public class PurchaseRequisition {
     }
 
     
-    public String getTotal() {
+    public double getTotal() {
         return total;
     }
 
     
-    public void setTotal(String total) {
+    public void setTotal(double total) {
         this.total = total;
     }
 
@@ -148,7 +148,7 @@ public class PurchaseRequisition {
     
     @Override
     public String toString(){
-        return prid + "," + String.join("|", itemids) + "," + userid + "," + String.join("|", quantities) +","+ String.join("|",unitPrices)+"," + total+ "," + requestdate + "," + expecteddeliverydate + "," + approvestatus + "," + statuschangeby + ","+ note + ","+deleted;
+        return prid + "," + String.join("|", itemids) + "," + userid + "," + String.join("|", quantities) +","+ String.join("|",unitPrices)+"," +  String.format("%.2f", total)+ "," + requestdate + "," + expecteddeliverydate + "," + approvestatus + "," + statuschangeby + ","+ note + ","+deleted;
     } 
 
     

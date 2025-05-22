@@ -37,7 +37,7 @@ public class PurchaseRequisitionManager {
                             parts[2].trim(),
                             quantities,
                             unitPrices,
-                            parts[5].trim(),
+                            Double.parseDouble(parts[5].trim()),
                             parts[6].trim(),
                             parts[7].trim(),
                             PurchaseRequisition.ApproveStatus.fromString(parts[8].trim()),
@@ -88,8 +88,8 @@ public class PurchaseRequisitionManager {
                 System.out.println("pr not found");
             } 
     }
-    public void updatepr(String prid, List<String> itemids, String userid, List<String> quantities,List<String> unitprices, String total,String requestdate,String expecteddeliverydate,PurchaseRequisition.ApproveStatus status,String statuschangeby,String note, boolean isdeleted) {
-        PurchaseRequisition existingpr= findprid(prid);
+    public void updatepr(String prid, List<String> itemids, String userid, List<String> quantities,List<String> unitprices, double total,String requestdate,String expecteddeliverydate,PurchaseRequisition.ApproveStatus status,String statuschangeby,String note, boolean isdeleted) {
+        PurchaseRequisition existingpr = findprid(prid);
         if (existingpr != null) {
             existingpr.setPrid(prid);
             existingpr.setItemids(itemids);
@@ -141,7 +141,7 @@ public class PurchaseRequisitionManager {
         double totalprice = 0.00;
         for (PRItem pritem : pritemlist){
             try{
-                totalprice += Double.parseDouble(pritem.getTotalprice());
+                totalprice += pritem.getTotalprice();
             }catch(NumberFormatException e){
                 System.out.println("invalid price format in PRitem");
             }

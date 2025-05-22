@@ -128,7 +128,6 @@ public class PMPurchaseOrder extends javax.swing.JFrame {
         jLabel11 = new javax.swing.JLabel();
         donDeleteMe = new javax.swing.JButton();
         jLabel13 = new javax.swing.JLabel();
-        saveMe = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jTextField1 = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
@@ -256,14 +255,6 @@ public class PMPurchaseOrder extends javax.swing.JFrame {
     jLabel13.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
     jLabel13.setText("Purchase Order Table");
 
-    saveMe.setFont(new java.awt.Font("Segoe UI Black", 1, 13)); // NOI18N
-    saveMe.setText("Save Changes");
-    saveMe.addActionListener(new java.awt.event.ActionListener() {
-        public void actionPerformed(java.awt.event.ActionEvent evt) {
-            saveMeActionPerformed(evt);
-        }
-    });
-
     jLabel1.setFont(new java.awt.Font("STZhongsong", 2, 13)); // NOI18N
     jLabel1.setText("Search: ");
 
@@ -307,8 +298,6 @@ public class PMPurchaseOrder extends javax.swing.JFrame {
                     .addGap(18, 18, 18)
                     .addComponent(jButton2)
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(saveMe)
-                    .addGap(485, 485, 485)
                     .addComponent(donDeleteMe))
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -347,11 +336,9 @@ public class PMPurchaseOrder extends javax.swing.JFrame {
                     .addComponent(donDeleteMe))
                 .addGroup(jPanel1Layout.createSequentialGroup()
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton1)
-                            .addComponent(jButton2))
-                        .addComponent(saveMe))))
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jButton1)
+                        .addComponent(jButton2))))
             .addGap(35, 129, Short.MAX_VALUE))
     );
 
@@ -370,29 +357,24 @@ public class PMPurchaseOrder extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        //        new SM_ItemEntry(salesmanager).setVisible(true);
-        //        this.dispose();
+       new PM_ViewItem().setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-        //        new SM_SupplierEntry(salesmanager).setVisible(true);
-        //        this.dispose();
+         new PM_ViewSupplier().setVisible(true);
+         this.dispose();
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-        //        new SM_DailySalesEntry(salesmanager).setVisible(true);
-        //        this.dispose();
+           new PM_PurchaseRequisition().setVisible(true);
+           this.dispose();
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
-        //        new SM_PurchaseRequisition(salesmanager).setVisible(true);
-        //        this.dispose();
+        new PMPurchaseOrder().setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_jButton9ActionPerformed
-
-    private void saveMeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveMeActionPerformed
-        // TODO add your handling code here:
-       
-    }//GEN-LAST:event_saveMeActionPerformed
 
     private void donDeleteMeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_donDeleteMeActionPerformed
 
@@ -400,7 +382,7 @@ public class PMPurchaseOrder extends javax.swing.JFrame {
         if (selectedrow != -1){
             String poid = jTable1.getValueAt(selectedrow, 0).toString();
             System.out.println("here"+ poid);
-            int YesOrNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this purchase o?" + poid , "Confirm Delete", JOptionPane.YES_NO_OPTION);
+            int YesOrNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this purchase ?" + poid , "Confirm Delete", JOptionPane.YES_NO_OPTION);
             
             if (YesOrNo == JOptionPane.YES_OPTION){
                 pomanager.deletepo(poid);
@@ -487,38 +469,38 @@ public class PMPurchaseOrder extends javax.swing.JFrame {
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(PMPurchaseOrder.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(PMPurchaseOrder.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(PMPurchaseOrder.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(PMPurchaseOrder.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new PMPurchaseOrder().setVisible(true);
-            }
-        });
-    }
+//    public static void main(String args[]) {
+//        /* Set the Nimbus look and feel */
+//        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+//        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+//         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+//         */
+//        try {
+//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+//                if ("Nimbus".equals(info.getName())) {
+//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+//                    break;
+//                }
+//            }
+//        } catch (ClassNotFoundException ex) {
+//            java.util.logging.Logger.getLogger(PMPurchaseOrder.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (InstantiationException ex) {
+//            java.util.logging.Logger.getLogger(PMPurchaseOrder.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (IllegalAccessException ex) {
+//            java.util.logging.Logger.getLogger(PMPurchaseOrder.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+//            java.util.logging.Logger.getLogger(PMPurchaseOrder.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        }
+//        //</editor-fold>
+//        //</editor-fold>
+//
+//        /* Create and display the form */
+//        java.awt.EventQueue.invokeLater(new Runnable() {
+//            public void run() {
+//                new PMPurchaseOrder().setVisible(true);
+//            }
+//        });
+//    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton donDeleteMe;
@@ -540,6 +522,5 @@ public class PMPurchaseOrder extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     private javax.swing.JTextField jTextField1;
-    private javax.swing.JButton saveMe;
     // End of variables declaration//GEN-END:variables
 }

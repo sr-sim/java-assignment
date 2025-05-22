@@ -64,7 +64,7 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
             String quantity = String.join(",", quantitieslist);
             List<String> unitPricelist = pr.getUnitPrices();
             String unitprice = String.join(",",unitPricelist);
-            String totalprice = pr.getTotal();
+            double totalprice = pr.getTotal();
             String reqdate = pr.getRequestdate();
             String expecteddate = pr.getExpecteddeliverydate();
             String createdby = pr.getUserid();
