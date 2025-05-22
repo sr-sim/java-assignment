@@ -4,14 +4,18 @@
  */
 package java_assignment2025;
 
+import java.awt.Component;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import javax.swing.RowFilter;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableRowSorter;
 
 /**
@@ -39,6 +43,10 @@ public class SM_PurchaseOrder extends javax.swing.JFrame {
     public SM_PurchaseOrder() {
         initComponents();
         this.salesmanager = (SalesManager)Session.getCurrentUser();
+        jScrollPane1.setHorizontalScrollBarPolicy(
+        javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        jTable1.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        jScrollPane1.setViewportView(jTable1);
         this.pomanager = new PurchaseOrderManager();
         this.inventorydatamanager = new InventoryDataManager();
         this.editPO = editPO;
@@ -103,7 +111,32 @@ public class SM_PurchaseOrder extends javax.swing.JFrame {
                 po.getPaymentStatus()
             });
         }
-    }}
+    }
+        resizeColumnWidths(jTable1);
+     }
+     
+     
+    private void resizeColumnWidths(JTable table) {
+    for (int column = 0; column < table.getColumnCount(); column++) {
+        TableColumn tableColumn = table.getColumnModel().getColumn(column);
+        int preferredWidth = 75;
+        int maxWidth = 300;
+    
+        TableCellRenderer headerRenderer = table.getTableHeader().getDefaultRenderer();
+        Component headerComp = headerRenderer.getTableCellRendererComponent(table, tableColumn.getHeaderValue(), false, false, 0, column);
+        preferredWidth = Math.max(preferredWidth, headerComp.getPreferredSize().width);
+
+        for (int row = 0; row < table.getRowCount(); row++) {
+            TableCellRenderer cellRenderer = table.getCellRenderer(row, column);
+            Component c = table.prepareRenderer(cellRenderer, row, column);
+            int width = c.getPreferredSize().width + table.getIntercellSpacing().width;
+            preferredWidth = Math.max(preferredWidth, width);
+        }
+
+        preferredWidth = Math.min(preferredWidth, maxWidth);
+        tableColumn.setPreferredWidth(preferredWidth);
+    }
+}
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -294,6 +327,7 @@ public class SM_PurchaseOrder extends javax.swing.JFrame {
         }
 
     );
+    jTable1.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
     jScrollPane1.setViewportView(jTable1);
 
     jLabel12.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
