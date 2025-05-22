@@ -3,8 +3,24 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package java_assignment2025;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import net.sf.jasperreports.engine.JREmptyDataSource;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
+import net.sf.jasperreports.engine.export.JRPdfExporter;
+import net.sf.jasperreports.engine.util.JRLoader;
+import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
+import net.sf.jasperreports.export.SimplePdfExporterConfiguration;
 /**
  *
  * @author User
@@ -38,9 +54,9 @@ public class SalesDataManager {
                 individualsaleslist.add(new IndividualSales( // one by one add to list
                         parts[0].trim(),
                         parts[1].trim(),
-                        parts[2].trim(),
-                        parts[3].trim(),
-                        parts[4].trim(),
+                        Integer.parseInt(parts[2].trim()),
+                        Double.parseDouble(parts[3].trim()),
+                        Double.parseDouble(parts[4].trim()),
                         parts[5].trim()
                 ));
             }
@@ -54,7 +70,7 @@ public class SalesDataManager {
             if(parts.length == 3){
                 dailysaleslist.add(new DailySales( // one by one add to list
                         parts[0].trim(),
-                        parts[1].trim(),
+                        Double.parseDouble(parts[1].trim()),
                         parts[2].trim()
                 ));
             }
@@ -92,8 +108,8 @@ public class SalesDataManager {
             if (individualsales != null){
                 String itemid = individualsales.getItemid();
                 String date = individualsales.getDateofsales();
-                String amount = individualsales.getAmount();
-                String qtyStr = individualsales.getQuantity();
+                double amount = individualsales.getAmount();
+                int qtyStr = individualsales.getQuantity();
                 individualsaleslist.remove(individualsales);
                 textfile.deleteLine(individualsalesfilepath, individualsales.toString());
                 System.out.println("delete successful");
@@ -122,12 +138,12 @@ public class SalesDataManager {
 //            System.out.println("failed to edit");
 //        }
 //    }
-    public void updateindividualsales(String salesid, String itemid, String quantity, String retailprice, String amount, String dateofsales) {
+    public void updateindividualsales(String salesid, String itemid, int quantity, double retailprice, double amount, String dateofsales) {
         IndividualSales existingsales= findsalesid(salesid);
         if (existingsales != null) {
             String oldItemId = existingsales.getItemid();
             String oldDate = existingsales.getDateofsales();
-            String oldAmount = existingsales.getAmount();
+            double oldAmount = existingsales.getAmount();
             existingsales.setretailprice(retailprice);
             existingsales.setSalesid(salesid);
             existingsales.setItemid(itemid);
@@ -167,20 +183,20 @@ public class SalesDataManager {
     public void updatedailysummary(IndividualSales sales){
         String itemid = sales.getItemid();
         String date = sales.getDateofsales();
-        String amount = sales.getAmount();
+        double amount = sales.getAmount();
 
         boolean updated=false;
 
         for(DailySales dailysales : dailysaleslist){
             if (dailysales.getItemid().equals(itemid) && dailysales.getDateofsales().equals(date)) {
-                double currentTotalSales = Double.parseDouble(dailysales.getTotalsales());
-                double newTotalSales = currentTotalSales + Double.parseDouble(amount);
-                String formattedCurrentTotal = String.format("%.2f", currentTotalSales);
-                String formattedNewTotal = String.format("%.2f", newTotalSales);
+                double currentTotalSales = dailysales.getTotalsales();
+                double newTotalSales = currentTotalSales + amount;
+//                String formattedCurrentTotal = String.format("%.2f", currentTotalSales);
+//                String formattedNewTotal = String.format("%.2f", newTotalSales);
                 
-                dailysales.setTotalsales(formattedNewTotal);
-                String oldLine = itemid + "," + formattedCurrentTotal + "," + date;
-                String newLine = itemid + "," + formattedNewTotal + "," + date;
+                dailysales.setTotalsales(newTotalSales);
+                String oldLine = itemid + "," + currentTotalSales + "," + date;
+                String newLine = itemid + "," + newTotalSales + "," + date;
                 textfile.replaceLine(dailysalesfilepath, oldLine, newLine); 
 
                 updated = true;
@@ -188,9 +204,9 @@ public class SalesDataManager {
             }
         }
         if(!updated){
-            String formattedAmount = String.format("%.2f", Double.parseDouble(amount));
-            String newentry = itemid + "," + formattedAmount + "," + date;
-            dailysaleslist.add(new DailySales(itemid, formattedAmount, date)); 
+//            String formattedAmount = String.format("%.2f", Double.parseDouble(amount));
+            String newentry = itemid + "," + amount + "," + date;
+            dailysaleslist.add(new DailySales(itemid, amount, date)); 
             textfile.appendTo(dailysalesfilepath,newentry);
         }
     }
@@ -198,25 +214,25 @@ public class SalesDataManager {
     private void updatedailysummaryAfterDelete(IndividualSales sales) {
         String itemid = sales.getItemid();
         String date = sales.getDateofsales();
-        String amount = sales.getAmount();
+        double amount = sales.getAmount();
 
         for (int i = 0; i < dailysaleslist.size(); i++) {
             DailySales dailysales = dailysaleslist.get(i);
             if (dailysales.getItemid().equals(itemid) && dailysales.getDateofsales().equals(date)) {
-                double currentTotalSales = Double.parseDouble(dailysales.getTotalsales());
-                double newTotalSales = currentTotalSales - Double.parseDouble(amount);
-                String formattedCurrentTotal = String.format("%.2f", currentTotalSales);
-                String formattedNewTotal = String.format("%.2f", newTotalSales);
+                double currentTotalSales = dailysales.getTotalsales();
+                double newTotalSales = currentTotalSales - amount;
+//                String formattedCurrentTotal = String.format("%.2f", currentTotalSales);
+//                String formattedNewTotal = String.format("%.2f", newTotalSales);
                 
-                String oldLine = itemid + "," + formattedCurrentTotal + "," + date;
+                String oldLine = itemid + "," + currentTotalSales + "," + date;
 
                 if (newTotalSales <= 0.00) {
                     dailysaleslist.remove(i);
                     textfile.deleteLine(dailysalesfilepath, oldLine);
                     System.out.println("Daily summary entry removed completely");
                 } else {
-                    dailysales.setTotalsales(formattedNewTotal);
-                    String newLine = itemid + "," + formattedNewTotal + "," + date;
+                    dailysales.setTotalsales(newTotalSales);
+                    String newLine = itemid + "," + newTotalSales + "," + date;
                     textfile.replaceLine(dailysalesfilepath, oldLine, newLine);
                     System.out.println("Daily summary updated after delete");
                 }
@@ -224,27 +240,27 @@ public class SalesDataManager {
             }
         }
     }
-    private void updatedailysummaryAfterUpdate(String oldItemid, String oldDate, String oldAmount,String newItemid, String newDate, String newAmount) {
-        double oldAmt = Double.parseDouble(oldAmount);
-        double newAmt = Double.parseDouble(newAmount);
+    private void updatedailysummaryAfterUpdate(String oldItemid, String oldDate, double oldAmount,String newItemid, String newDate, double newAmount) {
+        double oldAmt = oldAmount;
+        double newAmt = newAmount;
         boolean oldUpdated = false;
         boolean newUpdated = false;
 
         for (DailySales dailysales : dailysaleslist) {
             if (dailysales.getItemid().equals(oldItemid) && dailysales.getDateofsales().equals(oldDate)) {
-                double currentTotal = Double.parseDouble(dailysales.getTotalsales());
+                double currentTotal = dailysales.getTotalsales();
                 double newTotal = currentTotal - oldAmt;
-                
-                String formattedCurrentTotal = String.format("%.2f", currentTotal);
-                String formattedNewTotal = String.format("%.2f", newTotal);
+//                
+//                String formattedCurrentTotal = String.format("%.2f", currentTotal);
+//                String formattedNewTotal = String.format("%.2f", newTotal);
 
-                String oldLine = oldItemid + "," + formattedCurrentTotal + "," + oldDate;
+                String oldLine = oldItemid + "," + currentTotal + "," + oldDate;
                 if (newTotal <= 0.00) {
                     dailysaleslist.remove(dailysales);
                     textfile.deleteLine(dailysalesfilepath, oldLine);
                 } else {
-                    dailysales.setTotalsales(formattedNewTotal);
-                    String newLine = oldItemid + "," + formattedNewTotal + "," + oldDate;
+                    dailysales.setTotalsales(newTotal);
+                    String newLine = oldItemid + "," + newTotal + "," + oldDate;
                     textfile.replaceLine(dailysalesfilepath, oldLine, newLine);
                 }
 
@@ -252,17 +268,40 @@ public class SalesDataManager {
                 break;
             }
         }
+          if (!oldItemid.equals(newItemid) || !oldDate.equals(newDate)) {
+            // Handle adding to a different item/date
+            boolean found = false;
+            for (DailySales dailysales : dailysaleslist) {
+                if (dailysales.getItemid().equals(newItemid) && dailysales.getDateofsales().equals(newDate)) {
+                    double currentTotal = dailysales.getTotalsales();
+                    double newTotal = currentTotal + newAmt;
+
+                    String oldLine = newItemid + "," + currentTotal + "," + newDate;
+                    String newLine = newItemid + "," + newTotal + "," + newDate;
+
+                    dailysales.setTotalsales(newTotal);
+                    textfile.replaceLine(dailysalesfilepath, oldLine, newLine);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                String newEntry = newItemid + "," + String.format("%.2f", newAmt) + "," + newDate;
+                dailysaleslist.add(new DailySales(newItemid, newAmt, newDate));
+                textfile.appendTo(dailysalesfilepath, newEntry);
+            }
+        }
         for (DailySales dailysales : dailysaleslist) {
             if (dailysales.getItemid().equals(newItemid) && dailysales.getDateofsales().equals(newDate)) {
-                double currentTotal = Double.parseDouble(dailysales.getTotalsales());
+                double currentTotal = dailysales.getTotalsales();
                 double newTotal = currentTotal + newAmt;
-                
-                String formattedCurrentTotal = String.format("%.2f", currentTotal);
-                String formattedNewTotal = String.format("%.2f", newTotal);
+//                
+//                String formattedCurrentTotal = String.format("%.2f", currentTotal);
+//                String formattedNewTotal = String.format("%.2f", newTotal);
 
-                String oldLine = newItemid + "," + formattedCurrentTotal + "," + newDate;
-                String newLine = newItemid + "," + formattedNewTotal + "," + newDate;
-                dailysales.setTotalsales(formattedNewTotal);
+                String oldLine = newItemid + "," + currentTotal + "," + newDate;
+                String newLine = newItemid + "," + newTotal + "," + newDate;
+                dailysales.setTotalsales(newTotal);
                 textfile.replaceLine(dailysalesfilepath, oldLine, newLine);
 
                 newUpdated = true;
@@ -271,10 +310,10 @@ public class SalesDataManager {
         }
 
         if (!newUpdated) {
-            String formattedNewAmount = String.format("%.2f", Double.parseDouble(newAmount));
-            DailySales newEntry = new DailySales(newItemid, formattedNewAmount, newDate);
+//            String formattedNewAmount = String.format("%.2f", Double.parseDouble(newAmount));
+            DailySales newEntry = new DailySales(newItemid, newAmt, newDate);
             dailysaleslist.add(newEntry);
-            textfile.appendTo(dailysalesfilepath, newItemid + "," + formattedNewAmount + "," + newDate);
+            textfile.appendTo(dailysalesfilepath, newItemid + "," + newAmt + "," + newDate);
         }
 
         System.out.println("Daily summary updated after individual sales edit.");
