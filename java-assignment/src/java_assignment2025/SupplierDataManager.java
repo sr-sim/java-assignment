@@ -21,8 +21,8 @@ import java_assignment2025.TextFile;
 public class SupplierDataManager extends DataManager{
     private final List<Supplier>supplierlist;
     private final TextFile textfile;
-    private final String supplierfilepath = "C:\\Users\\User\\OneDrive\\Documents\\NetBeansProjects\\java-assignment\\java-assignment\\src\\java_assignment2025\\supplier.txt";
-    private final String inventoryfilepath = "C:\\\\Users\\\\User\\\\OneDrive\\\\Documents\\\\NetBeansProjects\\\\java-assignment\\\\java-assignment\\\\src\\\\java_assignment2025\\inventory.txt";
+    private final String supplierfilepath = "src/java_assignment2025/supplier.txt";
+    private final String inventoryfilepath = "src/java_assignment2025/inventory.txt";
     
     public SupplierDataManager() {
         super();
