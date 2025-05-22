@@ -113,7 +113,7 @@ public class IM_VerifyPo extends javax.swing.JFrame {
             // Adjust for Action column (ensure buttons fit)
             if (column == 5) {
                 preferredWidth = Math.max(preferredWidth, 200); // Ensure enough space for buttons
-                System.out.println("Action column width set to: " + preferredWidth);
+               
             }
 
             tableColumn.setPreferredWidth(Math.min(preferredWidth, maxWidth));
@@ -420,8 +420,7 @@ public class IM_VerifyPo extends javax.swing.JFrame {
         @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
         Object modelValue = table.getModel().getValueAt(row, column);
-        System.out.println("Renderer - Row " + row + " Value: " + (modelValue != null ? modelValue.toString() : "null") +
-                          " (Param Value: " + (value != null ? value.toString() : "null") + ")");
+        
 
         // Reset the renderer panel
         rendererPanel.removeAll();
@@ -455,8 +454,7 @@ public class IM_VerifyPo extends javax.swing.JFrame {
         @Override
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
         Object modelValue = table.getModel().getValueAt(row, column);
-        System.out.println("Editor - Row " + row + " Value: " + (modelValue != null ? modelValue.toString() : "null") +
-                          " (Param Value: " + (value != null ? value.toString() : "null") + ")");
+        
 
         currentValue = modelValue;
 

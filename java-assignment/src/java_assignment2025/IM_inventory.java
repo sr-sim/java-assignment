@@ -27,7 +27,7 @@ public class IM_inventory extends javax.swing.JFrame {
      */
     public IM_inventory(InventoryManager inventorymanager,InventoryDataManager inventorydatamanager, SupplierDataManager supplierdatamanager) {
         initComponents();
-        this. inventorymanager =inventorymanager;
+       this.inventorymanager = (InventoryManager)Session.getCurrentUser();
         this.inventorydatamanager = inventorydatamanager;
         this.supplierdatamanager = supplierdatamanager;
         String generateItemId= inventorydatamanager.generateItemId();

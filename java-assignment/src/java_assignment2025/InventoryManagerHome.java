@@ -14,7 +14,7 @@ public class InventoryManagerHome extends javax.swing.JFrame {
     /**
      * Creates new form InventoryManagerHome
      */
-    public InventoryManagerHome() {
+    public InventoryManagerHome(InventoryManager inventorymanager) {
         this.inventoryManager = (InventoryManager)Session.getCurrentUser(); 
         initComponents();
     }

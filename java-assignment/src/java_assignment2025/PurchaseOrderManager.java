@@ -44,11 +44,10 @@ public class PurchaseOrderManager extends DataManager {
    
     public void loadAllpofromtxtfile() {
         polist.clear();
-        try {
+        
             List<String> lines = textfile.readFile(pofilepath);
-            System.out.println("Lines read from " + pofilepath + ": " + lines.size() + " at " + new File(pofilepath).getAbsolutePath());
+           
             for (String line : lines) {
-                System.out.println("Processing line: " + line);
                 String[] parts = line.split(",", 15);
                 if (parts.length == 15) {
                     try {
@@ -78,14 +77,11 @@ public class PurchaseOrderManager extends DataManager {
                             System.out.println("Added PO: " + parts[0].trim());
                         }catch (NumberFormatException e) {
                         System.err.println("Error parsing amount in line: " + line + " - " + e.getMessage());
-                        }
-                    }else{
-                    System.out.println("Invalid line format (expected 15 parts): " + line);}
-                
                     }
-        } catch (Exception e) {
-            System.err.println("Error loading PurchaseOrder.txt: " + e.getMessage());
-        }
+                }
+                
+        
+            }
 }
     
      public void updatePurchaseOrderInFile(PurchaseOrder po) {

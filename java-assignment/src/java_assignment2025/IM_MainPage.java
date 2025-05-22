@@ -12,17 +12,16 @@ public class IM_MainPage extends javax.swing.JFrame {
     private InventoryManager inventorymanager;
     private InventoryDataManager inventorydatamanager;
     private SupplierDataManager supplierdatamanager;
-    private PurchaseRequisitionManager prmanager;
+
     private PurchaseOrderManager pomanager;
    
     /**
      * Creates new form IM_MainPage
      */
-    public IM_MainPage(InventoryManager inventorymanager) {
-        this.inventorymanager = inventorymanager; 
+    public IM_MainPage() {
+        this.inventorymanager = (InventoryManager)Session.getCurrentUser(); 
           this.supplierdatamanager = new SupplierDataManager();
         this.inventorydatamanager = new InventoryDataManager();
-        this.prmanager = new PurchaseRequisitionManager();
         this.pomanager = new PurchaseOrderManager();
         initComponents();
     }
@@ -162,7 +161,8 @@ public class IM_MainPage extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-
+    new IM_VerifyPo(inventorymanager, pomanager, inventorydatamanager, supplierdatamanager).setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
