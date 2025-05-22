@@ -17,7 +17,7 @@ public class InventoryDataManager extends DataManager{
     private final List<Item>itemlist;
     private final List<Item>itemlistbysupplier;
     private final TextFile textfile;
-    private final String inventoryfilepath = "src/java_assignment2025/inventory.txt";
+    private final String inventoryfilepath = "C:\\Users\\hew\\OneDrive - Asia Pacific University\\Documents\\NetBeansProjects\\java-assignment\\java-assignment\\src\\java_assignment2025\\inventory.txt";
     
     
     
