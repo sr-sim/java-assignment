@@ -29,8 +29,7 @@ public class PurchaseOrder {
     private String orderStatus;
     private String verifyStatus;
     private String paymentStatus;
-    private ReceiveStatus receiveStatus;
-
+    private String receiveStatus;
     private String postatuschangeby;
    
     
@@ -38,7 +37,7 @@ public class PurchaseOrder {
     // Constructor
     public PurchaseOrder(String orderId, String poCreator, String requestId, String userId,List<String> itemIds ,
                          List<String> unitPrices, List<String> quantities, double amount,List<String>  supplierIds,
-                         String orderDate, String orderStatus, String verifyStatus, String paymentStatus,String postatuschangeby) {
+                         String orderDate, String orderStatus, String verifyStatus, String paymentStatus,String receiveStatus,String postatuschangeby) {
         this.orderId = orderId;
         this.poCreator = poCreator;
         this.requestId = requestId;
@@ -53,6 +52,7 @@ public class PurchaseOrder {
         this.verifyStatus = verifyStatus;
         this.paymentStatus = paymentStatus;
         this.postatuschangeby = postatuschangeby;
+         this.receiveStatus = receiveStatus;
     }
     
 
@@ -112,6 +112,10 @@ public class PurchaseOrder {
     public String getVerifyStatus() {
         return verifyStatus;
     }
+    public void setVerifyStatus(String verifyStatus) {
+        this.verifyStatus = verifyStatus;
+    }
+    
     public String getPaymentStatus() {
         return paymentStatus;
     }
@@ -119,7 +123,15 @@ public class PurchaseOrder {
     public void setPaymentStatus(String paymentStatus) {
         this.paymentStatus = paymentStatus;
     }
+    
+    public String getReceiveStatus() {
+        return receiveStatus;
+    }
+    public void setReceiveStatus(String receiveStatus) {
+        this.receiveStatus = receiveStatus;
+    }
 
+    
    
 
      public static String getCurrentDate() {
@@ -163,7 +175,8 @@ public class PurchaseOrder {
                String.join("|", quantities) + "," +
                String.format("%.2f", amount) + "," +
                String.join("|", supplierIds) + "," +
-               orderDate + "," + orderStatus + "," + verifyStatus+","+ paymentStatus+","+postatuschangeby;
+               orderDate + "," + orderStatus + "," + verifyStatus+","+ paymentStatus
+                + "," + receiveStatus+","+postatuschangeby;
 }
 
     public String getPostatuschangeby() {

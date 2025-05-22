@@ -7,6 +7,9 @@ package java_assignment2025;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.io.*;
+import java.util.*;
+import java.nio.file.*;
 
 /**
  *
@@ -15,43 +18,95 @@ import java.util.List;
 public class PurchaseOrderManager extends DataManager {
     private final List<PurchaseOrder>polist;
     private final TextFile textfile;
-    private final String pofilepath = "C:\\Users\\hew\\OneDrive - Asia Pacific University\\Documents\\NetBeansProjects\\java-assignment\\java-assignment\\src\\java_assignment2025\\PurchaseOrder.txt";
+//    private final String pofilepath = "C:\\Users\\hew\\OneDrive - Asia Pacific University\\Documents\\NetBeansProjects\\java-assignment\\java-assignment\\src\\java_assignment2025\\PurchaseOrder.txt";
+    private final String pofilepath= "src/java_assignment2025/PurchaseOrder.txt";
+    
     
     public PurchaseOrderManager() {
         this.polist = new ArrayList<>();
         this.textfile = new TextFile();
-                loadAllpofromtxtfile();
+        initializeFile();//this one macy remove le
+        loadAllpofromtxtfile();
     }
-    
+    private void initializeFile() {
+        try {
+            File file = new File(pofilepath);
+            if (!file.exists()) {
+                file.getParentFile().mkdirs();
+                file.createNewFile();
+                System.out.println("Created PurchaseOrder.txt at: " + file.getAbsolutePath());
+                
+            }
+        } catch (IOException e) {
+            System.err.println("Error creating PurchaseOrder.txt: " + e.getMessage()); //this function macy dh
+        }
+    }
+   
     public void loadAllpofromtxtfile() {
         polist.clear();
-         
+        try {
+            List<String> lines = textfile.readFile(pofilepath);
+            System.out.println("Lines read from " + pofilepath + ": " + lines.size() + " at " + new File(pofilepath).getAbsolutePath());
+            for (String line : lines) {
+                System.out.println("Processing line: " + line);
+                String[] parts = line.split(",", 15);
+                if (parts.length == 15) {
+                    try {
+                            List<String> itemids = Arrays.asList(parts[4].trim().split("\\|"));
+                            List<String> unitPrices = Arrays.asList(parts[5].trim().split("\\|"));
+                            List<String> quantities = Arrays.asList(parts[6].trim().split("\\|"));
+                            List<String> supplierids = Arrays.asList(parts[8].trim().split("\\|"));
+                            polist.add(new PurchaseOrder(
+                                    parts[0].trim(),
+                                    parts[1].trim(),
+                                    parts[2].trim(),
+                                    parts[3].trim(),
+                                    itemids, // new ArrayList<>(itemids)
+                                    unitPrices,
+                                    quantities,
+                                    Double.parseDouble(parts[7].trim()),  
+                                    supplierids,
+                                    parts[9].trim(),
+                                    parts[10].trim(),
+                                    parts[11].trim(),
+                                    parts[12].trim(),
+                                    parts[13].trim(),
+                                    parts[14].trim()
+
+
+                            ));
+                            System.out.println("Added PO: " + parts[0].trim());
+                        }catch (NumberFormatException e) {
+                        System.err.println("Error parsing amount in line: " + line + " - " + e.getMessage());
+                        }
+                    }else{
+                    System.out.println("Invalid line format (expected 15 parts): " + line);}
+                
+                    }
+        } catch (Exception e) {
+            System.err.println("Error loading PurchaseOrder.txt: " + e.getMessage());
+        }
+}
+    
+     public void updatePurchaseOrderInFile(PurchaseOrder po) {
         List<String> lines = textfile.readFile(pofilepath);
-        for (String line : lines) {
-            String[] parts = line.split(",", 14);
-            if (parts.length == 14) {
-                List<String> itemids = Arrays.asList(parts[4].trim().split("\\|"));
-                List<String> unitPrices = Arrays.asList(parts[5].trim().split("\\|"));
-                List<String> quantities = Arrays.asList(parts[6].trim().split("\\|"));
-                List<String> supplierids = Arrays.asList(parts[8].trim().split("\\|"));
-                polist.add(new PurchaseOrder(
-                        parts[0].trim(),
-                        parts[1].trim(),
-                        parts[2].trim(),
-                        parts[3].trim(),
-                        itemids, // new ArrayList<>(itemids)
-                        unitPrices,
-                        quantities,
-                        Double.parseDouble(parts[7].trim()),  
-                        supplierids,
-                        parts[9].trim(),
-                        parts[10].trim(),
-                        parts[11].trim(),
-                        parts[12].trim(),
-                        parts[13].trim())
-                       
-                );
+        List<String> updatedLines = new ArrayList<>();
+        boolean updated = false;//new
+        try{
+            for (String line : lines) {
+                if (line.startsWith(po.getOrderId() + ",")) {
+                    updatedLines.add(po.toString());
+                    updated = true; // Set flag when updated
+                } else {
+                    updatedLines.add(line);
+                }
             }
+            if (!updated) {
+                    updatedLines.add(po.toString());
+            }
+            textfile.rewriteFile(pofilepath, updatedLines);
+        } catch (Exception e) {
+            System.err.println("Error updating PurchaseOrder.txt: " + e.getMessage()); //this function macy dh
         }
     }
     public String getpofilepath(){
@@ -115,5 +170,23 @@ public class PurchaseOrderManager extends DataManager {
         java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd");
         return today.format(formatter);
     }
+     
+     public void updateReceiveStatus(String orderId, String status, boolean checkNotReceived) {
+        PurchaseOrder po = findpoid(orderId);
+        if (po == null) {
+            System.out.println("Purchase Order not found for ID: " + orderId);
+            return;
+        }
+        if (checkNotReceived && !po.getReceiveStatus().equals("not received")) {
+            System.out.println("Status already set to " + po.getReceiveStatus());
+            return;
+        }
+        po.setReceiveStatus(status);
+        po.setVerifyStatus("verified");
+        updatePurchaseOrderInFile(po);
+        System.out.println((status.equals("received") ? "Remaining quantities received" : "Receive status updated to " + status) + " for PO: " + orderId);
+    }
+     
+     
 
 }
