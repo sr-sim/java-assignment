@@ -182,6 +182,32 @@ public class PurchaseOrderManager extends DataManager {
         updatePurchaseOrderInFile(po);
         System.out.println((status.equals("received") ? "Remaining quantities received" : "Receive status updated to " + status) + " for PO: " + orderId);
     }
+    
+    public static String getNextOrderId() {
+
+        String filePath = "src/java_assignment2025/PurchaseOrder.txt";
+        List<String> lines = TextFile.readFile(filePath);
+        int maxId = 0;
+
+        for (String line : lines) {
+            if (!line.trim().isEmpty()) {
+                String[] parts = line.split(",");
+                if (parts.length > 0 && parts[0].startsWith("PO")) {
+                    String poId = parts[0];
+                    try {
+                        int idNum = Integer.parseInt(poId.substring(2)); // Extract numeric part
+                        if (idNum > maxId) {
+                            maxId = idNum;
+                        }
+                    } catch (NumberFormatException e) {
+                        System.err.println("Invalid PO ID format: " + poId);
+                    }
+                }
+            }
+        }
+
+        return String.format("PO%03d", maxId + 1);
+    }
      
      
 
