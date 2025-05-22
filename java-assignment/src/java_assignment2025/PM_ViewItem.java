@@ -43,9 +43,9 @@ public class PM_ViewItem extends javax.swing.JFrame {
                 String itemName = item.getItemname();
                 String itemDescription = item.getItemdesc();
                 String supplierId = item.getSupplierid();
-                String inStockQty = item.getInstockquantity();
-                String unitPrice = item.getUnitprice();
-                String retailPrice = item.getRetailprice();
+                int inStockQty = item.getInstockquantity();
+                double unitPrice = item.getUnitprice();
+                double retailPrice = item.getRetailprice();
                 String lastModifiedDate = item.getLastmodifieddate();
 
                 Supplier supplier = supplierdatamanager.findsupplierid(supplierId);
