@@ -62,10 +62,13 @@ public class SM_ItemEntry extends javax.swing.JFrame {
                 String itemName = item.getItemname();
                 String itemDescription = item.getItemdesc();
                 String supplierId = item.getSupplierid();
-                String inStockQty = item.getInstockquantity();
-                String unitPrice = item.getUnitprice();
-                String retailPrice = item.getRetailprice();
+                int inStockQty = item.getInstockquantity();
+                double unitPrice = item.getUnitprice();
+                double retailPrice = item.getRetailprice();
                 String lastModifiedDate = item.getLastmodifieddate();
+                String formattedUnitPrice = String.format("%.2f", item.getUnitprice());
+                String formattedRetailPrice = String.format("%.2f", item.getRetailprice());
+
 
                 Supplier supplier = supplierdatamanager.findsupplierid(supplierId);
                 String supplierName = (supplier != null) ? supplier.getSuppliername() : "Unknown Supplier";
@@ -73,7 +76,7 @@ public class SM_ItemEntry extends javax.swing.JFrame {
                 model.addRow(new Object[]{
                     itemId, itemName, itemDescription,
                     supplierId, supplierName,
-                    inStockQty, unitPrice, retailPrice,
+                    inStockQty, formattedUnitPrice, formattedRetailPrice,
                     lastModifiedDate
                 });
             }
@@ -793,8 +796,8 @@ public class SM_ItemEntry extends javax.swing.JFrame {
                 return;
             }
 
-            String formattedUnitPrice = String.format("%.2f", unitprice);
-            String formattedRetailPrice = String.format("%.2f", retailprice);
+//            String formattedUnitPrice = String.format("%.2f", unitprice);
+//            String formattedRetailPrice = String.format("%.2f", retailprice);
 
             if(itemdesc.isEmpty()){
                 itemdesc = "No description";
@@ -805,12 +808,12 @@ public class SM_ItemEntry extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "old item not found" , "Error",JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            String instockquantity = olditem.getInstockquantity();
+            int instockquantity = olditem.getInstockquantity();
             String lastmodifieddate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             String reorderlevel = olditem.getReorderlevel();
             String reorderstatus = olditem.getReorderstatus();
             boolean deleted = olditem.isDeleted();
-            inventorydatamanager.updateItem(itemid, itemname, itemdesc, supplierid,formattedUnitPrice,formattedRetailPrice, instockquantity, reorderlevel, reorderstatus, lastmodifieddate, deleted);
+            inventorydatamanager.updateItem(itemid, itemname, itemdesc, supplierid,unitprice,retailprice, instockquantity, reorderlevel, reorderstatus, lastmodifieddate, deleted);
             fillTable1FromTxtFile();
             clearTextField();
             JOptionPane.showMessageDialog(this, "Update Successfully!");
@@ -828,7 +831,7 @@ public class SM_ItemEntry extends javax.swing.JFrame {
         String unitpricestr = jTextField3.getText();
         String retailpricestr = jTextField4.getText();
         String itemdesc = jTextArea1.getText();
-        String instockquantity = "0";
+        int instockquantity = 0;
         String lastmodifieddate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         String reorderlevel = "0";
         String reorderstatus = null;
@@ -869,15 +872,15 @@ public class SM_ItemEntry extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Unit price cannot be more than retail price","Input Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        String formattedUnitPrice = String.format("%.2f", unitprice);
-        String formattedRetailPrice = String.format("%.2f", retailprice);
+//        String formattedUnitPrice = String.format("%.2f", unitprice);
+//        String formattedRetailPrice = String.format("%.2f", retailprice);
 
         if(itemdesc.isEmpty()){
             itemdesc = "No description";
         }
 
         try {
-            Item item = new Item(itemid, itemname, itemdesc, supplierid,formattedUnitPrice,formattedRetailPrice,instockquantity, reorderlevel, reorderstatus, lastmodifieddate,deleted);
+            Item item = new Item(itemid, itemname, itemdesc, supplierid,unitprice,retailprice,instockquantity, reorderlevel, reorderstatus, lastmodifieddate,deleted);
             inventorydatamanager.addItem(item);
 
             JOptionPane.showMessageDialog(null, "Success","Information", JOptionPane.INFORMATION_MESSAGE);

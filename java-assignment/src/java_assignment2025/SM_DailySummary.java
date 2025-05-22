@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import static java_assignment2025.FinanceReport.exportDailySumToJasper;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -102,12 +103,13 @@ public class SM_DailySummary extends javax.swing.JFrame {
             if ((selectedItemId != null && !itemid.equals(selectedItemId)) || (formattedSelectedDate != null && !date.equals(formattedSelectedDate))) {
                 continue;
             }
-            String total = sales.getTotalsales();
+            double total = sales.getTotalsales();
+            String formattedtotal = String.format("%.2f", total);
 
             int qty = 0;
             for (IndividualSales indiv : individualList) {
                 if (indiv.getItemid().equals(itemid) && indiv.getDateofsales().equals(date)) {
-                    qty+= Integer.parseInt(indiv.getQuantity());
+                    qty+= indiv.getQuantity();
                 }
             }
 
@@ -126,7 +128,7 @@ public class SM_DailySummary extends javax.swing.JFrame {
         for (DailySales sales : dailyList) {
             String date = sales.getDateofsales();
             if (formattedSelectedDate != null && date.equals(formattedSelectedDate)) {
-                totalAmount += Double.parseDouble(sales.getTotalsales());
+                totalAmount += sales.getTotalsales();
             }
         }
         String formattedAmount = String.format("%.2f", totalAmount);
@@ -164,6 +166,7 @@ public class SM_DailySummary extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         jLabel13 = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -320,6 +323,14 @@ public class SM_DailySummary extends javax.swing.JFrame {
         jLabel13.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         jLabel13.setText("Daily Summary Table");
 
+        jButton1.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 14)); // NOI18N
+        jButton1.setText("Generate PDF");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -345,6 +356,8 @@ public class SM_DailySummary extends javax.swing.JFrame {
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 889, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(152, 152, 152)
                                         .addComponent(jLabel6)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -377,8 +390,9 @@ public class SM_DailySummary extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
-                    .addComponent(jLabel6))
-                .addContainerGap(28, Short.MAX_VALUE))
+                    .addComponent(jLabel6)
+                    .addComponent(jButton1))
+                .addContainerGap(22, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -434,6 +448,10 @@ public class SM_DailySummary extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_jButton17ActionPerformed
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+         exportDailySumToJasper(jTable1);
+    }//GEN-LAST:event_jButton1ActionPerformed
+
     /**
      * @param args the command line arguments
 //     */
@@ -470,6 +488,7 @@ public class SM_DailySummary extends javax.swing.JFrame {
 //    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton10;
     private javax.swing.JButton jButton17;
     private javax.swing.JButton jButton18;

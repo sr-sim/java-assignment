@@ -105,15 +105,17 @@ public class SM_DailySalesEntry extends javax.swing.JFrame {
                 continue;
             }
             String salesid = sales.getSalesid();
-            String qty = sales.getQuantity();
-            String amount = sales.getAmount();
-            String retailprice = sales.getretailprice();
+            int qty = sales.getQuantity();
+            double amount = sales.getAmount();
+            double retailprice = sales.getretailprice();
+            String formattedreatilprice = String.format("%.2f", retailprice);
+            String formattedamount = String.format("%.2f", amount);
 
             Item item = inventorydatamanager.finditemid(itemid);
             String itemname = (item != null) ? item.getItemname() : "Unknown Item";
 
             model.addRow(new Object[]{
-                salesid,itemid,itemname,qty,retailprice,amount,dateofsales
+                salesid,itemid,itemname,qty,formattedreatilprice,formattedamount,dateofsales
         });
         }
     }
@@ -670,18 +672,18 @@ public class SM_DailySalesEntry extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null,"Item not found", "Eror",JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            int currentstock = Integer.parseInt(item.getInstockquantity());
+            int currentstock = item.getInstockquantity();
             if (qty > currentstock){
                  JOptionPane.showMessageDialog(null,"No enough stock.Current stock: "+currentstock,"Stock Error",JOptionPane.WARNING_MESSAGE);
                  return;
             }
 
-            double unitretailprice = Double.parseDouble(item.getRetailprice());
+            double unitretailprice = item.getRetailprice();
             double amount = qty*unitretailprice;
-            String formattedretailprice = String.format("%.2f", unitretailprice);
-            String formattedamount= String.format("%.2f", amount);
+//            String formattedretailprice = String.format("%.2f", unitretailprice);
+//            String formattedamount= String.format("%.2f", amount);
             
-            IndividualSales sales = new IndividualSales(salesid, itemid, qtystring,formattedretailprice,formattedamount,date);
+            IndividualSales sales = new IndividualSales(salesid, itemid, qty,unitretailprice,amount,date);
             inventorydatamanager.deductQuantityAfterSale(itemid, qty);
             salesdatamanager.addIndividualSales(sales);
             JOptionPane.showMessageDialog(null, "Success","Information", JOptionPane.INFORMATION_MESSAGE);
@@ -739,8 +741,8 @@ public class SM_DailySalesEntry extends javax.swing.JFrame {
                 return;
             }
 
-            int currentInStockQty = Integer.parseInt(selectedItem.getInstockquantity());
-            int oldQty = Integer.parseInt(oldsales.getQuantity());
+            int currentInStockQty = selectedItem.getInstockquantity();
+            int oldQty = oldsales.getQuantity();
 
             int revertQty = currentInStockQty + (itemid.equals(oldsales.getItemid()) ? oldQty : 0); // Only revert if item is same
 
@@ -756,14 +758,14 @@ public class SM_DailySalesEntry extends javax.swing.JFrame {
                 }
 
                 try {
-                    retailprice = Double.parseDouble(newItem.getRetailprice());
+                    retailprice = newItem.getRetailprice();
                 } catch (NumberFormatException e) {
                     JOptionPane.showMessageDialog(this, "Invalid retail price in the new item.", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
             } else {
                 try {
-                    retailprice = Double.parseDouble(oldsales.getretailprice());
+                    retailprice = oldsales.getretailprice();
                 } catch (NumberFormatException e) {
                     JOptionPane.showMessageDialog(this, "Invalid retail price in existing sales record.", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
@@ -771,13 +773,13 @@ public class SM_DailySalesEntry extends javax.swing.JFrame {
             }
 
             amount = qty * retailprice;
-            String formattedretailprice = String.format("%.2f", retailprice);
-            String formattedamount= String.format("%.2f", amount);
+//            String formattedretailprice = String.format("%.2f", retailprice);
+//            String formattedamount= String.format("%.2f", amount);
             
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
             String dateFormatted = df.format(date);
             inventorydatamanager.updateItemQuantityAfterSaleEdit(oldsales.getItemid(), oldQty, itemid, qty);
-            salesdatamanager.updateindividualsales(salesid, itemid, String.valueOf(qty),formattedretailprice,formattedamount, dateFormatted);
+            salesdatamanager.updateindividualsales(salesid, itemid, qty,retailprice,amount, dateFormatted);
 
             fillTable1FromTxtFile();
             clearTextField();
