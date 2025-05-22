@@ -52,7 +52,7 @@ public class PurchaseOrder {
         this.verifyStatus = verifyStatus;
         this.paymentStatus = paymentStatus;
         this.postatuschangeby = postatuschangeby;
-         this.receiveStatus = receiveStatus;
+//        this.receiveStatus = receiveStatus;
     }
     
 
@@ -134,7 +134,7 @@ public class PurchaseOrder {
     
    
 
-     public static String getCurrentDate() {
+    public static String getCurrentDate() {
         java.time.LocalDate today = java.time.LocalDate.now();
         java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("yy-MM-dd");
         return today.format(formatter);
