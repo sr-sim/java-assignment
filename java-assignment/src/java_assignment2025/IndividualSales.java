@@ -13,12 +13,12 @@ package java_assignment2025;
 public class IndividualSales {
     private String salesid;
     private String itemid;
-    private String quantity;
-    private String retailprice;
-    private String amount;
+    private int quantity;
+    private double retailprice;
+    private double amount;
     private String dateofsales;
     
-    public IndividualSales(String salesid, String itemid, String quantity, String retailprice, String amount, String dateofsales){
+    public IndividualSales(String salesid, String itemid, int quantity, double retailprice, double amount, String dateofsales){
         this.salesid = salesid;
         this.itemid = itemid;
         this.quantity = quantity;
@@ -46,19 +46,19 @@ public class IndividualSales {
         this.itemid = itemid;
     }
 
-    public String getQuantity() {
+    public int getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(String quantity) {
+    public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
 
-    public String getAmount() {
+    public double getAmount() {
         return amount;
     }
 
-    public void setAmount(String amount) {
+    public void setAmount(double amount) {
         this.amount = amount;
     }
 
@@ -71,15 +71,15 @@ public class IndividualSales {
     }
     @Override
     public String toString(){
-        return salesid + "," + itemid +"," + quantity + "," + retailprice + "," + amount + "," + dateofsales;
+        return salesid + "," + itemid +"," + quantity + "," +  String.format("%.2f", retailprice) + "," +  String.format("%.2f", amount) + "," + dateofsales;
     } 
 
 
-    public String getretailprice() {
+    public double getretailprice() {
         return retailprice;
     }
 
-    public void setretailprice(String retailprice) {
+    public void setretailprice(double retailprice) {
         this.retailprice = retailprice;
     }
 

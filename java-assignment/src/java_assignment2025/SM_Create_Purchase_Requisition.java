@@ -68,7 +68,7 @@ public class SM_Create_Purchase_Requisition extends javax.swing.JFrame {
         String prusername = (userofprcreator != null) ? userofprcreator.getFullname() : prcreator;
        jLabel10.setText(prcreator+" - "+prusername);
        jTextArea1.setText(existingPR.getNote());
-       jLabel4.setText(existingPR.getTotal());
+       jLabel4.setText(String.format("%.2f", existingPR.getTotal()));
        jDateChooser1.setDate(java.sql.Date.valueOf(existingPR.getRequestdate()));
        jDateChooser2.setDate(java.sql.Date.valueOf(existingPR.getExpecteddeliverydate()));
         PurchaseRequisition.ApproveStatus status = existingPR.getApprovestatus();
@@ -104,17 +104,19 @@ public class SM_Create_Purchase_Requisition extends javax.swing.JFrame {
                 String qty = existingPR.getQuantities().get(i);
             String unitPriceStr = existingPR.getUnitPrices().get(i);
             double totalprice = Integer.parseInt(qty) * Double.parseDouble(unitPriceStr);
-            String formattedtotalPriceOfeachitem = String.format("%.2f", totalprice);
+            String formattedtotalprice = String.format("%.2f", totalprice);
 
             ((DefaultTableModel) jTable1.getModel()).addRow(new Object[]{
                 item.getItemid(),
                 item.getItemname(),
                 qty,
                 unitPriceStr,
-                formattedtotalPriceOfeachitem
+                formattedtotalprice
             });
+            int quantity = Integer.parseInt(qty);
+            double unitPrice = Double.parseDouble(unitPriceStr);
+            pritemlist.add(new PRItem(item, quantity, unitPrice, totalprice));
 
-            pritemlist.add(new PRItem(item, qty, unitPriceStr, String.valueOf(totalprice)));
             prUnitPriceList.add(unitPriceStr);
         }if (mode == PRformMode.edit){
         jLabel14.setText("Edit Purchase Requisition");
@@ -662,6 +664,7 @@ public class SM_Create_Purchase_Requisition extends javax.swing.JFrame {
         String prid = jLabel3.getText();
         String userid = salesmanager.getUserId();
         String totalprice = jLabel4.getText();
+        double totalpricevalue = Double.parseDouble(totalprice);
         String note = jTextArea1.getText();
         boolean deleted = false;
     
@@ -675,8 +678,8 @@ public class SM_Create_Purchase_Requisition extends javax.swing.JFrame {
         for(int i = 0; i < pritemlist.size(); i++){
             PRItem pritem = pritemlist.get(i);
             itemids.add(pritem.getItem().getItemid());
-            quantities.add(pritem.getQuantity());
-            unitprices.add(pritem.getUnitprice());
+            quantities.add(String.valueOf(pritem.getQuantity()));
+            unitprices.add(String.valueOf(pritem.getUnitprice()));
         }
         
         Date reqdate = jDateChooser1.getDate();
@@ -696,11 +699,11 @@ public class SM_Create_Purchase_Requisition extends javax.swing.JFrame {
         
         try {
             if (mode == PRformMode.edit && existingPR != null && existingPR.getApprovestatus() != PurchaseRequisition.ApproveStatus.approved){
-                prmanager.updatepr(prid,itemids,userid,quantities,unitprices,totalprice,requestdate,expecteddate,existingPR.getApprovestatus(),existingPR.getStatuschangeby(),note,existingPR.isDeleted());
+                prmanager.updatepr(prid,itemids,userid,quantities,unitprices,totalpricevalue,requestdate,expecteddate,existingPR.getApprovestatus(),existingPR.getStatuschangeby(),note,existingPR.isDeleted());
 
                 JOptionPane.showMessageDialog(null, "Updated Success","Information", JOptionPane.INFORMATION_MESSAGE);
             } else if (mode == PRformMode.create){
-                PurchaseRequisition pr = new PurchaseRequisition(prid,itemids,userid,quantities,unitprices,totalprice,requestdate,expecteddate,PurchaseRequisition.ApproveStatus.pending,statuschangeby,note,deleted);
+                PurchaseRequisition pr = new PurchaseRequisition(prid,itemids,userid,quantities,unitprices,totalpricevalue,requestdate,expecteddate,PurchaseRequisition.ApproveStatus.pending,statuschangeby,note,deleted);
                 prmanager.addpr(pr);
 
                 JOptionPane.showMessageDialog(null, "Success","Information", JOptionPane.INFORMATION_MESSAGE);
@@ -770,25 +773,25 @@ public class SM_Create_Purchase_Requisition extends javax.swing.JFrame {
         }
         double unitprice;
         try{ 
-            unitprice = Double.parseDouble(item.getUnitprice());
+            unitprice = item.getUnitprice();
         }catch(NumberFormatException e){
             JOptionPane.showMessageDialog(null,"Invalid unit price");
             return;
         }        
         double totalPriceOfeachitem = quantity*unitprice;
         
-        String formattedUnitPrice = String.format("%.2f", unitprice);
-        String formattedtotalPriceOfeachitem = String.format("%.2f", totalPriceOfeachitem);
+//        String formattedUnitPrice = String.format("%.2f", unitprice);
+//        String formattedtotalPriceOfeachitem = String.format("%.2f", totalPriceOfeachitem);
         
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
         model.addRow(new Object[]{
             item.getItemid(),
             item.getItemname(),
             quantity,
-            formattedUnitPrice,
-            formattedtotalPriceOfeachitem
+            unitprice,
+            totalPriceOfeachitem
         });
-        pritemlist.add(new PRItem(item, String.valueOf(quantity),formattedUnitPrice,formattedtotalPriceOfeachitem));
+        pritemlist.add(new PRItem(item,quantity,unitprice,totalPriceOfeachitem));
         prUnitPriceList.add(String.valueOf(unitprice));
         updatetotalprice();
         System.out.println(pritemlist);
@@ -844,22 +847,22 @@ public class SM_Create_Purchase_Requisition extends javax.swing.JFrame {
             }
         } else {
             try {
-                unitprice = Double.parseDouble(item.getUnitprice());
+                unitprice = item.getUnitprice();
             } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(null, "Invalid unit price from item");
                 return;
             }
         }
         double totalPriceOfeachitem = quantity * unitprice;
-        String formattedUnitPrice = String.format("%.2f", unitprice);
-        String formattedtotalPriceOfeachitem = String.format("%.2f", totalPriceOfeachitem);
+//        String formattedUnitPrice = String.format("%.2f", unitprice);
+//        String formattedtotalPriceOfeachitem = String.format("%.2f", totalPriceOfeachitem);
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
         model.setValueAt(item.getItemid(), selectedRow, 0);
         model.setValueAt(item.getItemname(), selectedRow, 1);
         model.setValueAt(quantity, selectedRow, 2);
-        model.setValueAt(formattedUnitPrice, selectedRow, 3);
-        model.setValueAt(formattedtotalPriceOfeachitem, selectedRow, 4);
-        pritemlist.set(selectedRow, new PRItem(item, String.valueOf(quantity), formattedUnitPrice, formattedtotalPriceOfeachitem));
+        model.setValueAt(unitprice, selectedRow, 3);
+        model.setValueAt(totalPriceOfeachitem, selectedRow, 4);
+        pritemlist.set(selectedRow, new PRItem(item,quantity, unitprice, totalPriceOfeachitem));
         if (selectedRow < prUnitPriceList.size()) {
             prUnitPriceList.set(selectedRow, String.valueOf(unitprice));
         } else {

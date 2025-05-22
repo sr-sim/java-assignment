@@ -42,9 +42,9 @@ public class InventoryDataManager extends DataManager{
                         parts[1].trim(),
                         parts[2].trim(),
                         parts[3].trim(),
-                        parts[4].trim(),
-                        parts[5].trim(),
-                        parts[6].trim(),
+                        Double.parseDouble(parts[4].trim()),
+                        Double.parseDouble(parts[5].trim()),
+                        Integer.parseInt(parts[6].trim()),
                         parts[7].trim(),
                         parts[8].trim(),
                         parts[9].trim(),
@@ -90,7 +90,7 @@ public class InventoryDataManager extends DataManager{
                 System.out.println("item not found");
             } 
     }
-    public void updateItem(String itemid, String itemname, String itemdesc, String supplierid, String unitprice, String retailprice,String instockquantity,String reorderlevel,String reorderstatus,String lastmodifieddate,boolean deleted) {
+    public void updateItem(String itemid, String itemname, String itemdesc, String supplierid, double unitprice, double retailprice,int instockquantity,String reorderlevel,String reorderstatus,String lastmodifieddate,boolean deleted) {
         Item existingitem = finditemid(itemid);
         if (existingitem != null) {
             existingitem.setItemid(itemid);
@@ -194,10 +194,10 @@ public class InventoryDataManager extends DataManager{
     public boolean deductQuantityAfterSale(String itemId, int quantitySold) {
         Item item = finditemid(itemId);
         if (item != null) {
-            int currentStock = Integer.parseInt(item.getInstockquantity());
+            int currentStock = item.getInstockquantity();
             if (quantitySold <= currentStock) {
                 int updatedStock = currentStock - quantitySold;
-                item.setInstockquantity(String.valueOf(updatedStock));
+                item.setInstockquantity(updatedStock);
                     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
                     String formattedNow = LocalDateTime.now().format(dtf);
                     item.setLastmodifieddate(formattedNow);
@@ -218,12 +218,12 @@ public class InventoryDataManager extends DataManager{
             int diff = newQty - oldQty;
             Item item = finditemid(oldItemId);
             if (item != null) {
-                int currentQty = Integer.parseInt(item.getInstockquantity());
+                int currentQty = item.getInstockquantity();
                 int revertedQty = currentQty + oldQty; 
 
                 int updatedQty = revertedQty - newQty;
                 if (updatedQty >= 0) {
-                    item.setInstockquantity(String.valueOf(updatedQty));
+                    item.setInstockquantity(updatedQty);
                     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
                     String formattedNow = LocalDateTime.now().format(dtf);
                     item.setLastmodifieddate(formattedNow);
@@ -240,8 +240,8 @@ public class InventoryDataManager extends DataManager{
             boolean valid = true;
 
             if (oldItem != null) {
-                int currentOldQty = Integer.parseInt(oldItem.getInstockquantity());
-                oldItem.setInstockquantity(String.valueOf(currentOldQty + oldQty));
+                int currentOldQty = oldItem.getInstockquantity();
+                oldItem.setInstockquantity(currentOldQty + oldQty);
                 DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
                 String formattedNow = LocalDateTime.now().format(dtf);
                 oldItem.setLastmodifieddate(formattedNow);
@@ -251,10 +251,10 @@ public class InventoryDataManager extends DataManager{
             }
 
             if (newItem != null) {
-                int currentNewQty = Integer.parseInt(newItem.getInstockquantity());
+                int currentNewQty = newItem.getInstockquantity();
                 int updatedNewQty = currentNewQty - newQty;
                 if (updatedNewQty >= 0) {
-                    newItem.setInstockquantity(String.valueOf(updatedNewQty));
+                    newItem.setInstockquantity(updatedNewQty);
                     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
                     String formattedNow = LocalDateTime.now().format(dtf);
                     newItem.setLastmodifieddate(formattedNow);
@@ -278,9 +278,9 @@ public class InventoryDataManager extends DataManager{
     public void increaseItemQuantity(String itemId, int quantityToAdd) {
         for (Item item : itemlist) {
             if (item.getItemid().equals(itemId)) {
-                int currentQty = Integer.parseInt(item.getInstockquantity());
+                int currentQty = item.getInstockquantity();
                 int newQty = currentQty + quantityToAdd;
-                item.setInstockquantity(String.valueOf(newQty));
+                item.setInstockquantity(newQty);
                 textfile.rewriteFile(inventoryfilepath, itemlist);
                 System.out.println("increaseItemQuantity called for itemId: " + itemId + " quantity: " + quantityToAdd);
 

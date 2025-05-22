@@ -4,8 +4,6 @@
  */
 package java_assignment2025;
 
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -15,7 +13,6 @@ import java_assignment2025.PurchaseOrder;
 import java_assignment2025.TextFile;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.RowFilter;
 import javax.swing.table.DefaultTableModel;
@@ -30,10 +27,7 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
     private PurchaseRequisitionManager prmanager;
     private InventoryDataManager inventorydatamanager;
     private PurchaseManager pm;
-    private PurchaseOrderManager pomanager;
-    private PurchaseRequisition selectedPR;
-    
-    
+   
      //search functionfrom Pr list
     public void search(String str){
        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
@@ -51,9 +45,6 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
         this.pm = (PurchaseManager)Session.getCurrentUser();
         this.prmanager = new PurchaseRequisitionManager();
         this.inventorydatamanager = new InventoryDataManager();
-        this.pomanager = new PurchaseOrderManager();
-        
-        
         fillTableFromTxtFile();
     }
 
@@ -73,7 +64,7 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
             String quantity = String.join(",", quantitieslist);
             List<String> unitPricelist = pr.getUnitPrices();
             String unitprice = String.join(",",unitPricelist);
-            String totalprice = pr.getTotal();
+            double totalprice = pr.getTotal();
             String reqdate = pr.getRequestdate();
             String expecteddate = pr.getExpecteddeliverydate();
             String createdby = pr.getUserid();
@@ -129,7 +120,6 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jTextField1 = new javax.swing.JTextField();
         createPurchaseOrder = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -273,13 +263,6 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
             }
         });
 
-        jButton3.setText("View");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -292,24 +275,25 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
                         .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(479, 479, 479))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(57, 57, 57)
-                        .addComponent(jLabel4)
-                        .addGap(118, 118, 118)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jButton3)
-                                .addGap(337, 337, 337)
-                                .addComponent(saveMe))
+                                .addGap(57, 57, 57)
+                                .addComponent(jLabel4)
+                                .addGap(118, 118, 118)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(249, 249, 249)
+                                        .addComponent(jLabel13)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(createPurchaseOrder))
+                                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 946, javax.swing.GroupLayout.PREFERRED_SIZE)))
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(249, 249, 249)
-                                .addComponent(jLabel13)
-                                .addGap(295, 295, 295)
-                                .addComponent(createPurchaseOrder))
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 946, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addContainerGap(45, Short.MAX_VALUE))))
+                                .addGap(604, 604, 604)
+                                .addComponent(saveMe)))
+                        .addContainerGap(142, Short.MAX_VALUE))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -336,11 +320,9 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(250, 250, 250)
                         .addComponent(jLabel4)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(saveMe)
-                    .addComponent(jButton3))
-                .addContainerGap(189, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(saveMe)
+                .addContainerGap(183, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -360,23 +342,23 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        new PM_ViewItem().setVisible(true);
-        this.dispose();
+        //        new SM_ItemEntry(salesmanager).setVisible(true);
+        //        this.dispose();
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-         new PM_ViewSupplier().setVisible(true);
-         this.dispose();
+        //        new SM_SupplierEntry(salesmanager).setVisible(true);
+        //        this.dispose();
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-       new PM_PurchaseRequisition().setVisible(true);
-       this.dispose();
+        //        new SM_DailySalesEntry(salesmanager).setVisible(true);
+        //        this.dispose();
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
-        new PMPurchaseOrder().setVisible(true);
-        this.dispose();
+        //        new SM_PurchaseRequisition(salesmanager).setVisible(true);
+        //        this.dispose();
     }//GEN-LAST:event_jButton9ActionPerformed
 
     private void saveMeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveMeActionPerformed
@@ -530,31 +512,7 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
             TextFile.appendTo("src/java_assignment2025/PurchaseOrder.txt", poLine);
             JOptionPane.showMessageDialog(null, "Purchase Order generated successfully.");
             this.dispose();
-            
-            // reload the file to include the new PO 
-            pomanager.loadAllpofromtxtfile();  
-
-            //  Find the newly created PO
-            String poId = nextPoId; //generated this earlier
-            PurchaseOrder selectedPO = pomanager.findpoid(poId);  
-
-            // Debug: List all PO IDs found after reloading
-            System.out.println("Looking for PO ID: " + poId);
-            for (PurchaseOrder existingPO : pomanager.getpolist()) {
-                System.out.println("Existing PO ID: " + existingPO.getOrderId());
-            }
-
-            //  Display the PO 
-            if (selectedPO != null) {
-                PM_Edit_Purchase_Order viewFrame = new PM_Edit_Purchase_Order(
-                    selectedPO, pomanager, inventorydatamanager, false
-                );
-                viewFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                viewFrame.setVisible(true);
-            } else {
-                JOptionPane.showMessageDialog(null, "Unable to open generated PO. PO ID not found.");
-            }
-
+            new PMPurchaseOrder().setVisible(true);
         } else {
             JOptionPane.showMessageDialog(null, "No valid items to generate PO. All were duplicates.");
         }
@@ -565,71 +523,43 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
         
     }//GEN-LAST:event_jTextField1ActionPerformed
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // TODO add your handling code here:
-        System.out.println("button exist");
-        int selectedRow = jTable1.getSelectedRow();
-        if (selectedRow != -1) {
-            String prId = jTable1.getValueAt(selectedRow, 0).toString();
-            PurchaseRequisition selectedPR = prmanager.findprid(prId);
-
-            // Create and open the View frame (false means view-only mode)
-            PM_ViewPR viewFrame = new PM_ViewPR(selectedPR, prmanager, inventorydatamanager);
-            viewFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
-            // Re-show the PO JFrame after view frame is closed
-            viewFrame.addWindowListener(new WindowAdapter() {
-                @Override
-                public void windowClosed(WindowEvent e) {
-                    setVisible(true); // This refers to the PO JFrame
-                }
-            });
-
-//            setVisible(false); // Hide main PO JFrame
-            viewFrame.setVisible(true);
-        } else {
-            JOptionPane.showMessageDialog(null, "Please select a row to view.");
-        }
-    }//GEN-LAST:event_jButton3ActionPerformed
-
     /**
      * @param args the command line arguments
      */
-//    public static void main(String args[]) {
-//        /* Set the Nimbus look and feel */
-//        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-//        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-//         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-//         */
-//        try {
-//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-//                if ("Nimbus".equals(info.getName())) {
-//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-//                    break;
-//                }
-//            }
-//        } catch (ClassNotFoundException ex) {
-//            java.util.logging.Logger.getLogger(PM_PurchaseRequisition.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (InstantiationException ex) {
-//            java.util.logging.Logger.getLogger(PM_PurchaseRequisition.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (IllegalAccessException ex) {
-//            java.util.logging.Logger.getLogger(PM_PurchaseRequisition.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-//            java.util.logging.Logger.getLogger(PM_PurchaseRequisition.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        }
-//        //</editor-fold>
-//
-//        /* Create and display the form */
-//        java.awt.EventQueue.invokeLater(new Runnable() {
-//            public void run() {
-//                new PM_PurchaseRequisition().setVisible(true);
-//            }
-//        });
-//    }
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(PM_PurchaseRequisition.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(PM_PurchaseRequisition.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(PM_PurchaseRequisition.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(PM_PurchaseRequisition.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new PM_PurchaseRequisition().setVisible(true);
+            }
+        });
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton createPurchaseOrder;
-    private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
     private javax.swing.JButton jButton8;
