@@ -11,10 +11,10 @@ package java_assignment2025;
 //Item Id, Total Sales (for each item), Date of sales
 public class DailySales {
     private String itemid;
-    private String totalsales;
+    private double totalsales;
     private String dateofsales;
     
-    public DailySales(String itemid, String totalsales, String dateofsales){
+    public DailySales(String itemid, double totalsales, String dateofsales){
         this.itemid = itemid;
         this.totalsales = totalsales;
         this.dateofsales = dateofsales;
@@ -31,11 +31,11 @@ public class DailySales {
         this.itemid = itemid;
     }
 
-    public String getTotalsales() {
+    public double getTotalsales() {
         return totalsales;
     }
 
-    public void setTotalsales(String totalsales) {
+    public void setTotalsales(double totalsales) {
         this.totalsales = totalsales;
     }
 
@@ -48,6 +48,6 @@ public class DailySales {
     }
     @Override
     public String toString(){
-        return  itemid +"," + totalsales + "," + dateofsales;
+        return  itemid +"," +  String.format("%.2f", totalsales) + "," + dateofsales;
     } 
 }
