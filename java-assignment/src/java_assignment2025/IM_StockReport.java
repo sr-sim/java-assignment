@@ -4,7 +4,10 @@
  */
 package java_assignment2025;
 
+import java.awt.Component;
 import java.awt.Desktop;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
@@ -14,8 +17,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import static java_assignment2025.FinanceReport.InventoryExportToJasper;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -33,9 +40,10 @@ public class IM_StockReport extends javax.swing.JFrame {
     private PurchaseRequisitionManager prmanager;
     private InventoryDataManager inventorydatamanager;
     private PurchaseOrderManager pomanager;
-    private File pdfFolder = new File("./reports/");
+  
+    private File folder;
     private DefaultTableModel pdfTableModel;
-    private InventoryStockReport inventorystockreport;
+    private File pdfFolder = new File(System.getProperty("user.dir"));
     /**
      * Creates new form IM_StockReport
      */
@@ -46,7 +54,10 @@ public class IM_StockReport extends javax.swing.JFrame {
         this.inventorydatamanager = inventorydatamanager;
         this.supplierdatamanager = supplierdatamanager;
         this.pomanager = pomanager;
-        this.inventorystockreport = new InventoryStockReport();
+      
+        // Initialize pdfTableModel once
+        pdfTableModel = new DefaultTableModel(new Object[]{"No", "PDF File Name"}, 0);
+        jTable2.setModel(pdfTableModel);
 
         // Create reports folder if it doesn't exist
         if (!pdfFolder.exists()) {
@@ -65,6 +76,12 @@ public class IM_StockReport extends javax.swing.JFrame {
         // Disable cell editing for tables
         jTable1.setDefaultEditor(Object.class, null);
         jTable2.setDefaultEditor(Object.class, null);
+                fillPDFTable();
+        jButton3.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                viewSelectedPDF();
+            }
+        });
     }
     private void setDefaultComboBoxSelections() {
         // Set jComboBox2 to current month
@@ -122,6 +139,7 @@ public class IM_StockReport extends javax.swing.JFrame {
                 inStockQty, unitPrice, retailPrice, lastModifiedDate, restockQuantity
             });
         }
+        resizeColumnWidths(jTable1);
     }
     private int getMonthIndex(String month) {
         String[] months = new String[]{"January", "February", "March", "April", "May", "June",
@@ -178,40 +196,73 @@ public class IM_StockReport extends javax.swing.JFrame {
         return restockQty;
     }
     private void fillPDFTable() {
-        pdfTableModel = new DefaultTableModel(new Object[]{"No", "PDF File Name"}, 0);
-        jTable2.setModel(pdfTableModel);
+    // Clear existing rows but keep the same model
+    pdfTableModel.setRowCount(0);
+    
+    File[] files = pdfFolder.listFiles((dir, name) -> {
+        boolean matches = name.startsWith("Inventory_Stock_Report_") && name.endsWith(".pdf");
+        
+        return matches;
+    });
+    if (files != null) {
+        System.out.println("Found " + files.length + " PDF files");
+        int count = 1;
+        for (File file : files) {
+            pdfTableModel.addRow(new Object[]{count++, file.getName()});
+            System.out.println("Added to jTable2: " + file.getName());
+        }
+    } else {
+        System.out.println("No PDF files found in " + pdfFolder.getAbsolutePath());
+    }
+    jTable2.revalidate();
+    jTable2.repaint();
+    }
+        private void viewSelectedPDF() {
+            int row = jTable2.getSelectedRow();
+            if (row == -1) {
+                JOptionPane.showMessageDialog(this, "Please select a row first.");
+                return;
+            }
 
-        File[] files = pdfFolder.listFiles((dir, name) -> name.startsWith("Stock_Report_") && name.endsWith(".pdf"));
-        if (files != null) {
-            int count = 1;
-            for (File file : files) {
-                pdfTableModel.addRow(new Object[]{count++, file.getName()});
+            String filename = jTable2.getValueAt(row, 1).toString(); 
+            File selectedPDF = new File(pdfFolder, filename); 
+            openPDF(selectedPDF);
+        }
+        private void openPDF(File pdfFile) {
+            try {
+                if (Desktop.isDesktopSupported() && pdfFile.exists()) {
+                    Desktop.getDesktop().open(pdfFile);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Cannot open PDF file.");
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Error opening PDF: " + e.getMessage());
+                e.printStackTrace();
             }
         }
-    }
 
-    private void viewSelectedPDF() {
-        int row = jTable2.getSelectedRow();
-        if (row == -1) {
-            JOptionPane.showMessageDialog(this, "Please select a PDF file to view.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
+    
+    private void resizeColumnWidths(JTable table) {
+    for (int column = 0; column < table.getColumnCount(); column++) {
+        TableColumn tableColumn = table.getColumnModel().getColumn(column);
+        int preferredWidth = 75;
+        int maxWidth = 300;
+    
+        TableCellRenderer headerRenderer = table.getTableHeader().getDefaultRenderer();
+        Component headerComp = headerRenderer.getTableCellRendererComponent(table, tableColumn.getHeaderValue(), false, false, 0, column);
+        preferredWidth = Math.max(preferredWidth, headerComp.getPreferredSize().width);
+
+        for (int row = 0; row < table.getRowCount(); row++) {
+            TableCellRenderer cellRenderer = table.getCellRenderer(row, column);
+            Component c = table.prepareRenderer(cellRenderer, row, column);
+            int width = c.getPreferredSize().width + table.getIntercellSpacing().width;
+            preferredWidth = Math.max(preferredWidth, width);
         }
 
-        String filename = (String) jTable2.getValueAt(row, 1);
-        File selectedPDF = new File(pdfFolder, filename);
-        try {
-            if (Desktop.isDesktopSupported() && selectedPDF.exists()) {
-                Desktop.getDesktop().open(selectedPDF);
-            } else {
-                JOptionPane.showMessageDialog(this, "Cannot open PDF file: " + selectedPDF.getName(), 
-                                             "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error opening PDF: " + e.getMessage(), 
-                                         "Error", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
-        }
+        preferredWidth = Math.min(preferredWidth, maxWidth);
+        tableColumn.setPreferredWidth(preferredWidth);
     }
+}
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -234,11 +285,11 @@ public class IM_StockReport extends javax.swing.JFrame {
         jScrollPane3 = new javax.swing.JScrollPane();
         jTable2 = new javax.swing.JTable();
         jButton3 = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jComboBox2 = new javax.swing.JComboBox<>();
         jComboBox1 = new javax.swing.JComboBox<>();
         jLabel3 = new javax.swing.JLabel();
+        jButton9 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -321,6 +372,7 @@ public class IM_StockReport extends javax.swing.JFrame {
                 "Item Id", "Item Name", "Description", "Supplier Id", "Supplier Name", "Quanity", "Unit Price", "Retail Price", "Last Modified Date","Restock Quantity"
             }
         ));
+        jTable1.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
         jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jTable1MouseClicked(evt);
@@ -364,13 +416,6 @@ public class IM_StockReport extends javax.swing.JFrame {
             }
         });
 
-        jButton1.setText("jButton1");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-
         jLabel1.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N
         jLabel1.setText("Date picker :");
 
@@ -390,6 +435,13 @@ public class IM_StockReport extends javax.swing.JFrame {
 
         jLabel3.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N
         jLabel3.setText("Choose a item :");
+
+        jButton9.setText("pdf");
+        jButton9.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton9ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -416,15 +468,15 @@ public class IM_StockReport extends javax.swing.JFrame {
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 583, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 577, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                        .addGap(0, 279, Short.MAX_VALUE))
+                        .addGap(0, 285, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(312, 312, 312)
                                 .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(308, 308, 308)
-                                .addComponent(jButton1)))
+                                .addGap(251, 251, 251)
+                                .addComponent(jButton9, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
@@ -442,9 +494,9 @@ public class IM_StockReport extends javax.swing.JFrame {
                         .addComponent(jLabel3)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 330, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton1)
-                .addGap(23, 23, 23)
+                .addGap(17, 17, 17)
+                .addComponent(jButton9)
+                .addGap(18, 18, 18)
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -477,17 +529,6 @@ public class IM_StockReport extends javax.swing.JFrame {
         
     }//GEN-LAST:event_jTable2MouseClicked
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        int selectedRow = jTable1.getSelectedRow();
-        String selectedItemId = selectedRow != -1 ? (String) jTable1.getValueAt(selectedRow, 0) : null;
-        String month = (String) jComboBox2.getSelectedItem();
-        String pdfFileName = inventorystockreport.generateStockReport(jTable1, selectedItemId, month, this);
-        if (pdfFileName != null) {
-            pdfTableModel.addRow(new Object[]{pdfTableModel.getRowCount() + 1, pdfFileName});
-        }
-         
-    }//GEN-LAST:event_jButton1ActionPerformed
-
     private void jComboBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox2ActionPerformed
         fillTable1FromTxtFile();
     }//GEN-LAST:event_jComboBox2ActionPerformed
@@ -499,6 +540,28 @@ public class IM_StockReport extends javax.swing.JFrame {
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         viewSelectedPDF();
     }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
+    String selectedItemId = (String) jComboBox1.getSelectedItem();
+        System.out.println("jButton9: Generating PDF for itemId = " + selectedItemId);
+        String pdfFileName = FinanceReport.InventoryExportToJasper(jTable1, selectedItemId);
+        if (pdfFileName != null) {
+            System.out.println("jButton9: PDF generated: " + pdfFileName);
+            pdfTableModel.addRow(new Object[]{pdfTableModel.getRowCount() + 1, pdfFileName});
+            try {
+                Thread.sleep(500); // 500ms for OneDrive sync
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            fillPDFTable();
+            jTable2.revalidate();
+            jTable2.repaint();
+        } else {
+            System.out.println("jButton9: PDF generation failed");
+            JOptionPane.showMessageDialog(this, "Failed to generate PDF", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        
+    }//GEN-LAST:event_jButton9ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -536,11 +599,11 @@ public class IM_StockReport extends javax.swing.JFrame {
 //    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
     private javax.swing.JButton jButton8;
+    private javax.swing.JButton jButton9;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JComboBox<String> jComboBox2;
     private javax.swing.JLabel jLabel1;
