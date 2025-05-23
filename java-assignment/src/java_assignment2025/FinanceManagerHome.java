@@ -127,18 +127,18 @@ public class FinanceManagerHome extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        //        new SM_ItemEntry(salesmanager).setVisible(true);
-        //        this.dispose();
+                new FMPurchaseOrder().setVisible(true);
+                this.dispose();
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-        //        new SM_SupplierEntry(salesmanager).setVisible(true);
-        //        this.dispose();
+                new FinanceDailySum().setVisible(true);
+                this.dispose();
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-        //        new SM_DailySalesEntry(salesmanager).setVisible(true);
-        //        this.dispose();
+                new FMCreatePayment().setVisible(true);
+                this.dispose();
     }//GEN-LAST:event_jButton8ActionPerformed
 
 //    /**

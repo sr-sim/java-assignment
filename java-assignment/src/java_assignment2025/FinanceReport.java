@@ -170,7 +170,7 @@ public class FinanceReport {
 //
 //    return allSummaries;
 //}
-    public static void exportJTableToJasper(JTable table) {
+    public static void exportJTableToJasper(String userid,JTable table) {
     try {
 //        System.setProperty("net.sf.jasperreports.export.pdf.force.linebreak.policy", "false");
 //        System.setProperty("net.sf.jasperreports.default.pdf.font.name", "Helvetica");
@@ -228,7 +228,7 @@ public class FinanceReport {
         JasperPrint filled = JasperFillManager.fillReport(report, params, new JREmptyDataSource());
 
         //export to pdf
-        String path = "Purchase_Order_Report_" + System.currentTimeMillis() + ".pdf";
+        String path = "Purchase_Order_Report_" + userid + "_"+System.currentTimeMillis() + ".pdf";
 
         JRPdfExporter exporter = new JRPdfExporter();
         exporter.setExporterInput(new SimpleExporterInput(filled));
@@ -252,7 +252,7 @@ public class FinanceReport {
         JOptionPane.showMessageDialog(null, "Export failed: " + e.getMessage());
     }
 }    
-    public static void exportDailySumToJasper(JTable table) {
+    public static void exportDailySumToJasper(String userid,JTable table) {
     try {
         List<Map<String, ?>> data = new ArrayList<>();
         double totalAmount = 0.0;
@@ -291,7 +291,7 @@ public class FinanceReport {
         );
 
         JasperPrint filled = JasperFillManager.fillReport(report, params, new JREmptyDataSource());
-        String path = "Daily_Sales_Report_" + System.currentTimeMillis() + ".pdf";
+        String path = "Daily_Sales_Report_"+ userid + "_"+ System.currentTimeMillis() + ".pdf";
 
         JRPdfExporter exporter = new JRPdfExporter();
         exporter.setExporterInput(new SimpleExporterInput(filled));
@@ -312,7 +312,7 @@ public class FinanceReport {
     }
 }
     
-    public static void PaymentExportToJasper(JTable table) {
+    public static void PaymentExportToJasper(String userid,JTable table) {
     try {
         List<Map<String, ?>> data = new ArrayList<>();
         double totalAmount = 0.0;
@@ -358,7 +358,7 @@ public class FinanceReport {
 
         JasperPrint filled = JasperFillManager.fillReport(report, params, new JREmptyDataSource());
 
-        String path = "Payment_Report_" + System.currentTimeMillis() + ".pdf";
+        String path = "Payment_Report_" + userid + "_"+ System.currentTimeMillis() + ".pdf";
 
         JRPdfExporter exporter = new JRPdfExporter();
         exporter.setExporterInput(new SimpleExporterInput(filled));
@@ -380,7 +380,7 @@ public class FinanceReport {
     }
 }
     
-    public static String InventoryExportToJasper(JTable table,String selectedItemId) {
+    public static String InventoryExportToJasper(String userid,JTable table,String selectedItemId) {
     try {
         List<Map<String, ?>> data = new ArrayList<>();
 
@@ -414,7 +414,7 @@ public class FinanceReport {
 
         String dateStr = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
         String safeItemId = selectedItemId != null ? selectedItemId.replace(" ", "_") : "All";
-        String pdfFileName = "Inventory_Stock_Report_" + safeItemId + "_" + dateStr + ".pdf";
+        String pdfFileName = "Inventory_Stock_Report_" + userid + "_" + safeItemId + "_" + dateStr + ".pdf";
         File pdfFile = new File(System.getProperty("user.dir"), pdfFileName); // Save to project root
 
         JRPdfExporter exporter = new JRPdfExporter();

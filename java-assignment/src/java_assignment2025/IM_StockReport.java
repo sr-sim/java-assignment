@@ -67,16 +67,13 @@ public class IM_StockReport extends javax.swing.JFrame {
         // Set default selections
         setDefaultComboBoxSelections();
 
-        // Populate jTable2 with existing PDFs
-        fillPDFTable();
-
         // Populate jTable1 with current month's data
         fillTable1FromTxtFile();
 
         // Disable cell editing for tables
         jTable1.setDefaultEditor(Object.class, null);
         jTable2.setDefaultEditor(Object.class, null);
-                fillPDFTable();
+                 fillPDFTable(inventorymanager.getUserId());
         jButton3.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 viewSelectedPDF();
@@ -195,12 +192,12 @@ public class IM_StockReport extends javax.swing.JFrame {
         }
         return restockQty;
     }
-    private void fillPDFTable() {
+    private void fillPDFTable(String userid) {
     // Clear existing rows but keep the same model
     pdfTableModel.setRowCount(0);
     
     File[] files = pdfFolder.listFiles((dir, name) -> {
-        boolean matches = name.startsWith("Inventory_Stock_Report_") && name.endsWith(".pdf");
+        boolean matches = name.startsWith("Inventory_Stock_Report_"+ userid + "_") && name.endsWith(".pdf");
         
         return matches;
     });
@@ -546,9 +543,10 @@ public class IM_StockReport extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton9ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-     String selectedItemId = (String) jComboBox1.getSelectedItem();
+     String userid = inventorymanager.getUserId();
+        String selectedItemId = (String) jComboBox1.getSelectedItem();
         System.out.println("jButton9: Generating PDF for itemId = " + selectedItemId);
-        String pdfFileName = FinanceReport.InventoryExportToJasper(jTable1, selectedItemId);
+        String pdfFileName = FinanceReport.InventoryExportToJasper(userid,jTable1, selectedItemId);
         if (pdfFileName != null) {
             System.out.println("jButton9: PDF generated: " + pdfFileName);
             pdfTableModel.addRow(new Object[]{pdfTableModel.getRowCount() + 1, pdfFileName});
@@ -557,7 +555,7 @@ public class IM_StockReport extends javax.swing.JFrame {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            fillPDFTable();
+            fillPDFTable(userid);
             jTable2.revalidate();
             jTable2.repaint();
         } else {
