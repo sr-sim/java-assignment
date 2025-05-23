@@ -227,7 +227,7 @@ public class FinanceReport {
         JasperPrint filled = JasperFillManager.fillReport(report, params, new JREmptyDataSource());
 
         //export to pdf
-        String path = "Payment_Report_" + System.currentTimeMillis() + ".pdf";
+        String path = "Purchase_Order_Report_" + System.currentTimeMillis() + ".pdf";
 
         JRPdfExporter exporter = new JRPdfExporter();
         exporter.setExporterInput(new SimpleExporterInput(filled));
@@ -358,6 +358,61 @@ public class FinanceReport {
         JasperPrint filled = JasperFillManager.fillReport(report, params, new JREmptyDataSource());
 
         String path = "Payment_Report_" + System.currentTimeMillis() + ".pdf";
+
+        JRPdfExporter exporter = new JRPdfExporter();
+        exporter.setExporterInput(new SimpleExporterInput(filled));
+        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(path));
+        exporter.setConfiguration(new SimplePdfExporterConfiguration());
+
+        exporter.exportReport();
+        
+        File pdfFile = new File(path);
+        if (pdfFile.exists()) {
+            Desktop.getDesktop().open(pdfFile);
+        }
+
+        JOptionPane.showMessageDialog(null, "Payment report exported to " + path);
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(null, "Export failed: " + e.getMessage());
+    }
+}
+    
+    public static void InventoryExportToJasper(JTable table) {
+    try {
+        List<Map<String, ?>> data = new ArrayList<>();
+
+        for (int row = 0; row < table.getRowCount(); row++) {
+            Map<String, Object> record = new HashMap<>();
+            record.put("itemid", table.getValueAt(row, 0));
+            record.put("itemname", table.getValueAt(row, 1));
+            record.put("desc", table.getValueAt(row, 2));
+            record.put("supid", table.getValueAt(row, 3));
+            record.put("supname", table.getValueAt(row, 4));
+            record.put("qty", table.getValueAt(row, 5));
+            record.put("uprice", table.getValueAt(row, 6));
+            record.put("reprice", table.getValueAt(row, 7));
+            record.put("date", table.getValueAt(row, 8));
+            record.put("restockqty", table.getValueAt(row, 9));          
+            
+            data.add(record);
+        }
+
+        JRMapCollectionDataSource dataSource = new JRMapCollectionDataSource(data);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("DATA_SOURCE", dataSource);
+        params.put("DateCreated", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+
+        JasperReport report = (JasperReport) JRLoader.loadObjectFromFile(
+            "src/java_assignment2025/Jasper/Inventory.jasper"
+        );
+
+        JasperPrint filled = JasperFillManager.fillReport(report, params, new JREmptyDataSource());
+
+        String dateStr = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+        String path = "Stock_Report_" + dateStr + ".pdf";
 
         JRPdfExporter exporter = new JRPdfExporter();
         exporter.setExporterInput(new SimpleExporterInput(filled));

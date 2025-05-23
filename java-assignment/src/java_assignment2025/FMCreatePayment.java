@@ -5,7 +5,10 @@
 package java_assignment2025;
 
 import java.awt.Component;
+import java.awt.Desktop;
+import java.io.File;
 import static java_assignment2025.FinanceReport.PaymentExportToJasper;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
@@ -15,11 +18,15 @@ import javax.swing.table.TableColumn;
  * @author Isaac
  */
 public class FMCreatePayment extends javax.swing.JFrame {
+    private FinanceManager fm;
+    private DefaultTableModel pdfTableModel;
+    private File pdfFolder = new File(System.getProperty("user.dir"));
 
     /**
      * Creates new form FMCreatePayment
      */
     public FMCreatePayment() {
+        this.fm = (FinanceManager) Session.getCurrentUser();
         initComponents();
         jTable1.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         loadPaymentsIntoTable();
@@ -53,6 +60,42 @@ public class FMCreatePayment extends javax.swing.JFrame {
         tableColumn.setPreferredWidth(preferredWidth);
     }
 }
+    
+    private void fillPDFTable() {
+            pdfTableModel = new DefaultTableModel(new Object[]{"No", "PDF File Name"}, 0);
+            jTable2.setModel(pdfTableModel); // assuming jTable2 is used for PDF list
+
+            File[] files = pdfFolder.listFiles((dir, name) -> name.startsWith("Payment_Report_") && name.endsWith(".pdf"));
+            if (files != null) {
+                int count = 1;
+                for (File file : files) {
+                    pdfTableModel.addRow(new Object[]{count++, file.getName()});
+                }
+            }
+        }
+        private void viewSelectedPDF() {
+            int row = jTable2.getSelectedRow();
+            if (row == -1) {
+                JOptionPane.showMessageDialog(this, "Please select a row first.");
+                return;
+            }
+
+            String filename = jTable2.getValueAt(row, 1).toString(); 
+            File selectedPDF = new File(pdfFolder, filename); 
+            openPDF(selectedPDF);
+        }
+        private void openPDF(File pdfFile) {
+            try {
+                if (Desktop.isDesktopSupported() && pdfFile.exists()) {
+                    Desktop.getDesktop().open(pdfFile);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Cannot open PDF file.");
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Error opening PDF: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -70,12 +113,17 @@ public class FMCreatePayment extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jButton6 = new javax.swing.JButton();
         jButton7 = new javax.swing.JButton();
-        jButton8 = new javax.swing.JButton();
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
+        jButton8 = new javax.swing.JButton();
         jLabel11 = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTable2 = new javax.swing.JTable();
+        jButton3 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setMinimumSize(new java.awt.Dimension(1288, 720));
+        setPreferredSize(new java.awt.Dimension(1288, 720));
 
         approveBtn.setFont(new java.awt.Font("Segoe UI Black", 1, 13)); // NOI18N
         approveBtn.setText("Generate PDF");
@@ -117,17 +165,10 @@ public class FMCreatePayment extends javax.swing.JFrame {
         }
     });
 
-    jButton7.setText("Daily Summary");
+    jButton7.setText("Sales Report");
     jButton7.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(java.awt.event.ActionEvent evt) {
             jButton7ActionPerformed(evt);
-        }
-    });
-
-    jButton8.setText("Process Payment");
-    jButton8.addActionListener(new java.awt.event.ActionListener() {
-        public void actionPerformed(java.awt.event.ActionEvent evt) {
-            jButton8ActionPerformed(evt);
         }
     });
 
@@ -137,6 +178,13 @@ public class FMCreatePayment extends javax.swing.JFrame {
     jLabel9.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
     jLabel9.setText("(OWSB)");
 
+    jButton8.setText("Log Out");
+    jButton8.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            jButton8ActionPerformed(evt);
+        }
+    });
+
     javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
     jPanel3.setLayout(jPanel3Layout);
     jPanel3Layout.setHorizontalGroup(
@@ -144,7 +192,7 @@ public class FMCreatePayment extends javax.swing.JFrame {
         .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
         .addGroup(jPanel3Layout.createSequentialGroup()
             .addComponent(jLabel2)
-            .addGap(0, 27, Short.MAX_VALUE))
+            .addGap(0, 0, Short.MAX_VALUE))
         .addGroup(jPanel3Layout.createSequentialGroup()
             .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel3Layout.createSequentialGroup()
@@ -152,12 +200,10 @@ public class FMCreatePayment extends javax.swing.JFrame {
                     .addComponent(jLabel9))
                 .addGroup(jPanel3Layout.createSequentialGroup()
                     .addGap(38, 38, 38)
-                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
-                            .addGap(4, 4, 4)
-                            .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addComponent(jButton7, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton8, javax.swing.GroupLayout.Alignment.LEADING))))
+                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jButton7, javax.swing.GroupLayout.DEFAULT_SIZE, 114, Short.MAX_VALUE)
+                        .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton8, javax.swing.GroupLayout.DEFAULT_SIZE, 114, Short.MAX_VALUE))))
             .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
     jPanel3Layout.setVerticalGroup(
@@ -173,13 +219,46 @@ public class FMCreatePayment extends javax.swing.JFrame {
             .addComponent(jButton6)
             .addGap(18, 18, 18)
             .addComponent(jButton7)
-            .addGap(18, 18, 18)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 231, Short.MAX_VALUE)
             .addComponent(jButton8)
-            .addContainerGap(221, Short.MAX_VALUE))
+            .addGap(49, 49, 49))
     );
 
     jLabel11.setFont(new java.awt.Font("Algerian", 0, 24)); // NOI18N
     jLabel11.setText("Payment overview");
+
+    jTable2.setModel(new javax.swing.table.DefaultTableModel(
+        new Object [][] {
+            {null, null, null, null},
+            {null, null, null, null},
+            {null, null, null, null},
+            {null, null, null, null}
+        },
+        new String [] {
+            "Title 1", "Title 2", "Title 3", "Title 4"
+        }
+    ) {
+        boolean[] canEdit = new boolean [] {
+            false, false, false, false
+        };
+
+        public boolean isCellEditable(int rowIndex, int columnIndex) {
+            return canEdit [columnIndex];
+        }
+    });
+    jTable2.addMouseListener(new java.awt.event.MouseAdapter() {
+        public void mouseClicked(java.awt.event.MouseEvent evt) {
+            jTable2MouseClicked(evt);
+        }
+    });
+    jScrollPane2.setViewportView(jTable2);
+
+    jButton3.setText("View PDF");
+    jButton3.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            jButton3ActionPerformed(evt);
+        }
+    });
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
@@ -189,33 +268,41 @@ public class FMCreatePayment extends javax.swing.JFrame {
             .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
-                    .addGap(331, 331, 331)
-                    .addComponent(approveBtn)
-                    .addContainerGap(401, Short.MAX_VALUE))
-                .addGroup(layout.createSequentialGroup()
+                    .addGap(79, 79, 79)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(layout.createSequentialGroup()
-                            .addGap(280, 280, 280)
-                            .addComponent(jLabel11))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 806, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addContainerGap(118, Short.MAX_VALUE))
                         .addGroup(layout.createSequentialGroup()
-                            .addGap(18, 18, 18)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 806, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGap(0, 28, Short.MAX_VALUE))))
+                            .addGap(251, 251, 251)
+                            .addComponent(jLabel11)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(approveBtn)
+                            .addGap(133, 133, 133))))
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(178, 178, 178)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 583, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                            .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(239, 239, 239)))
+                    .addGap(0, 0, Short.MAX_VALUE))))
     );
     layout.setVerticalGroup(
         layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-            .addGap(0, 0, Short.MAX_VALUE)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                .addGroup(layout.createSequentialGroup()
-                    .addGap(22, 22, 22)
-                    .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                    .addComponent(approveBtn)
-                    .addGap(15, 15, 15))
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+        .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        .addGroup(layout.createSequentialGroup()
+            .addContainerGap()
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(approveBtn))
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(jButton3)
+            .addGap(31, 31, 31))
     );
 
     pack();
@@ -223,22 +310,31 @@ public class FMCreatePayment extends javax.swing.JFrame {
 
     private void approveBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_approveBtnActionPerformed
         PaymentExportToJasper(jTable1);
+        fillPDFTable();
     }//GEN-LAST:event_approveBtnActionPerformed
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        //        new SM_ItemEntry(salesmanager).setVisible(true);
-        //        this.dispose();
+        new FMPurchaseOrder().setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-        //        new SM_SupplierEntry(salesmanager).setVisible(true);
-        //        this.dispose();
+        new FinanceDailySum().setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-        //        new SM_DailySalesEntry(salesmanager).setVisible(true);
-        //        this.dispose();
+        new Login().setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_jButton8ActionPerformed
+
+    private void jTable2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable2MouseClicked
+
+    }//GEN-LAST:event_jTable2MouseClicked
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        viewSelectedPDF();
+    }//GEN-LAST:event_jButton3ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -277,6 +373,7 @@ public class FMCreatePayment extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton approveBtn;
+    private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
     private javax.swing.JButton jButton8;
@@ -286,6 +383,8 @@ public class FMCreatePayment extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTable1;
+    private javax.swing.JTable jTable2;
     // End of variables declaration//GEN-END:variables
 }

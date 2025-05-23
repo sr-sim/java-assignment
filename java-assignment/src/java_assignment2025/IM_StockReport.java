@@ -4,6 +4,7 @@
  */
 package java_assignment2025;
 
+import java.awt.Component;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -14,8 +15,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import static java_assignment2025.FinanceReport.InventoryExportToJasper;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -122,6 +127,7 @@ public class IM_StockReport extends javax.swing.JFrame {
                 inStockQty, unitPrice, retailPrice, lastModifiedDate, restockQuantity
             });
         }
+        resizeColumnWidths(jTable1);
     }
     private int getMonthIndex(String month) {
         String[] months = new String[]{"January", "February", "March", "April", "May", "June",
@@ -212,6 +218,28 @@ public class IM_StockReport extends javax.swing.JFrame {
             e.printStackTrace();
         }
     }
+    
+    private void resizeColumnWidths(JTable table) {
+    for (int column = 0; column < table.getColumnCount(); column++) {
+        TableColumn tableColumn = table.getColumnModel().getColumn(column);
+        int preferredWidth = 75;
+        int maxWidth = 300;
+    
+        TableCellRenderer headerRenderer = table.getTableHeader().getDefaultRenderer();
+        Component headerComp = headerRenderer.getTableCellRendererComponent(table, tableColumn.getHeaderValue(), false, false, 0, column);
+        preferredWidth = Math.max(preferredWidth, headerComp.getPreferredSize().width);
+
+        for (int row = 0; row < table.getRowCount(); row++) {
+            TableCellRenderer cellRenderer = table.getCellRenderer(row, column);
+            Component c = table.prepareRenderer(cellRenderer, row, column);
+            int width = c.getPreferredSize().width + table.getIntercellSpacing().width;
+            preferredWidth = Math.max(preferredWidth, width);
+        }
+
+        preferredWidth = Math.min(preferredWidth, maxWidth);
+        tableColumn.setPreferredWidth(preferredWidth);
+    }
+}
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -239,6 +267,7 @@ public class IM_StockReport extends javax.swing.JFrame {
         jComboBox2 = new javax.swing.JComboBox<>();
         jComboBox1 = new javax.swing.JComboBox<>();
         jLabel3 = new javax.swing.JLabel();
+        jButton9 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -321,6 +350,7 @@ public class IM_StockReport extends javax.swing.JFrame {
                 "Item Id", "Item Name", "Description", "Supplier Id", "Supplier Name", "Quanity", "Unit Price", "Retail Price", "Last Modified Date","Restock Quantity"
             }
         ));
+        jTable1.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
         jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jTable1MouseClicked(evt);
@@ -391,6 +421,13 @@ public class IM_StockReport extends javax.swing.JFrame {
         jLabel3.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N
         jLabel3.setText("Choose a item :");
 
+        jButton9.setText("pdf");
+        jButton9.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton9ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -423,9 +460,11 @@ public class IM_StockReport extends javax.swing.JFrame {
                                 .addGap(312, 312, 312)
                                 .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(308, 308, 308)
+                                .addGap(89, 89, 89)
+                                .addComponent(jButton9, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(161, 161, 161)
                                 .addComponent(jButton1)))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addContainerGap(564, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -443,7 +482,9 @@ public class IM_StockReport extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 330, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton1)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton1)
+                    .addComponent(jButton9))
                 .addGap(23, 23, 23)
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -500,6 +541,11 @@ public class IM_StockReport extends javax.swing.JFrame {
         viewSelectedPDF();
     }//GEN-LAST:event_jButton3ActionPerformed
 
+    private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
+        InventoryExportToJasper(jTable1);
+        fillPDFTable();
+    }//GEN-LAST:event_jButton9ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -541,6 +587,7 @@ public class IM_StockReport extends javax.swing.JFrame {
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
     private javax.swing.JButton jButton8;
+    private javax.swing.JButton jButton9;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JComboBox<String> jComboBox2;
     private javax.swing.JLabel jLabel1;
