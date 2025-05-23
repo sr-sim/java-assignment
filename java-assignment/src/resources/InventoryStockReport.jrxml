@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="StockReport" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+    <parameter name="ReportTitle" class="java.lang.String"/>
+    <parameter name="Month" class="java.lang.String"/>
+    <field name="itemId" class="java.lang.String"/>
+    <field name="itemName" class="java.lang.String"/>
+    <field name="itemDescription" class="java.lang.String"/>
+    <field name="supplierId" class="java.lang.String"/>
+    <field name="supplierName" class="java.lang.String"/>
+    <field name="inStockQty" class="java.lang.Integer"/>
+    <field name="unitPrice" class="java.lang.Double"/>
+    <field name="retailPrice" class="java.lang.Double"/>
+    <field name="lastModifiedDate" class="java.lang.String"/>
+    <field name="restockQuantity" class="java.lang.Integer"/>
+    <title>
+        <band height="50">
+            <staticText>
+                <reportElement x="0" y="0" width="555" height="30"/>
+                <textElement>
+                    <font fontName="Times New Roman" size="16" isBold="true"/>
+                </textElement>
+                <text><![CDATA[$P{ReportTitle}]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="0" y="30" width="555" height="20"/>
+                <textElement>
+                    <font fontName="Times New Roman" size="12"/>
+                </textElement>
+                <text><![CDATA[Month: $P{Month}]]></text>
+            </staticText>
+        </band>
+    </title>
+    <columnHeader>
+        <band height="20">
+            <staticText>
+                <reportElement x="0" y="0" width="50" height="20"/>
+                <textElement>
+                    <font fontName="Times New Roman" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Item ID]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="50" y="0" width="100" height="20"/>
+                <textElement>
+                    <font fontName="Times New Roman" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Item Name]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="150" y="0" width="100" height="20"/>
+                <textElement>
+                    <font fontName="Times New Roman" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Description]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="250" y="0" width="50" height="20"/>
+                <textElement>
+                    <font fontName="Times New Roman" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Supplier ID]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="300" y="0" width="80" height="20"/>
+                <textElement>
+                    <font fontName="Times New Roman" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Supplier Name]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="380" y="0" width="50" height="20"/>
+                <textElement>
+                    <font fontName="Times New Roman" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Quantity]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="430" y="0" width="50" height="20"/>
+                <textElement>
+                    <font fontName="Times New Roman" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Unit Price]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="480" y="0" width="50" height="20"/>
+                <textElement>
+                    <font fontName="Times New Roman" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Retail Price]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="530" y="0" width="80" height="20"/>
+                <textElement>
+                    <font fontName="Times New Roman" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Last Modified]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="610" y="0" width="80" height="20"/>
+                <textElement>
+                    <font fontName="Times New Roman" isBold="true"/>
+                </textElement>
+                <text><![CDATA[Restock Qty]]></text>
+            </staticText>
+        </band>
+    </columnHeader>
+    <detail>
+        <band height="20">
+            <textField>
+                <reportElement x="0" y="0" width="50" height="20"/>
+                <textElement>
+                    <font fontName="Times New Roman"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{itemId}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="50" y="0" width="100" height="20"/>
+                <textElement>
+                    <font fontName="Times New Roman"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{itemName}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="150" y="0" width="100" height="20"/>
+                <textElement>
+                    <font fontName="Times New Roman"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{itemDescription}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="250" y="0" width="50" height="20"/>
+                <textElement>
+                    <font fontName="Times New Roman"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{supplierId}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="300" y="0" width="80" height="20"/>
+                <textElement>
+                    <font fontName="Times New Roman"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{supplierName}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="380" y="0" width="50" height="20"/>
+                <textElement>
+                    <font fontName="Times New Roman"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{inStockQty}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="430" y="0" width="50" height="20"/>
+                <textElement>
+                    <font fontName="Times New Roman"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{unitPrice}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="480" y="0" width="50" height="20"/>
+                <textElement>
+                    <font fontName="Times New Roman"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{retailPrice}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="530" y="0" width="80" height="20"/>
+                <textElement>
+                    <font fontName="Times New Roman"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{lastModifiedDate}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="610" y="0" width="80" height="20"/>
+                <textElement>
+                    <font fontName="Times New Roman"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{restockQuantity}]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+</jasperReport>
