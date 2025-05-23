@@ -842,9 +842,8 @@ public class SM_ItemEntry extends javax.swing.JFrame {
             int instockquantity = olditem.getInstockquantity();
             String lastmodifieddate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             String reorderlevel = olditem.getReorderlevel();
-            String reorderstatus = olditem.getReorderstatus();
             boolean deleted = olditem.isDeleted();
-            inventorydatamanager.updateItem(itemid, itemname, itemdesc, supplierid,unitprice,retailprice, instockquantity, reorderlevel, reorderstatus, lastmodifieddate, deleted);
+            inventorydatamanager.updateItem(itemid, itemname, itemdesc, supplierid,unitprice,retailprice, instockquantity, reorderlevel, lastmodifieddate, deleted);
             fillTable1FromTxtFile();
             clearTextField();
             JOptionPane.showMessageDialog(this, "Update Successfully!");
@@ -911,7 +910,7 @@ public class SM_ItemEntry extends javax.swing.JFrame {
         }
 
         try {
-            Item item = new Item(itemid, itemname, itemdesc, supplierid,unitprice,retailprice,instockquantity, reorderlevel, reorderstatus, lastmodifieddate,deleted);
+            Item item = new Item(itemid, itemname, itemdesc, supplierid,unitprice,retailprice,instockquantity, reorderlevel, lastmodifieddate,deleted);
             inventorydatamanager.addItem(item);
 
             JOptionPane.showMessageDialog(null, "Success","Information", JOptionPane.INFORMATION_MESSAGE);

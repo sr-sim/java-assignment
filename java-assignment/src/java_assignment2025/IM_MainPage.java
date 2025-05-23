@@ -12,6 +12,7 @@ public class IM_MainPage extends javax.swing.JFrame {
     private InventoryManager inventorymanager;
     private InventoryDataManager inventorydatamanager;
     private SupplierDataManager supplierdatamanager;
+    private PartialReceivedDataManager partialReceivedDataManager;
 
     private PurchaseOrderManager pomanager;
    
@@ -22,6 +23,8 @@ public class IM_MainPage extends javax.swing.JFrame {
         this.inventorymanager = (InventoryManager)Session.getCurrentUser(); 
           this.supplierdatamanager = new SupplierDataManager();
         this.inventorydatamanager = new InventoryDataManager();
+        this.partialReceivedDataManager = new PartialReceivedDataManager(pomanager);
+        
         this.pomanager = new PurchaseOrderManager();
         initComponents();
     }
@@ -161,17 +164,17 @@ public class IM_MainPage extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-    new IM_VerifyPo(inventorymanager, pomanager, inventorydatamanager, supplierdatamanager).setVisible(true);
+    new IM_VerifyPo(inventorymanager, pomanager, inventorydatamanager, supplierdatamanager, partialReceivedDataManager).setVisible(true);
         this.dispose();
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-
+     new IM_StockReport(inventorymanager,inventorydatamanager,supplierdatamanager,pomanager).setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
-        //        new SM_PurchaseOrder(salesmanager).setVisible(true);
-        //        this.dispose();
+        
     }//GEN-LAST:event_jButton10ActionPerformed
 
 //    /**
