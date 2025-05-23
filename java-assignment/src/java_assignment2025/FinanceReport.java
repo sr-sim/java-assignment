@@ -1,5 +1,7 @@
 package java_assignment2025;
 
+import java.awt.Desktop;
+import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -30,6 +32,7 @@ import java.util.Map;
 
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
+import javax.swing.filechooser.FileSystemView;
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
@@ -224,7 +227,7 @@ public class FinanceReport {
         JasperPrint filled = JasperFillManager.fillReport(report, params, new JREmptyDataSource());
 
         //export to pdf
-        String path = "Finance_Report_" + System.currentTimeMillis() + ".pdf";
+        String path = "Payment_Report_" + System.currentTimeMillis() + ".pdf";
 
         JRPdfExporter exporter = new JRPdfExporter();
         exporter.setExporterInput(new SimpleExporterInput(filled));
@@ -235,6 +238,11 @@ public class FinanceReport {
         exporter.setConfiguration(config);
 
         exporter.exportReport();
+        
+        File pdfFile = new File(path);
+        if (pdfFile.exists()) {
+            Desktop.getDesktop().open(pdfFile);
+        }
 
         JOptionPane.showMessageDialog(null, "Report exported to " + path);
 
@@ -289,7 +297,12 @@ public class FinanceReport {
         exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(path));
         exporter.setConfiguration(new SimplePdfExporterConfiguration());
         exporter.exportReport();
-
+        
+        File pdfFile = new File(path);
+        if (pdfFile.exists()) {
+            Desktop.getDesktop().open(pdfFile);
+        }
+        
         JOptionPane.showMessageDialog(null, "Report exported to " + path);
 
     } catch (Exception e) {
@@ -352,6 +365,11 @@ public class FinanceReport {
         exporter.setConfiguration(new SimplePdfExporterConfiguration());
 
         exporter.exportReport();
+        
+        File pdfFile = new File(path);
+        if (pdfFile.exists()) {
+            Desktop.getDesktop().open(pdfFile);
+        }
 
         JOptionPane.showMessageDialog(null, "Payment report exported to " + path);
 

@@ -59,7 +59,7 @@
                           <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
                           <EmptySpace min="-2" pref="118" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Group type="102" alignment="0" attributes="0">
+                              <Group typ   alignment="0" attributes="0">
                                   <Component id="jButton10" min="-2" pref="128" max="-2" attributes="0"/>
                                   <EmptySpace min="-2" pref="288" max="-2" attributes="0"/>
                                   <Component id="saveMe" min="-2" max="-2" attributes="0"/>
