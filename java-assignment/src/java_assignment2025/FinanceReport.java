@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.io.FileOutputStream;
 
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -379,7 +380,7 @@ public class FinanceReport {
     }
 }
     
-    public static void InventoryExportToJasper(JTable table) {
+    public static String InventoryExportToJasper(JTable table,String selectedItemId) {
     try {
         List<Map<String, ?>> data = new ArrayList<>();
 
@@ -412,25 +413,30 @@ public class FinanceReport {
         JasperPrint filled = JasperFillManager.fillReport(report, params, new JREmptyDataSource());
 
         String dateStr = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
-        String path = "Stock_Report_" + dateStr + ".pdf";
+        String safeItemId = selectedItemId != null ? selectedItemId.replace(" ", "_") : "All";
+        String pdfFileName = "Inventory_Stock_Report_" + safeItemId + "_" + dateStr + ".pdf";
+        File pdfFile = new File(System.getProperty("user.dir"), pdfFileName); // Save to project root
 
         JRPdfExporter exporter = new JRPdfExporter();
         exporter.setExporterInput(new SimpleExporterInput(filled));
-        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(path));
+        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(new FileOutputStream(pdfFile)));
         exporter.setConfiguration(new SimplePdfExporterConfiguration());
 
         exporter.exportReport();
         
-        File pdfFile = new File(path);
         if (pdfFile.exists()) {
-            Desktop.getDesktop().open(pdfFile);
-        }
+                Desktop.getDesktop().open(pdfFile);
+            }
 
-        JOptionPane.showMessageDialog(null, "Payment report exported to " + path);
+            JOptionPane.showMessageDialog(null, "Inventory report exported to " + pdfFile.getAbsolutePath());
+
+            return pdfFileName;
+
 
     } catch (Exception e) {
-        e.printStackTrace();
-        JOptionPane.showMessageDialog(null, "Export failed: " + e.getMessage());
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Export failed: " + e.getMessage());
+            return null;
     }
 }
     
@@ -498,6 +504,7 @@ public class FinanceReport {
 
         return new ArrayList<>(grouped.values());
     }
+    
 
 }
 
