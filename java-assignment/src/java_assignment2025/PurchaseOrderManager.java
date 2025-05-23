@@ -35,8 +35,7 @@ public class PurchaseOrderManager extends DataManager {
             List<String> lines = textfile.readFile(pofilepath);
            
             for (String line : lines) {
-                String[] parts = line.split(",", 14);
-                if (parts.length == 14) {
+                
                 String[] parts = line.split(",", 14);
                 if (parts.length == 14) {
                     try {
@@ -60,7 +59,7 @@ public class PurchaseOrderManager extends DataManager {
                                     parts[12].trim(),
                                     parts[13].trim()
                                     
-                                    parts[13].trim()
+                                  
                                     
 
 
@@ -159,7 +158,6 @@ public class PurchaseOrderManager extends DataManager {
     }
      
      public void updateReceiveStatus(String orderId, String status) {
-     public void updateReceiveStatus(String orderId, String status) {
         PurchaseOrder po = findpoid(orderId);
         if (po != null) {
             po.setVerifyStatus(status);
@@ -195,41 +193,12 @@ public class PurchaseOrderManager extends DataManager {
         }
 
         return String.format("PO%03d", maxId + 1);
-        if (po != null) {
-            po.setVerifyStatus(status);
-           
-            System.out.println("Updated PO " + orderId + " ReceiveStatus to: " + status);
-            updatePurchaseOrderInFile(po);
-        } else {
-            System.out.println("Failed to update ReceiveStatus: PO " + orderId + " not found");
-        }
     }
+        
+        
     
-    public static String getNextOrderId() {
-
-        String filePath = "src/java_assignment2025/PurchaseOrder.txt";
-        List<String> lines = TextFile.readFile(filePath);
-        int maxId = 0;
-
-        for (String line : lines) {
-            if (!line.trim().isEmpty()) {
-                String[] parts = line.split(",");
-                if (parts.length > 0 && parts[0].startsWith("PO")) {
-                    String poId = parts[0];
-                    try {
-                        int idNum = Integer.parseInt(poId.substring(2)); // Extract numeric part
-                        if (idNum > maxId) {
-                            maxId = idNum;
-                        }
-                    } catch (NumberFormatException e) {
-                        System.err.println("Invalid PO ID format: " + poId);
-                    }
-                }
-            }
-        }
-
-        return String.format("PO%03d", maxId + 1);
-    }
+    
+    
     
      
      
