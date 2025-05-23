@@ -38,6 +38,7 @@ public class PurchaseOrder {
     public PurchaseOrder(String orderId, String poCreator, String requestId, String userId,List<String> itemIds ,
                          List<String> unitPrices, List<String> quantities, double amount,List<String>  supplierIds,
                          String orderDate, String orderStatus, String verifyStatus, String paymentStatus,String postatuschangeby) {
+                         String orderDate, String orderStatus, String verifyStatus, String paymentStatus,String postatuschangeby) {
         this.orderId = orderId;
         this.poCreator = poCreator;
         this.requestId = requestId;
@@ -124,7 +125,12 @@ public class PurchaseOrder {
         this.paymentStatus = paymentStatus;
     }
     
-    
+    public String getReceiveStatus() {
+        return receiveStatus;
+    }
+    public void setReceiveStatus(String receiveStatus) {
+        this.receiveStatus = receiveStatus;
+    }
 
     
    
@@ -171,6 +177,7 @@ public class PurchaseOrder {
                String.format("%.2f", amount) + "," +
                String.join("|", supplierIds) + "," +
                orderDate + "," + orderStatus + "," + verifyStatus+","+ paymentStatus
+                + "," +postatuschangeby;
                 + "," +postatuschangeby;
 }
 

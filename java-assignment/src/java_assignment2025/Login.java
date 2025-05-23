@@ -206,7 +206,7 @@ public void openHomePage(User user) {
             new SM_MainPage().setVisible(true);
             break;
         case FINANCE_MANAGER:
-            new FMPurchaseOrder().setVisible(true);
+            new FinanceManagerHome().setVisible(true);
             break;
         case INVENTORY_MANAGER:
             new IM_MainPage().setVisible(true);
