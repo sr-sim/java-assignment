@@ -6,6 +6,8 @@ package java_assignment2025;
 
 import java.awt.Component;
 import java.awt.Desktop;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import static java_assignment2025.FinanceReport.PaymentExportToJasper;
 import javax.swing.JOptionPane;
@@ -28,8 +30,15 @@ public class FMCreatePayment extends javax.swing.JFrame {
     public FMCreatePayment() {
         this.fm = (FinanceManager) Session.getCurrentUser();
         initComponents();
+        this.fm = (FinanceManager) Session.getCurrentUser();
         jTable1.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         loadPaymentsIntoTable();
+         fillPDFTable(fm.getUserId());
+        jButton3.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                viewSelectedPDF();
+            }
+        });
     }
     
     private void loadPaymentsIntoTable(){
@@ -61,11 +70,11 @@ public class FMCreatePayment extends javax.swing.JFrame {
     }
 }
     
-    private void fillPDFTable() {
+    private void fillPDFTable(String userid) {
             pdfTableModel = new DefaultTableModel(new Object[]{"No", "PDF File Name"}, 0);
             jTable2.setModel(pdfTableModel); // assuming jTable2 is used for PDF list
 
-            File[] files = pdfFolder.listFiles((dir, name) -> name.startsWith("Payment_Report_") && name.endsWith(".pdf"));
+            File[] files = pdfFolder.listFiles((dir, name) -> name.startsWith("Payment_Report_"+userid+"_") && name.endsWith(".pdf"));
             if (files != null) {
                 int count = 1;
                 for (File file : files) {
@@ -309,8 +318,9 @@ public class FMCreatePayment extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void approveBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_approveBtnActionPerformed
-        PaymentExportToJasper(jTable1);
-        fillPDFTable();
+         String userid = fm.getUserId();   
+         PaymentExportToJasper(userid,jTable1);
+        fillPDFTable(userid);
     }//GEN-LAST:event_approveBtnActionPerformed
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed

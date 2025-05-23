@@ -1,4 +1,4 @@
 PR001,I001,UID001,23,3.00,69.00,2025-05-20,2025-05-21,approved,UID003,No description,false
 PR002,I003|I001,UID001,4|5,2.00|3.00,23.00,2025-05-20,2025-05-21,approved,UID003,No description,false
 PR003,I001,UID001,4,3.00,12.00,2025-05-20,2025-05-21,pending,unknown,No description,false
-PR004,I001|I001|I003,UID001,1|2|4,8.0|8.0|5.0,44.00,2025-05-22,2025-05-23,pending,unknown,No description,false
+PR004,I001|I001|I003|I001|I001|I001|I001|I001|I001|I001,UID001,1|2|4|3|3|3|3|2|3|3,8.0|8.0|5.0|2.0|2.0|2.0|2.0|2.0|2.0|2.0,84.00,2025-05-22,2025-05-23,pending,unknown,No description,false

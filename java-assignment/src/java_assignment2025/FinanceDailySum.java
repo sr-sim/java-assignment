@@ -5,6 +5,8 @@
 package java_assignment2025;
 
 import java.awt.Desktop;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.Date;
 import java.util.HashMap;
@@ -21,11 +23,11 @@ import javax.swing.table.DefaultTableModel;
  * @author Isaac
  */
 public class FinanceDailySum extends javax.swing.JFrame {
+    private FinanceManager fm;
     private SalesDataManager salesdatamanager = new SalesDataManager();
     private InventoryDataManager inventorydatamanager = new InventoryDataManager();
     private enum FilterMode { DATE, MONTH }
     private FilterMode currentFilter = FilterMode.DATE;
-    private FinanceManager fm;
     private DefaultTableModel pdfTableModel;
     private File pdfFolder = new File(System.getProperty("user.dir"));
     /**
@@ -34,6 +36,7 @@ public class FinanceDailySum extends javax.swing.JFrame {
     public FinanceDailySum() {
         this.fm = (FinanceManager) Session.getCurrentUser();
         initComponents();
+        this.fm = (FinanceManager)Session.getCurrentUser();
 
         // default = today
         jDateChooser1.setDate(new java.util.Date());
@@ -53,6 +56,13 @@ public class FinanceDailySum extends javax.swing.JFrame {
                 filterByMonth(selectedMonth);
             }
         });
+        fillPDFTable(fm.getUserId());
+        jButton3.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                viewSelectedPDF();
+            }
+        });
+
     }
     
     private void filterByDate(Date selectedDate) {
@@ -105,11 +115,11 @@ public class FinanceDailySum extends javax.swing.JFrame {
         jLabel3.setText(String.format("Total Revenue: RM%.2f", total));
     }
     
-    private void fillPDFTable() {
+    private void fillPDFTable(String userid) {
             pdfTableModel = new DefaultTableModel(new Object[]{"No", "PDF File Name"}, 0);
             jTable2.setModel(pdfTableModel); // assuming jTable2 is used for PDF list
 
-            File[] files = pdfFolder.listFiles((dir, name) -> name.startsWith("Daily_Sales_Report_") && name.endsWith(".pdf"));
+            File[] files = pdfFolder.listFiles((dir, name) -> name.startsWith("Daily_Sales_Report_"+userid+"_") && name.endsWith(".pdf"));
             if (files != null) {
                 int count = 1;
                 for (File file : files) {
@@ -382,8 +392,9 @@ public class FinanceDailySum extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void approveBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_approveBtnActionPerformed
-        exportDailySumToJasper(jTable1);
-        fillPDFTable();
+         String userid = fm.getUserId();   
+         exportDailySumToJasper(userid,jTable1);
+        fillPDFTable(userid);
     }//GEN-LAST:event_approveBtnActionPerformed
 
     private void jComboBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox2ActionPerformed
