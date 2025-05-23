@@ -6,6 +6,8 @@ package java_assignment2025;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Desktop;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -35,6 +37,7 @@ public class FMPurchaseOrder extends javax.swing.JFrame {
     private PurchaseOrderManager poManager;
     private InventoryDataManager inventoryManager;
     private FinanceManager fm;
+    private File folder;
     private DefaultTableModel pdfTableModel;
     private File pdfFolder = new File(System.getProperty("user.dir"));
 
@@ -52,6 +55,12 @@ public class FMPurchaseOrder extends javax.swing.JFrame {
         poManager = new PurchaseOrderManager();
         inventoryManager = new InventoryDataManager();
         loadPOsIntoTable();
+        fillPDFTable();
+        jButton3.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                viewSelectedPDF();
+            }
+        });
 
     }
     

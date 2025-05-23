@@ -6,6 +6,8 @@ package java_assignment2025;
 
 import java.awt.Component;
 import java.awt.Desktop;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
@@ -38,9 +40,10 @@ public class IM_StockReport extends javax.swing.JFrame {
     private PurchaseRequisitionManager prmanager;
     private InventoryDataManager inventorydatamanager;
     private PurchaseOrderManager pomanager;
-    private File pdfFolder = new File("./reports/");
-    private DefaultTableModel pdfTableModel;
     private InventoryStockReport inventorystockreport;
+        private File folder;
+    private DefaultTableModel pdfTableModel;
+    private File pdfFolder = new File(System.getProperty("user.dir"));
     /**
      * Creates new form IM_StockReport
      */
@@ -70,6 +73,12 @@ public class IM_StockReport extends javax.swing.JFrame {
         // Disable cell editing for tables
         jTable1.setDefaultEditor(Object.class, null);
         jTable2.setDefaultEditor(Object.class, null);
+                fillPDFTable();
+        jButton3.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                viewSelectedPDF();
+            }
+        });
     }
     private void setDefaultComboBoxSelections() {
         // Set jComboBox2 to current month
@@ -183,41 +192,42 @@ public class IM_StockReport extends javax.swing.JFrame {
         }
         return restockQty;
     }
-    private void fillPDFTable() {
-        pdfTableModel = new DefaultTableModel(new Object[]{"No", "PDF File Name"}, 0);
-        jTable2.setModel(pdfTableModel);
+            private void fillPDFTable() {
+            pdfTableModel = new DefaultTableModel(new Object[]{"No", "PDF File Name"}, 0);
+            jTable2.setModel(pdfTableModel); // assuming jTable2 is used for PDF list
 
-        File[] files = pdfFolder.listFiles((dir, name) -> name.startsWith("Stock_Report_") && name.endsWith(".pdf"));
-        if (files != null) {
-            int count = 1;
-            for (File file : files) {
-                pdfTableModel.addRow(new Object[]{count++, file.getName()});
+            File[] files = pdfFolder.listFiles((dir, name) -> name.startsWith("Stock_Report_")&& name.endsWith(".pdf"));
+            if (files != null) {
+                int count = 1;
+                for (File file : files) {
+                    pdfTableModel.addRow(new Object[]{count++, file.getName()});
+                }
             }
         }
-    }
-
-    private void viewSelectedPDF() {
-        int row = jTable2.getSelectedRow();
-        if (row == -1) {
-            JOptionPane.showMessageDialog(this, "Please select a PDF file to view.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        String filename = (String) jTable2.getValueAt(row, 1);
-        File selectedPDF = new File(pdfFolder, filename);
-        try {
-            if (Desktop.isDesktopSupported() && selectedPDF.exists()) {
-                Desktop.getDesktop().open(selectedPDF);
-            } else {
-                JOptionPane.showMessageDialog(this, "Cannot open PDF file: " + selectedPDF.getName(), 
-                                             "Error", JOptionPane.ERROR_MESSAGE);
+        private void viewSelectedPDF() {
+            int row = jTable2.getSelectedRow();
+            if (row == -1) {
+                JOptionPane.showMessageDialog(this, "Please select a row first.");
+                return;
             }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error opening PDF: " + e.getMessage(), 
-                                         "Error", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
+
+            String filename = jTable2.getValueAt(row, 1).toString(); 
+            File selectedPDF = new File(pdfFolder, filename); 
+            openPDF(selectedPDF);
         }
-    }
+        private void openPDF(File pdfFile) {
+            try {
+                if (Desktop.isDesktopSupported() && pdfFile.exists()) {
+                    Desktop.getDesktop().open(pdfFile);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Cannot open PDF file.");
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Error opening PDF: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+
     
     private void resizeColumnWidths(JTable table) {
     for (int column = 0; column < table.getColumnCount(); column++) {
