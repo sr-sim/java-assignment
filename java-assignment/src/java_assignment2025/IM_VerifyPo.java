@@ -22,17 +22,23 @@ public class IM_VerifyPo extends javax.swing.JFrame {
     private SupplierDataManager supplierdatamanager;
     private PurchaseOrderManager pomanager ;
     private InventoryDataManager inventorydatamanager;
-    private List<PartialReceipt> partialReceipts;
+    private PartialReceivedDataManager partialReceivedDataManager; // New manager
+    private List<PartialReceived> partialReceiveds;
+    
     /**
      * Creates new form IM_VerifyPo
      */
-    public IM_VerifyPo(InventoryManager inventorymanager,PurchaseOrderManager pomanager,InventoryDataManager inventorydatamanager, SupplierDataManager supplierdatamanager) {
+    public IM_VerifyPo(InventoryManager inventorymanager,PurchaseOrderManager pomanager,InventoryDataManager inventorydatamanager, SupplierDataManager supplierdatamanager,PartialReceivedDataManager partialReceivedDataManager) {
    
             this.inventorymanager = (InventoryManager)Session.getCurrentUser();
             this.inventorydatamanager = inventorydatamanager;
             this.supplierdatamanager = supplierdatamanager;
-             this.pomanager = pomanager;
-             this.partialReceipts = new ArrayList<>();
+            this.pomanager = pomanager;
+            this.partialReceivedDataManager = partialReceivedDataManager; 
+            // Reload data to ensure consistency
+            this.pomanager.loadAllpofromtxtfile();
+            this.partialReceivedDataManager.loadAllPartialReceiveds();
+            this.partialReceiveds = this.partialReceivedDataManager.getPartialReceiveds();
              initComponents();
              setupTable();
             
@@ -57,7 +63,7 @@ public class IM_VerifyPo extends javax.swing.JFrame {
         jTable1.setDefaultRenderer(Object.class, new MultiLineCellRenderer());
         
         // Set up ActionButtonEditor for Action column (index 5)
-        ActionButtonEditor buttonEditor = new ActionButtonEditor(jTable1, inventorydatamanager, true);
+        ActionButtonEditor buttonEditor = new ActionButtonEditor(jTable1, inventorydatamanager, true, pomanager, partialReceivedDataManager, jTable1, jTable2);
         jTable1.getColumnModel().getColumn(5).setCellRenderer(buttonEditor);
         jTable1.getColumnModel().getColumn(5).setCellEditor(buttonEditor);
         
@@ -65,6 +71,7 @@ public class IM_VerifyPo extends javax.swing.JFrame {
         // Populate the table
         fillTable1FromTxtFile(jTable1, inventorydatamanager);
         autoAdjustColumnWidths(jTable1); // Adjust columns after filling
+        jTable1.clearSelection();
         jTable1.repaint(); // Force repaint to apply new sizes
         jTable1.revalidate(); // Added: Ensure layout is updated after population
         
@@ -82,13 +89,14 @@ public class IM_VerifyPo extends javax.swing.JFrame {
         jTable2.setRowHeight(30);
         jTable2.setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
         jTable2.setDefaultRenderer(Object.class, new MultiLineCellRenderer());
-        ActionButtonEditor remainEditor = new ActionButtonEditor(jTable2, inventorydatamanager, false);
+        ActionButtonEditor remainEditor = new ActionButtonEditor(jTable2, inventorydatamanager, false, pomanager, partialReceivedDataManager, jTable1, jTable2);
         jTable2.getColumnModel().getColumn(5).setCellRenderer(remainEditor);
         jTable2.getColumnModel().getColumn(5).setCellEditor(remainEditor);
-        fillTable2FromPartialReceipts(jTable2, inventorydatamanager);   
+        fillTable2FromPartialReceiveds(jTable2, inventorydatamanager);   
         autoAdjustColumnWidths(jTable2);
-        jTable2.repaint();
+        jTable2.clearSelection();
         jTable2.revalidate(); // Added: Ensure layout is updated after population
+        jTable2.repaint();
     }
     
     private void autoAdjustColumnWidths(JTable table) {
@@ -133,8 +141,7 @@ public class IM_VerifyPo extends javax.swing.JFrame {
             }
             for (PurchaseOrder po : pomanager.getpolist()) {
                 if (po.getOrderStatus().equalsIgnoreCase("approved") &&
-                    po.getVerifyStatus().equalsIgnoreCase("pending") &&
-                    po.getReceiveStatus().equalsIgnoreCase("not received")) {
+                    po.getVerifyStatus().equalsIgnoreCase("pending")) {
                     List<String> itemIds = po.getItemIds();
                     List<String> quantities = po.getQuantities();
                     List<String> supplierIds = po.getSupplierIds();
@@ -144,7 +151,8 @@ public class IM_VerifyPo extends javax.swing.JFrame {
                         itemNames.add(item != null ? item.getItemname() : "Unknown Item (" + itemId +")");
                     }
                     
-                   
+                   // Ensure consistent list sizes with the loadAllpofromtxtfile method in pomanager
+                    int maxSize = Math.min(itemIds.size(), Math.min(quantities.size(), Math.min(supplierIds.size(), itemNames.size())));
                     // Add rows for each item, with Action only in the last row
                     for (int i = 0; i < itemIds.size(); i++) {
                         Object actionValue = (i == itemIds.size() - 1) ? "" : null; // Explicitly set action value
@@ -169,34 +177,44 @@ public class IM_VerifyPo extends javax.swing.JFrame {
         }
     }
     
-    public void fillTable2FromPartialReceipts(JTable jTable2, InventoryDataManager inventorydatamanager) {
-        DefaultTableModel model = (DefaultTableModel) jTable2.getModel();
-        model.setRowCount(0);
+    private void fillTable2FromPartialReceiveds(JTable table, InventoryDataManager inventoryDataManager) {
+    DefaultTableModel model = (DefaultTableModel) table.getModel();
+    model.setRowCount(0);
+    List<PartialReceived> partialReceivedList = partialReceivedDataManager.getPartialReceiveds();
+    for (PartialReceived pr : partialReceivedList) {
+        String orderId = pr.getOrderId();
+        PurchaseOrder po = pomanager.findpoid(orderId);
+        if (po != null && po.getVerifyStatus().equals("partial received")) {
+            List<String> itemIds = pr.getItemIds();
+            List<String> itemNames = pr.getItemNames();
+            List<Integer> remainingQuantities = pr.getRemainingQuantities();
+            String supplierIds = String.join("|", po.getSupplierIds());
+            if (itemIds.size() == itemNames.size() && itemIds.size() == remainingQuantities.size()) {
+                for (int i = 0; i < itemIds.size(); i++) {
+                    String displayOrderId = (i == 0) ? orderId : "";
+                    String displaySupplierId = (i == 0) ? supplierIds : "";
+                    String actionValue = (i == itemIds.size() - 1) ? orderId : "";
 
-        for (PurchaseOrder po : pomanager.getpolist()) {
-            if (po.getOrderStatus().equalsIgnoreCase("approved") &&
-                po.getVerifyStatus().equalsIgnoreCase("pending") &&
-                po.getReceiveStatus().equalsIgnoreCase("partial received")) {
-                PartialReceipt receipt = partialReceipts.stream()
-                        .filter(r -> r.orderId.equals(po.getOrderId()))
-                        .findFirst()
-                        .orElse(null);
-                if (receipt != null) {
-                    List<String> itemIds = po.getItemIds();
-                    for (int i = 0; i < itemIds.size(); i++) {
-                        Object[] row = {
-                            i == 0 ? po.getOrderId() : "",
-                            i < po.getSupplierIds().size() ? po.getSupplierIds().get(i) : "",
-                            i < itemIds.size() ? itemIds.get(i) : "",
-                            i < receipt.itemNames.size() ? receipt.itemNames.get(i) : "",
-                            i < receipt.remainingQuantities.size() ? String.valueOf(receipt.remainingQuantities.get(i)) : "",
-                            i == itemIds.size() - 1 ? "" : null
-                        };
-                        model.addRow(row);
-                    }
+                    model.addRow(new Object[]{
+                        displayOrderId,
+                        displaySupplierId,
+                        itemIds.get(i),
+                        itemNames.get(i),
+                        remainingQuantities.get(i),
+                        actionValue
+                    });
                 }
+            }else{
+                System.err.println("Invalid PartialReceived data for PO " + orderId + ": Mismatched list sizes");
             }
+        }else{
+            System.err.println("Skipping PO " + orderId + ": Not found or not partial received");
         }
+    }
+    model.fireTableDataChanged();
+    table.clearSelection();
+    table.revalidate();
+    table.repaint();
     }
     private class MultiLineCellRenderer extends JTextArea implements TableCellRenderer {
         public MultiLineCellRenderer() {
@@ -206,9 +224,9 @@ public class IM_VerifyPo extends javax.swing.JFrame {
             setBorder(BorderFactory.createEmptyBorder(2, 5, 2, 5));
         }
 
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-                                                      boolean hasFocus, int row, int column) {
+    @Override
+    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+                                                  boolean hasFocus, int row, int column) {
             if (value == null) {
                 setText("");
             } else {
@@ -235,16 +253,25 @@ public class IM_VerifyPo extends javax.swing.JFrame {
         private final JButton receivedButton;
         private final JButton partialReceivedButton;
         private final JTable table;
-        private final InventoryDataManager inventoryDataManager;
+        private final InventoryDataManager inventorydatamanager;
         private final boolean isMainTable;
         private String orderId;
         private Object currentValue;
+       private final PurchaseOrderManager pomanager ;
+        private final PartialReceivedDataManager partialReceivedDataManager; // Added
+        private final JTable jTable1; // Added
+        private final JTable jTable2; // Added
 
-            public ActionButtonEditor(JTable table, InventoryDataManager inventoryDataManager, boolean isMainTable) {
+            public ActionButtonEditor(JTable table, InventoryDataManager inventorydatamanager, boolean isMainTable,
+                    PurchaseOrderManager pomanager, PartialReceivedDataManager partialReceivedDataManager,
+                                  JTable jTable1, JTable jTable2) {
             this.table = table;
-            this.inventoryDataManager = inventoryDataManager;
+            this.inventorydatamanager = inventorydatamanager;
             this.isMainTable = isMainTable;
-
+            this.pomanager = pomanager; // This assignment will now work
+            this.jTable1 = jTable1;
+            this.jTable2 = jTable2;
+            this.partialReceivedDataManager = partialReceivedDataManager;
             rendererPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 2, 0));
             editorPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 2, 0));
             receivedButton = new JButton("Received");
@@ -258,279 +285,320 @@ public class IM_VerifyPo extends javax.swing.JFrame {
             }
 
             receivedButton.addActionListener(e -> {
-                if (isMainTable) {
-                    updateReceiveStatus("received");
-                } else {
-                    completePartialReceipt();
-                }
-                fireEditingStopped();
-                table.revalidate();
-                table.repaint();
-            });
-            if (isMainTable && partialReceivedButton != null) {
-                partialReceivedButton.addActionListener(e -> {
-                    showPartialReceiptPanel();
-                    fireEditingStopped();
-                    table.revalidate();
-                    table.repaint();
-                });
-            }
-        }
-
-    private void updateReceiveStatus(String status) {
-    PurchaseOrder po = pomanager.findpoid(orderId);
-    if (po != null) {
-        if (!po.getReceiveStatus().equals("not received")) {
-            JOptionPane.showMessageDialog(table, "Status already set to " + po.getReceiveStatus(), "Warning", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        // Update inventory before updating PO status
-        List<String> itemIds = po.getItemIds();
-        List<String> quantities = po.getQuantities();
-        for (int i = 0; i < itemIds.size(); i++) {
-            Item item = inventoryDataManager.finditemid(itemIds.get(i));
-            if (item != null) {
-                int newQuantity = item.getInstockquantity() + Integer.parseInt(quantities.get(i));;
-                inventoryDataManager.updateItem(
-                    item.getItemid(), item.getItemname(), item.getItemdesc(), item.getSupplierid(),
-                    item.getUnitprice(), item.getRetailprice(), newQuantity,
-                    item.getReorderlevel(), item.getReorderstatus(), LocalDate.now().toString(),
-                    item.isDeleted()
-                );
-            }
-        }
-        pomanager.updateReceiveStatus(orderId, status, true);
-        JOptionPane.showMessageDialog(table, "Receive status updated to " + status, "Success", JOptionPane.INFORMATION_MESSAGE);
-        fillTable1FromTxtFile(table, inventoryDataManager);
-        fillTable2FromPartialReceipts(jTable2, inventoryDataManager);
-    } else {
-        JOptionPane.showMessageDialog(table, "Purchase Order not found", "Error", JOptionPane.ERROR_MESSAGE);
-    }
-}
-    private void showPartialReceiptPanel() {
-        PurchaseOrder po = pomanager.findpoid(orderId);
-        if (po == null) {
-            JOptionPane.showMessageDialog(table, "Purchase Order not found", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        if (!po.getReceiveStatus().equals("not received")) {
-            JOptionPane.showMessageDialog(table, "Status already set to " + po.getReceiveStatus(), "Warning", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        JPanel panel = new JPanel(new GridLayout(0, 2));
-        List<String> itemIds = po.getItemIds();
-        List<String> quantities = po.getQuantities();
-        List<String> itemNames = new ArrayList<>();
-        List<JTextField> quantityFields = new ArrayList<>();
-        for (String itemId : itemIds) {
-            Item item = inventoryDataManager.finditemid(itemId);
-            String itemName = item != null ? item.getItemname() : "Unknown Item";
-            itemNames.add(itemName);
-            panel.add(new JLabel(itemName + " Quantity:"));
-            JTextField field = new JTextField(5);
-            quantityFields.add(field);
-            panel.add(field);
-        }
-
-        int result = JOptionPane.showConfirmDialog(table, panel, "Enter Received Quantities", JOptionPane.OK_CANCEL_OPTION);
-        if (result == JOptionPane.OK_OPTION) {
-            List<Integer> receivedQuantities = new ArrayList<>();
-            List<Integer> remainingQuantities = new ArrayList<>();
-            boolean allReceived = true;
-            for (int i = 0; i < itemIds.size(); i++) {
-                try {
-                    int received = Integer.parseInt(quantityFields.get(i).getText());
-                    int ordered = Integer.parseInt(quantities.get(i));
-                    if (received < 0 || received > ordered) {
-                        JOptionPane.showMessageDialog(table, "Invalid quantity for " + itemNames.get(i), "Error", JOptionPane.ERROR_MESSAGE);
+                int row = table.getSelectedRow();
+                if (row >= 0 && row < table.getRowCount()) { // Validate row index
+                    orderId = (String) table.getModel().getValueAt(row, 5);
+                    if (orderId == null || orderId.isEmpty()) {
+                        JOptionPane.showMessageDialog(null, "Cannot determine Order ID for this row", "Error", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
-                    receivedQuantities.add(received);
-                    int remaining = ordered - received;
-                    remainingQuantities.add(remaining);
-                    if (remaining > 0) allReceived = false;
+                    if (isMainTable) {
+                        updateReceiveStatus("order received");
+                    } else {
+                        stopCellEditing();
+                        completePartialReceived();
+                    }
+                    table.clearSelection(); // Clear selection to prevent stale indices
+                    table.revalidate();
+                    table.repaint();
+                    
+                }
+            });
+            if (isMainTable && partialReceivedButton != null) {
+            partialReceivedButton.addActionListener(e -> {
+                int row = table.getSelectedRow();
+                if (row >= 0 && row < table.getRowCount()) {
+                    orderId = getOrderIdForRow(row);
+                    if (orderId.isEmpty()) {
+                        JOptionPane.showMessageDialog(null, "Cannot determine Order ID for this row", "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    stopCellEditing();
+                    showPartialReceivedPanel();
+                    table.clearSelection();
+                    table.revalidate();
+                    table.repaint();
+                    
+                }
+            });
+        }
+    
+        }
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            rendererPanel.removeAll();
+            rendererPanel.setVisible(false);
 
-                    Item item = inventoryDataManager.finditemid(itemIds.get(i));
+            // Ensure row and column are valid
+            if (row < 0 || row >= table.getRowCount() || column != 5) {
+                return rendererPanel; // Return empty panel for invalid rows or non-Action columns
+            }
+
+            Object modelValue = table.getModel().getValueAt(row, column);
+
+            if (isMainTable) { // jTable1
+                if (modelValue instanceof String && ((String) modelValue).equals("")) {
+                    rendererPanel.add(receivedButton);
+                    if (partialReceivedButton != null) {
+                        rendererPanel.add(partialReceivedButton);
+                    }
+                    orderId = getOrderIdForRow(row);
+                    PurchaseOrder po = pomanager.findpoid(orderId);
+                    boolean isEnabled = po != null && po.getVerifyStatus().equals("pending");
+
+                    receivedButton.setEnabled(isEnabled);
+                    if (partialReceivedButton != null) {
+                        partialReceivedButton.setEnabled(isEnabled);
+                    }
+                    rendererPanel.setVisible(true);
+                }
+            } else { // jTable2
+                if (modelValue instanceof String && !((String) modelValue).isEmpty()) {
+                    orderId = (String) modelValue;
+                    PurchaseOrder po = pomanager.findpoid(orderId);
+                    boolean isEnabled = po != null && po.getVerifyStatus().equals("partial received") &&
+                                   partialReceivedDataManager.getPartialReceiveds().stream()
+                                       .anyMatch(r -> r.getOrderId().equals(orderId));
+
+                    
+                    receivedButton.setEnabled(isEnabled);
+                    rendererPanel.add(receivedButton);
+                    rendererPanel.setVisible(true);
+                }
+            }
+
+            rendererPanel.revalidate();
+            rendererPanel.repaint();
+            return rendererPanel;
+        }
+         
+            @Override
+            public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+                editorPanel.removeAll();
+                editorPanel.setVisible(false);
+                if (row < 0 || row >= table.getRowCount()) {
+                            return editorPanel;
+                }
+                currentValue = value;
+                if (isMainTable) {
+                    if (value instanceof String && ((String) value).equals("")) {
+                        editorPanel.add(receivedButton);
+                        if (partialReceivedButton != null) {
+                            editorPanel.add(partialReceivedButton);
+                        }
+                        editorPanel.setVisible(true);
+                    }
+                } else {
+                    if (value instanceof String && !((String) value).isEmpty()) {
+                        editorPanel.add(receivedButton);
+                        editorPanel.setVisible(true);
+                    }
+                }
+
+                editorPanel.revalidate();
+                editorPanel.repaint();
+                return editorPanel;
+            }
+
+        //        private boolean isLastRowOfPOGroup(int row) {
+        //        String currentOrderId = getOrderIdForRow(row);
+        //        if (currentOrderId == null || currentOrderId.isEmpty()) {
+        //            return false;
+        //        }
+        //        // Check the next row
+        //        if (row + 1 < table.getRowCount()) {
+        //            String nextOrderId = getOrderIdForRow(row + 1);
+        //            return !currentOrderId.equals(nextOrderId) || nextOrderId.isEmpty();
+        //        }
+        //        return true; // Last row of the table is always considered the last row of the group
+        //    }
+
+
+
+            @Override
+            public Object getCellEditorValue() {
+            // Return the original cell value to prevent overwriting
+            return currentValue;
+            }
+            private String getOrderIdForRow(int row) {
+                if (row < 0 || row >= table.getRowCount()) {
+                    return "";
+                }
+                
+                for (int i = row; i >= 0; i--) {
+                    String orderId = (String) table.getModel().getValueAt(i, 0);
+                    if (orderId != null && !orderId.isEmpty()) {
+                        return orderId;
+                    }
+                }
+                return "";
+            }
+        
+    
+
+
+            private void updateReceiveStatus(String status) {
+            PurchaseOrder po = pomanager.findpoid(orderId);
+            if (po != null) {
+                if (!po.getVerifyStatus().equals("pending")) {
+                    JOptionPane.showMessageDialog(IM_VerifyPo.this, "Status already set to " + po.getVerifyStatus(), "Warning", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                List<String> itemIds = po.getItemIds();
+                List<String> quantities = po.getQuantities();
+                for (int i = 0; i < itemIds.size(); i++) {
+                    Item item = inventorydatamanager.finditemid(itemIds.get(i));
                     if (item != null) {
-                        int newQuantity = item.getInstockquantity() + received;
-                        inventoryDataManager.updateItem(
+                        int newQuantity = item.getInstockquantity() + Integer.parseInt(quantities.get(i));
+                        inventorydatamanager.updateItem(
                             item.getItemid(), item.getItemname(), item.getItemdesc(), item.getSupplierid(),
-                           item.getUnitprice(), item.getRetailprice(), newQuantity,
-                            item.getReorderlevel(), item.getReorderstatus(), LocalDate.now().toString(),
+                            item.getUnitprice(), item.getRetailprice(), newQuantity,
+                            item.getReorderlevel(), LocalDate.now().toString(),
                             item.isDeleted()
                         );
                     }
-                } catch (NumberFormatException e) {
-                    JOptionPane.showMessageDialog(table, "Invalid input for " + itemNames.get(i), "Error", JOptionPane.ERROR_MESSAGE);
-                    return;
+                }
+                pomanager.updateReceiveStatus(orderId, status);
+                JOptionPane.showMessageDialog(IM_VerifyPo.this, "Receive status updated to " + status, "Success", JOptionPane.INFORMATION_MESSAGE);
+                fillTable1FromTxtFile(jTable1, inventorydatamanager);
+                fillTable2FromPartialReceiveds(jTable2, inventorydatamanager);
+            } else {
+                JOptionPane.showMessageDialog(IM_VerifyPo.this, "Purchase Order not found", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+
+        private void showPartialReceivedPanel() {
+            PurchaseOrder po = pomanager.findpoid(orderId);
+            if (po == null) {
+                JOptionPane.showMessageDialog(IM_VerifyPo.this, "Purchase Order not found", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if (!po.getVerifyStatus().equals("pending")) {
+                JOptionPane.showMessageDialog(IM_VerifyPo.this, "Status already set to " + po.getVerifyStatus(), "Warning", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            JPanel panel = new JPanel(new GridLayout(0, 2));
+            List<String> itemIds = po.getItemIds();
+            List<String> quantities = po.getQuantities();
+            List<String> itemNames = new ArrayList<>();
+            List<JTextField> quantityFields = new ArrayList<>();
+            for (String itemId : itemIds) {
+                Item item = inventorydatamanager.finditemid(itemId);
+                String itemName = item != null ? item.getItemname() : "Unknown Item";
+                itemNames.add(itemName);
+                panel.add(new JLabel(itemName + " Quantity:"));
+                JTextField field = new JTextField(5);
+                quantityFields.add(field);
+                panel.add(field);
+            }
+
+            int result = JOptionPane.showConfirmDialog(IM_VerifyPo.this, panel, "Enter Received Quantities", JOptionPane.OK_CANCEL_OPTION);
+            if (result == JOptionPane.OK_OPTION) {
+                List<Integer> receivedQuantities = new ArrayList<>();
+                List<Integer> remainingQuantities = new ArrayList<>();
+                boolean allReceived = true;
+                for (int i = 0; i < itemIds.size(); i++) {
+                    try {
+                        int received = Integer.parseInt(quantityFields.get(i).getText());
+                        int ordered = Integer.parseInt(quantities.get(i));
+                        if (received < 0 || received > ordered) {
+                            JOptionPane.showMessageDialog(IM_VerifyPo.this, "Invalid quantity for " + itemNames.get(i), "Error", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                        receivedQuantities.add(received);
+                        int remaining = ordered - received;
+                        remainingQuantities.add(remaining);
+                        if (remaining > 0) allReceived = false;
+
+                        Item item = inventorydatamanager.finditemid(itemIds.get(i));
+                        if (item != null) {
+                            int newQuantity = item.getInstockquantity() + received;
+                            inventorydatamanager.updateItem(
+                                item.getItemid(), item.getItemname(), item.getItemdesc(), item.getSupplierid(),
+                                item.getUnitprice(), item.getRetailprice(), newQuantity,
+                                item.getReorderlevel(), LocalDate.now().toString(),
+                                item.isDeleted()
+                            );
+                        }
+                    } catch (NumberFormatException e) {
+                        JOptionPane.showMessageDialog(IM_VerifyPo.this, "Invalid input for " + itemNames.get(i), "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                }
+
+                po.setVerifyStatus(allReceived ? "order received" : "partial received");
+                pomanager.updatePurchaseOrderInFile(po);
+
+                if (!allReceived) {
+                    PartialReceived pr = new PartialReceived(orderId, itemIds, itemNames, remainingQuantities);
+                    partialReceivedDataManager.addPartialReceived(pr);
+                } else {
+                    partialReceivedDataManager.removePartialReceived(orderId);
+                }
+
+                JOptionPane.showMessageDialog(IM_VerifyPo.this, "Partial receipt processed", "Success", JOptionPane.INFORMATION_MESSAGE);
+                fillTable1FromTxtFile(jTable1, inventorydatamanager);
+                fillTable2FromPartialReceiveds(jTable2, inventorydatamanager);
+            }
+        }
+        // Rest of the methods remain as provided, except for completePartialReceived
+        private void completePartialReceived() {
+            if (orderId == null || orderId.isEmpty()) {
+            JOptionPane.showMessageDialog(IM_VerifyPo.this, "Invalid Order ID", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+            }
+            PurchaseOrder po = pomanager.findpoid(orderId);
+            if (po == null) {
+                JOptionPane.showMessageDialog(IM_VerifyPo.this, "Purchase Order not found", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            PartialReceived receive = partialReceivedDataManager.getPartialReceiveds().stream()
+                    .filter(r -> r.getOrderId().equals(orderId))
+                    .findFirst()
+                    .orElse(null);
+            if (receive == null) {
+                JOptionPane.showMessageDialog(IM_VerifyPo.this, "Partial receipt data not found", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            List<String> itemIds = po.getItemIds();
+            List<Integer> remainingQuantities = receive.getRemainingQuantities();
+            if (itemIds.size() != remainingQuantities.size()) {
+            JOptionPane.showMessageDialog(IM_VerifyPo.this, "Data mismatch for PO " + orderId, "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+            }
+            for (int i = 0; i < itemIds.size(); i++) {
+                Item item = inventorydatamanager.finditemid(itemIds.get(i));
+                if (item != null) {
+                    int newQuantity = item.getInstockquantity() + receive.getRemainingQuantities().get(i);
+                    inventorydatamanager.updateItem(
+                        item.getItemid(), item.getItemname(), item.getItemdesc(), item.getSupplierid(),
+                        item.getUnitprice(), item.getRetailprice(), newQuantity,
+                        item.getReorderlevel(), LocalDate.now().toString(),
+                        item.isDeleted()
+                    );
                 }
             }
 
-            po.setReceiveStatus(allReceived ? "received" : "partial received");
-            po.setVerifyStatus(allReceived ? "verified" : "pending");
-//            pomanager.updatePurchaseOrderInFile(po);
-
-            if (!allReceived) {
-                partialReceipts.add(new PartialReceipt(orderId, itemIds, itemNames, remainingQuantities));
-            }
-
-            JOptionPane.showMessageDialog(table, "Partial receipt processed", "Success", JOptionPane.INFORMATION_MESSAGE);
-            fillTable1FromTxtFile(jTable1, inventoryDataManager);
-            fillTable2FromPartialReceipts(jTable2, inventoryDataManager);
-        }
-    }
-        
-    private void completePartialReceipt() {
-    PurchaseOrder po = pomanager.findpoid(orderId);
-    if (po == null) {
-        JOptionPane.showMessageDialog(table, "Purchase Order not found", "Error", JOptionPane.ERROR_MESSAGE);
-        return;
-    }
-    PartialReceipt receipt = partialReceipts.stream()
-            .filter(r -> r.orderId.equals(orderId))
-            .findFirst()
-            .orElse(null);
-    if (receipt == null) {
-        JOptionPane.showMessageDialog(table, "Partial receipt data not found", "Error", JOptionPane.ERROR_MESSAGE);
-        return;
-    }
-
-    List<String> itemIds = po.getItemIds();
-    for (int i = 0; i < itemIds.size(); i++) {
-        Item item = inventoryDataManager.finditemid(itemIds.get(i));
-        if (item != null) {
-            int newQuantity = item.getInstockquantity() + receipt.remainingQuantities.get(i);
-            inventoryDataManager.updateItem(
-                item.getItemid(), item.getItemname(), item.getItemdesc(), item.getSupplierid(),
-                item.getUnitprice(), item.getRetailprice(), newQuantity,
-                item.getReorderlevel(), item.getReorderstatus(), LocalDate.now().toString(),
-                item.isDeleted()
-            );
+            pomanager.updateReceiveStatus(orderId, "order received");
+            partialReceivedDataManager.removePartialReceived(orderId);
+            JOptionPane.showMessageDialog(IM_VerifyPo.this, "Remaining quantities received", "Success", JOptionPane.INFORMATION_MESSAGE);
+            fillTable1FromTxtFile(jTable1, inventorydatamanager);
+            fillTable2FromPartialReceiveds(jTable2, inventorydatamanager);
+            jTable2.clearSelection(); // Clear selection after updating table
+            jTable2.revalidate();
+            jTable2.repaint();
         }
     }
 
-    pomanager.updateReceiveStatus(orderId, "received", false);
-    partialReceipts.remove(receipt);
-    JOptionPane.showMessageDialog(table, "Remaining quantities received", "Success", JOptionPane.INFORMATION_MESSAGE);
-    fillTable1FromTxtFile(jTable1, inventoryDataManager);
-    fillTable2FromPartialReceipts(jTable2, inventoryDataManager);
-}
 
-        @Override
-    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-        Object modelValue = table.getModel().getValueAt(row, column);
-        
 
-        // Reset the renderer panel
-        rendererPanel.removeAll();
-        rendererPanel.setVisible(false);
 
-        // Show buttons only if the value is an empty string ("")
-        if (modelValue instanceof String && ((String) modelValue).equals("")) {
-            rendererPanel.add(receivedButton);
-            if (isMainTable && partialReceivedButton != null) {
-                rendererPanel.add(partialReceivedButton);
-            }
+    
 
-            orderId = getOrderIdForRow(row);
-            PurchaseOrder po = pomanager.findpoid(orderId);
-            boolean isEnabled = po != null && (isMainTable ? po.getReceiveStatus().equals("not received") 
-                    : po.getReceiveStatus().equals("partial received"));
 
-            receivedButton.setEnabled(isEnabled);
-            if (isMainTable && partialReceivedButton != null) {
-                partialReceivedButton.setEnabled(isEnabled);
-            }
-
-            rendererPanel.setVisible(true);
-        }
-
-        rendererPanel.revalidate();
-        rendererPanel.repaint();
-        return rendererPanel;
-    }
-
-        @Override
-    public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-        Object modelValue = table.getModel().getValueAt(row, column);
-        
-
-        currentValue = modelValue;
-
-        // Reset the editor panel
-        editorPanel.removeAll();
-        editorPanel.setVisible(false);
-
-        // Show buttons only if the value is an empty string ("")
-        if (modelValue instanceof String && ((String) modelValue).equals("")) {
-            editorPanel.add(receivedButton);
-            if (isMainTable && partialReceivedButton != null) {
-                editorPanel.add(partialReceivedButton);
-            }
-
-            orderId = getOrderIdForRow(row);
-            PurchaseOrder po = pomanager.findpoid(orderId);
-            boolean isEnabled = po != null && (isMainTable ? po.getReceiveStatus().equals("not received") 
-                    : po.getReceiveStatus().equals("partial received"));
-
-            receivedButton.setEnabled(isEnabled);
-            if (isMainTable && partialReceivedButton != null) {
-                partialReceivedButton.setEnabled(isEnabled);
-            }
-
-            editorPanel.setVisible(true);
-        }
-
-        editorPanel.revalidate();
-        editorPanel.repaint();
-        return editorPanel;
-    }
-        
-//        private boolean isLastRowOfPOGroup(int row) {
-//        String currentOrderId = getOrderIdForRow(row);
-//        if (currentOrderId == null || currentOrderId.isEmpty()) {
-//            return false;
-//        }
-//        // Check the next row
-//        if (row + 1 < table.getRowCount()) {
-//            String nextOrderId = getOrderIdForRow(row + 1);
-//            return !currentOrderId.equals(nextOrderId) || nextOrderId.isEmpty();
-//        }
-//        return true; // Last row of the table is always considered the last row of the group
-//    }
-        
-        
-        
-    @Override
-    public Object getCellEditorValue() {
-    // Return the original cell value to prevent overwriting
-    return currentValue;
-    }
-    private String getOrderIdForRow(int row) {
-        for (int i = row; i >= 0; i--) {
-            String orderId = (String) table.getModel().getValueAt(i, 0);
-            if (orderId != null && !orderId.isEmpty()) {
-                return orderId;
-            }
-        }
-        return "";
-    }
-
-}
-    private class PartialReceipt {
-        String orderId;
-        List<String> itemIds;
-        List<String> itemNames;
-        List<Integer> remainingQuantities;
-
-        PartialReceipt(String orderId, List<String> itemIds, List<String> itemNames, List<Integer> remainingQuantities) {
-            this.orderId = orderId;
-            this.itemIds = itemIds;
-            this.itemNames = itemNames;
-            this.remainingQuantities = remainingQuantities;
-        }
-    }
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
