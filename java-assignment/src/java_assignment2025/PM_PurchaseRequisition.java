@@ -533,8 +533,6 @@ public class PM_PurchaseRequisition extends javax.swing.JFrame {
                 "pending",
                 "unpaid",
                 "unknown"
-             
-                
             );
 
             // Write to file

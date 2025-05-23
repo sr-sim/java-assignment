@@ -52,7 +52,6 @@ public class PurchaseOrder {
         this.verifyStatus = verifyStatus;
         this.paymentStatus = paymentStatus;
         this.postatuschangeby = postatuschangeby;
-        
     }
     
 
