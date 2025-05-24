@@ -7,6 +7,9 @@ package java_assignment2025;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.io.*;
+import java.util.*;
+import java.nio.file.*;
 
 /**
  *
@@ -15,42 +18,80 @@ import java.util.List;
 public class PurchaseOrderManager extends DataManager {
     private final List<PurchaseOrder>polist;
     private final TextFile textfile;
-    private final String pofilepath = "src/java_assignment2025/PurchaseOrder.txt";
+//    private final String pofilepath = "C:\\Users\\hew\\OneDrive - Asia Pacific University\\Documents\\NetBeansProjects\\java-assignment\\java-assignment\\src\\java_assignment2025\\PurchaseOrder.txt";
+    private final String pofilepath= "src/java_assignment2025/PurchaseOrder.txt";
+    
     
     public PurchaseOrderManager() {
         this.polist = new ArrayList<>();
         this.textfile = new TextFile();
-                loadAllpofromtxtfile();
+        loadAllpofromtxtfile();
     }
-    
+      
+      
     public void loadAllpofromtxtfile() {
         polist.clear();
-         
-        List<String> lines = textfile.readFile(pofilepath);
-        for (String line : lines) {
-            String[] parts = line.split(",", 13);
-            if (parts.length == 13) {
-                List<String> itemids = Arrays.asList(parts[4].trim().split("\\|"));
-                List<String> unitPrices = Arrays.asList(parts[5].trim().split("\\|"));
-                List<String> quantities = Arrays.asList(parts[6].trim().split("\\|"));
-                List<String> supplierids = Arrays.asList(parts[8].trim().split("\\|"));
-                polist.add(new PurchaseOrder(
-                        parts[0].trim(),
-                        parts[1].trim(),
-                        parts[2].trim(),
-                        parts[3].trim(),
-                        itemids, // new ArrayList<>(itemids)
-                        unitPrices,
-                        quantities,
-                        Double.parseDouble(parts[7].trim()),  
-                        supplierids,
-                        parts[9].trim(),
-                        parts[10].trim(),
-                        parts[11].trim(),
-                        parts[12].trim())
-                       
-                );
+        
+            List<String> lines = textfile.readFile(pofilepath);
+           
+            for (String line : lines) {
+                
+                String[] parts = line.split(",", 14);
+                if (parts.length == 14) {
+                    try {
+                            List<String> itemids = Arrays.asList(parts[4].trim().split("\\|"));
+                            List<String> unitPrices = Arrays.asList(parts[5].trim().split("\\|"));
+                            List<String> quantities = Arrays.asList(parts[6].trim().split("\\|"));
+                            List<String> supplierids = Arrays.asList(parts[8].trim().split("\\|"));
+                            polist.add(new PurchaseOrder(
+                                    parts[0].trim(),
+                                    parts[1].trim(),
+                                    parts[2].trim(),
+                                    parts[3].trim(),
+                                    itemids, // new ArrayList<>(itemids)
+                                    unitPrices,
+                                    quantities,
+                                    Double.parseDouble(parts[7].trim()),  
+                                    supplierids,
+                                    parts[9].trim(),
+                                    parts[10].trim(),
+                                    parts[11].trim(),
+                                    parts[12].trim(),
+                                    parts[13].trim()
+                                    
+                            ));
+                            System.out.println("Added PO: " + parts[0].trim());
+                        }catch (NumberFormatException e) {
+                        System.err.println("Error parsing amount in line: " + line + " - " + e.getMessage());
+                    }
+                }else{
+                    System.err.println("Invalid line format: " + line);
+                }
+            
+                
+        
             }
+}
+    
+     public void updatePurchaseOrderInFile(PurchaseOrder po) {
+        List<String> lines = textfile.readFile(pofilepath);
+        List<String> updatedLines = new ArrayList<>();
+        boolean updated = false;//new
+        try{
+            for (String line : lines) {
+                if (line.startsWith(po.getOrderId() + ",")) {
+                    updatedLines.add(po.toString());
+                    updated = true; // Set flag when updated
+                } else {
+                    updatedLines.add(line);
+                }
+            }
+            if (!updated) {
+                    updatedLines.add(po.toString());
+            }
+            textfile.rewriteFile(pofilepath, updatedLines);
+        } catch (Exception e) {
+            System.err.println("Error updating PurchaseOrder.txt: " + e.getMessage()); //this function macy dh
         }
     }
     public String getpofilepath(){
@@ -114,4 +155,51 @@ public class PurchaseOrderManager extends DataManager {
         java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd");
         return today.format(formatter);
     }
+     
+     public void updateReceiveStatus(String orderId, String status) {
+        PurchaseOrder po = findpoid(orderId);
+        if (po != null) {
+            po.setVerifyStatus(status);
+           
+
+            updatePurchaseOrderInFile(po);
+        } else {
+            System.out.println("Failed to update ReceiveStatus: PO " + orderId + " not found");
+        }
+    }
+    
+    public static String getNextOrderId() {
+
+        String filePath = "src/java_assignment2025/PurchaseOrder.txt";
+        List<String> lines = TextFile.readFile(filePath);
+        int maxId = 0;
+
+        for (String line : lines) {
+            if (!line.trim().isEmpty()) {
+                String[] parts = line.split(",");
+                if (parts.length > 0 && parts[0].startsWith("PO")) {
+                    String poId = parts[0];
+                    try {
+                        int idNum = Integer.parseInt(poId.substring(2)); // Extract numeric part
+                        if (idNum > maxId) {
+                            maxId = idNum;
+                        }
+                    } catch (NumberFormatException e) {
+                        System.err.println("Invalid PO ID format: " + poId);
+                    }
+                }
+            }
+        }
+
+        return String.format("PO%03d", maxId + 1);
+    }
+        
+        
+    
+    
+    
+    
+     
+     
+
 }

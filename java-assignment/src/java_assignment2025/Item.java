@@ -13,24 +13,22 @@ public class Item {
     private String itemname;
     private String itemdesc;
     private String supplierid;
-    private String unitprice;
-    private String instockquantity;
-    private String retailprice;
+    private double unitprice;
+    private int instockquantity;
+    private double retailprice;
     private String reorderlevel;
-    private String reorderstatus;
     private String lastmodifieddate;
     private boolean deleted;
    
-    public Item(String itemid, String itemname, String itemdesc, String supplierid, String unitprice, String retailprice, String instockquantity, String reorderlevel, String reorderstatus, String lastmodifieddate,boolean deleted){
+    public Item(String itemid, String itemname, String itemdesc, String supplierid, double unitprice, double retailprice, int instockquantity, String reorderlevel, String lastmodifieddate,boolean deleted){
         this.itemid = itemid;
         this.itemname = itemname;
         this.itemdesc = itemdesc;
         this.supplierid = supplierid;
         this.unitprice = unitprice;
-        this.instockquantity = instockquantity;
         this.retailprice = retailprice;
-        this.reorderlevel = reorderlevel;
-        this.reorderstatus = reorderstatus;
+        this.instockquantity = instockquantity;
+        this.reorderlevel = reorderlevel;      
         this.lastmodifieddate = lastmodifieddate;
         this.deleted = deleted;
     }
@@ -77,32 +75,32 @@ public class Item {
     }
 
 
-    public String getUnitprice() {
+    public double getUnitprice() {
         return unitprice;
     }
 
 
-    public void setUnitprice(String unitprice) {
+    public void setUnitprice(double unitprice) {
         this.unitprice = unitprice;
     }
 
 
-    public String getInstockquantity() {
+    public int getInstockquantity() {
         return instockquantity;
     }
 
 
-    public void setInstockquantity(String instockquantity) {
+    public void setInstockquantity(int instockquantity) {
         this.instockquantity = instockquantity;
     }
 
 
-    public String getRetailprice() {
+    public double getRetailprice() {
         return retailprice;
     }
 
 
-    public void setRetailprice(String retailprice) {
+    public void setRetailprice(double retailprice) {
         this.retailprice = retailprice;
     }
 
@@ -116,14 +114,6 @@ public class Item {
         this.reorderlevel = reorderlevel;
     }
 
-
-    public String getReorderstatus() {
-        return reorderstatus;
-    }
-
-    public void setReorderstatus(String reorderstatus) {
-        this.reorderstatus = reorderstatus;
-    }
     
     public String getLastmodifieddate() {
         return lastmodifieddate;
@@ -140,7 +130,7 @@ public class Item {
     }
     @Override
     public String toString(){
-        return itemid + "," + itemname + "," + itemdesc + "," + supplierid + "," + unitprice+ "," + retailprice+ "," + instockquantity +","+ reorderlevel+ "," + reorderstatus + "," + lastmodifieddate +","+ isDeleted();
+        return itemid + "," + itemname + "," + itemdesc + "," + supplierid + "," +  String.format("%.2f", unitprice)+ "," +  String.format("%.2f", retailprice)+ "," + instockquantity +","+ reorderlevel+ ","  + lastmodifieddate +","+ isDeleted();
     }
 
     /**

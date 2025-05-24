@@ -19,6 +19,7 @@ public class PM_Edit_Purchase_Order extends javax.swing.JFrame {
     private PurchaseOrder selectedPO;
     private PurchaseOrderManager pomanager;
     private InventoryDataManager inventorydatamanager;
+    private UserDataManager userManager = new UserDataManager();
     private boolean isEditMode;
     /**
      * Creates new form PM_Edit_Purchase_Order
@@ -75,6 +76,8 @@ public class PM_Edit_Purchase_Order extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         receivedStatus = new javax.swing.JLabel();
         paymentStatus = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
         btnSave = new javax.swing.JButton();
         jLabel20 = new javax.swing.JLabel();
         supplierList = new javax.swing.JComboBox<>();
@@ -99,7 +102,7 @@ public class PM_Edit_Purchase_Order extends javax.swing.JFrame {
 
         jPanel7.setBackground(new java.awt.Color(204, 255, 204));
 
-        jLabel1.setFont(new java.awt.Font("Times New Roman", 0, 24)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Perpetua", 1, 36)); // NOI18N
         jLabel1.setText("Purchase Order");
 
         poId.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 14)); // NOI18N
@@ -135,13 +138,13 @@ public class PM_Edit_Purchase_Order extends javax.swing.JFrame {
         jScrollPane1.setViewportView(jTable1);
 
         prCreator.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 14)); // NOI18N
-        prCreator.setText("Created by: ");
+        prCreator.setText("PR Created by: ");
 
         subtotal.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 14)); // NOI18N
         subtotal.setText("Subtotal: ");
 
         poCreator.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 14)); // NOI18N
-        poCreator.setText("Authorized By :");
+        poCreator.setText("PO Created By :");
 
         jLabel3.setFont(new java.awt.Font("Times New Roman", 0, 14));
 
@@ -157,10 +160,66 @@ public class PM_Edit_Purchase_Order extends javax.swing.JFrame {
         paymentStatus.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 14)); // NOI18N
         paymentStatus.setText("Payment Status: ");
 
+        jLabel6.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 14)); // NOI18N
+        jLabel6.setText("PO Approved By:");
+
+        jLabel7.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 14)); // NOI18N
+        jLabel7.setText("Status :");
+
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
         jPanel7.setLayout(jPanel7Layout);
         jPanel7Layout.setHorizontalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addGap(39, 39, 39)
+                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(683, Short.MAX_VALUE))
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel7Layout.createSequentialGroup()
+                        .addGap(0, 17, Short.MAX_VALUE)
+                        .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
+                                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabel10)
+                                    .addGroup(jPanel7Layout.createSequentialGroup()
+                                        .addComponent(jLabel4)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(subtotal)
+                                        .addGap(25, 25, 25)))
+                                .addGap(110, 110, 110))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
+                                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addGroup(jPanel7Layout.createSequentialGroup()
+                                        .addComponent(jLabel1)
+                                        .addGap(106, 106, 106)
+                                        .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 677, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGroup(jPanel7Layout.createSequentialGroup()
+                                            .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                .addComponent(prId, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGroup(jPanel7Layout.createSequentialGroup()
+                                                    .addComponent(poId)
+                                                    .addGap(18, 18, 18)
+                                                    .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                            .addGap(269, 269, 269)
+                                            .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                                .addComponent(orderDate)
+                                                .addComponent(prCreator)))))
+                                .addGap(63, 63, 63))))
+                    .addGroup(jPanel7Layout.createSequentialGroup()
+                        .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(jPanel7Layout.createSequentialGroup()
+                                .addComponent(paymentStatus)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel6))
+                            .addGroup(jPanel7Layout.createSequentialGroup()
+                                .addComponent(receivedStatus)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(poCreator)))
+                        .addGap(87, 87, 87))))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -169,58 +228,14 @@ public class PM_Edit_Purchase_Order extends javax.swing.JFrame {
                         .addGap(163, 163, 163)
                         .addComponent(jLabel3)))
                 .addGap(478, 478, 478))
-            .addGroup(jPanel7Layout.createSequentialGroup()
-                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel7Layout.createSequentialGroup()
-                        .addGap(300, 300, 300)
-                        .addComponent(jLabel1))
-                    .addGroup(jPanel7Layout.createSequentialGroup()
-                        .addGap(39, 39, 39)
-                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(jPanel7Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
-                                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addGroup(jPanel7Layout.createSequentialGroup()
-                                        .addComponent(jLabel4)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(subtotal))
-                                    .addComponent(jLabel10))
-                                .addGap(110, 110, 110))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
-                                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 677, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGroup(jPanel7Layout.createSequentialGroup()
-                                        .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(prId, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addGroup(jPanel7Layout.createSequentialGroup()
-                                                .addComponent(poId)
-                                                .addGap(18, 18, 18)
-                                                .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                        .addGap(269, 269, 269)
-                                        .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                            .addComponent(orderDate)
-                                            .addComponent(prCreator))))
-                                .addGap(63, 63, 63))))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
-                        .addComponent(receivedStatus)
-                        .addGap(98, 602, Short.MAX_VALUE))
-                    .addGroup(jPanel7Layout.createSequentialGroup()
-                        .addComponent(paymentStatus)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(poCreator)
-                        .addGap(85, 85, 85))))
         );
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel7Layout.createSequentialGroup()
                 .addGap(19, 19, 19)
-                .addComponent(jLabel1)
+                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1)
+                    .addComponent(jLabel7))
                 .addGap(54, 54, 54)
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel7Layout.createSequentialGroup()
@@ -247,18 +262,20 @@ public class PM_Edit_Purchase_Order extends javax.swing.JFrame {
                     .addComponent(jLabel4))
                 .addGap(34, 34, 34)
                 .addComponent(jLabel5)
-                .addGap(30, 30, 30)
+                .addGap(34, 34, 34)
                 .addComponent(jLabel10)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel7Layout.createSequentialGroup()
                         .addGap(0, 44, Short.MAX_VALUE)
-                        .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(paymentStatus)
-                            .addComponent(poCreator))
+                        .addComponent(paymentStatus)
                         .addGap(15, 15, 15))
                     .addGroup(jPanel7Layout.createSequentialGroup()
-                        .addComponent(receivedStatus)
+                        .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(receivedStatus)
+                            .addComponent(poCreator))
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel6)
                         .addGap(0, 0, Short.MAX_VALUE))))
         );
 
@@ -371,7 +388,7 @@ public class PM_Edit_Purchase_Order extends javax.swing.JFrame {
                 .addComponent(jButton8)
                 .addGap(30, 30, 30)
                 .addComponent(jButton10)
-                .addContainerGap(346, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         btnDone.setBackground(new java.awt.Color(255, 255, 204));
@@ -404,7 +421,7 @@ public class PM_Edit_Purchase_Order extends javax.swing.JFrame {
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel14)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addContainerGap(1061, Short.MAX_VALUE))
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(jPanel5Layout.createSequentialGroup()
@@ -416,7 +433,7 @@ public class PM_Edit_Purchase_Order extends javax.swing.JFrame {
                                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                             .addComponent(jLabel20, javax.swing.GroupLayout.Alignment.TRAILING)
                                             .addComponent(jLabel21))
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 24, Short.MAX_VALUE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                             .addComponent(supplierList, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
                                             .addComponent(txtQuantity, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -453,7 +470,7 @@ public class PM_Edit_Purchase_Order extends javax.swing.JFrame {
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addGap(18, 18, 18)
                         .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 16, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnSave)
                 .addGap(23, 23, 23))
             .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -484,13 +501,30 @@ public class PM_Edit_Purchase_Order extends javax.swing.JFrame {
         poId.setText("Purchase Requisition ID: " + selectedPO.getOrderId());
         prId.setText("Purchase OrderID: " + selectedPO.getRequestId());
         orderDate.setText("Order date: " + selectedPO.getOrderDate());
-        prCreator.setText("Created by: " +selectedPO.getUserId());
-        poCreator.setText("Authorized by: " + selectedPO.getPoCreator());
-        subtotal.setText(String.format("Subtotal: " + "%.2f", selectedPO.getAmount()));
+        String prcreator = selectedPO.getUserId();
+        String pocreator = selectedPO.getPoCreator();
+        User userofprcreator = userManager.findUserByID(prcreator);
+        User userofpocreator = userManager.findUserByID(pocreator);
+        String prusername = (userofprcreator != null) ? userofprcreator.getFullname() : prcreator;
+        String pousername = (userofpocreator != null) ? userofpocreator.getFullname() : pocreator;
+        prCreator.setText("PR Created by: " + prcreator+" - "+prusername);
+        poCreator.setText("PO Created by: " + pocreator+" - "+pousername);
+        subtotal.setText(String.format("Subtotal: RM" + "%.2f", selectedPO.getAmount()));
         receivedStatus.setText("Order Received Status:  " + selectedPO.getVerifyStatus());
         paymentStatus.setText("Payment Status:  " + selectedPO.getPaymentStatus());
-        
-        
+        jLabel7.setText("Status: " + selectedPO.getOrderStatus());
+        String status = selectedPO.getOrderStatus();
+        if ("approved".equals(status) || "reject".equals(status)) {
+            String statuschangeby = selectedPO.getPostatuschangeby();
+            User user = userManager.findUserByID(statuschangeby);
+            String userName = (user != null) ? user.getFullname() : statuschangeby;
+
+            String labelPrefix = ("approved".equals(status)) ? "PO Approved by: " : "Rejected by: ";
+            jLabel6.setText(labelPrefix + statuschangeby+" - "+userName);
+        } else {
+            jLabel6.setText(""); 
+        }
+
         List<String> itemIds = selectedPO.getItemIds();
         List<String> quantities = selectedPO.getQuantities();
         List<String> unitPrices = selectedPO.getUnitPrices();
@@ -632,8 +666,7 @@ public class PM_Edit_Purchase_Order extends javax.swing.JFrame {
     // write into PO text file
     TextFile.rewriteFile(pomanager.getpofilepath(), updatedPoLines);
     JOptionPane.showMessageDialog(null, "Changes saved to file successfully.");
-    new PMPurchaseOrder().setVisible(true);
-
+    this.dispose();
     }//GEN-LAST:event_btnSaveActionPerformed
 
     private void supplierListActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_supplierListActionPerformed
@@ -645,19 +678,23 @@ public class PM_Edit_Purchase_Order extends javax.swing.JFrame {
     }//GEN-LAST:event_txtQuantityActionPerformed
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-       
+       new PM_ViewItem().setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-               // TODO add your handling code here:
+         new PM_ViewSupplier().setVisible(true);
+         this.dispose();
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-        
+         new PM_PurchaseRequisition().setVisible(true);
+         this.dispose();
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
-         
+        new PMPurchaseOrder().setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_jButton10ActionPerformed
 
     private void btnDoneActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDoneActionPerformed
@@ -786,6 +823,8 @@ public class PM_Edit_Purchase_Order extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel3;

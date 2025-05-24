@@ -13,6 +13,7 @@ import java.util.List;
  *
  * @author Macy Khoo
  */
+
 public class PurchaseOrder {
     
     private String orderId;
@@ -28,13 +29,16 @@ public class PurchaseOrder {
     private String orderStatus;
     private String verifyStatus;
     private String paymentStatus;
+    private String receiveStatus;
+    private String postatuschangeby;
    
     
     public PurchaseOrder(){}
     // Constructor
     public PurchaseOrder(String orderId, String poCreator, String requestId, String userId,List<String> itemIds ,
                          List<String> unitPrices, List<String> quantities, double amount,List<String>  supplierIds,
-                         String orderDate, String orderStatus, String verifyStatus, String paymentStatus) {
+                         String orderDate, String orderStatus, String verifyStatus, String paymentStatus,String postatuschangeby) {
+                       
         this.orderId = orderId;
         this.poCreator = poCreator;
         this.requestId = requestId;
@@ -48,6 +52,8 @@ public class PurchaseOrder {
         this.orderStatus = orderStatus;
         this.verifyStatus = verifyStatus;
         this.paymentStatus = paymentStatus;
+        this.postatuschangeby = postatuschangeby;
+        
     }
     
 
@@ -107,12 +113,32 @@ public class PurchaseOrder {
     public String getVerifyStatus() {
         return verifyStatus;
     }
+    public void setVerifyStatus(String verifyStatus) {
+        this.verifyStatus = verifyStatus;
+    }
+    
     public String getPaymentStatus() {
         return paymentStatus;
     }
 
     public void setPaymentStatus(String paymentStatus) {
         this.paymentStatus = paymentStatus;
+    }
+    
+    public String getReceiveStatus() {
+        return receiveStatus;
+    }
+    public void setReceiveStatus(String receiveStatus) {
+        this.receiveStatus = receiveStatus;
+    }
+
+    
+   
+
+    public static String getCurrentDate() {
+        java.time.LocalDate today = java.time.LocalDate.now();
+        java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("yy-MM-dd");
+        return today.format(formatter);
     }
     
     
@@ -150,8 +176,18 @@ public class PurchaseOrder {
                String.join("|", quantities) + "," +
                String.format("%.2f", amount) + "," +
                String.join("|", supplierIds) + "," +
-               orderDate + "," + orderStatus + "," + verifyStatus+","+ paymentStatus;
+               orderDate + "," + orderStatus + "," + verifyStatus+","+ paymentStatus
+                + "," +postatuschangeby;
+                
 }
+
+    public String getPostatuschangeby() {
+        return postatuschangeby;
+    }
+
+    public void setPostatuschangeby(String postatuschangeby) {
+        this.postatuschangeby = postatuschangeby;
+    }
 
    
     
