@@ -60,7 +60,7 @@ public class SM_DailySummary extends javax.swing.JFrame {
         fillComboBoxFromitemList();
         jComboBox1.setSelectedItem("All");
         fillTable1FromTxtFile();
-        fillPDFTable();
+        fillPDFTable(salesmanager.getUserId());
         jButton3.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 viewSelectedPDF();
@@ -162,11 +162,11 @@ public class SM_DailySummary extends javax.swing.JFrame {
     }
     
     
-        private void fillPDFTable() {
+        private void fillPDFTable(String userid) {
             pdfTableModel = new DefaultTableModel(new Object[]{"No", "PDF File Name"}, 0);
             jTable2.setModel(pdfTableModel); // assuming jTable2 is used for PDF list
 
-            File[] files = pdfFolder.listFiles((dir, name) -> name.startsWith("Daily_Sales_Report_") && name.endsWith(".pdf"));
+            File[] files = pdfFolder.listFiles((dir, name) -> name.startsWith("Daily_Sales_Report_" + userid + "_") && name.endsWith(".pdf"));
             if (files != null) {
                 int count = 1;
                 for (File file : files) {
@@ -580,8 +580,9 @@ public class SM_DailySummary extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton17ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-         exportDailySumToJasper(jTable1);
-         fillPDFTable();
+         String userid = salesmanager.getUserId();   
+         exportDailySumToJasper(userid,jTable1);
+         fillPDFTable(userid);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed

@@ -59,16 +59,15 @@ public class PurchaseOrderManager extends DataManager {
                                     parts[12].trim(),
                                     parts[13].trim()
                                     
-                                  
-                                    
-
-
                             ));
                             System.out.println("Added PO: " + parts[0].trim());
                         }catch (NumberFormatException e) {
                         System.err.println("Error parsing amount in line: " + line + " - " + e.getMessage());
                     }
+                }else{
+                    System.err.println("Invalid line format: " + line);
                 }
+            
                 
         
             }
@@ -162,7 +161,7 @@ public class PurchaseOrderManager extends DataManager {
         if (po != null) {
             po.setVerifyStatus(status);
            
-            System.out.println("Updated PO " + orderId + " ReceiveStatus to: " + status);
+
             updatePurchaseOrderInFile(po);
         } else {
             System.out.println("Failed to update ReceiveStatus: PO " + orderId + " not found");

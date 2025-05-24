@@ -55,7 +55,7 @@ public class FMPurchaseOrder extends javax.swing.JFrame {
         poManager = new PurchaseOrderManager();
         inventoryManager = new InventoryDataManager();
         loadPOsIntoTable();
-        fillPDFTable();
+        fillPDFTable(fm.getUserId());
         jButton3.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 viewSelectedPDF();
@@ -219,11 +219,11 @@ public class FMPurchaseOrder extends javax.swing.JFrame {
         dialog.setVisible(true);
     }
     
-    private void fillPDFTable() {
+    private void fillPDFTable(String userid) {
             pdfTableModel = new DefaultTableModel(new Object[]{"No", "PDF File Name"}, 0);
             jTable2.setModel(pdfTableModel); // assuming jTable2 is used for PDF list
 
-            File[] files = pdfFolder.listFiles((dir, name) -> name.startsWith("Purchase_Order_Report_") && name.endsWith(".pdf"));
+            File[] files = pdfFolder.listFiles((dir, name) -> name.startsWith("Purchase_Order_Report_"+userid+"_") && name.endsWith(".pdf"));
             if (files != null) {
                 int count = 1;
                 for (File file : files) {
@@ -575,8 +575,9 @@ public class FMPurchaseOrder extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void donDeleteMeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_donDeleteMeActionPerformed
-        exportJTableToJasper(jTable1);
-        fillPDFTable();
+         String userid = fm.getUserId();   
+         exportJTableToJasper(userid,jTable1);
+         fillPDFTable(userid);
     }//GEN-LAST:event_donDeleteMeActionPerformed
 
     private void approveBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_approveBtnActionPerformed
