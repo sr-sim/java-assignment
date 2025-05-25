@@ -570,46 +570,70 @@ public class PM_Edit_Purchase_Order extends javax.swing.JFrame {
         
     
     
-    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
-        // in selected po item table, select a row
+    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {
+        
         int selectedRow = jTable1.getSelectedRow();
-        if(selectedRow !=-1){
+        if (selectedRow != -1) {
             String itemName = jTable1.getValueAt(selectedRow, 1).toString();
             String quantity = jTable1.getValueAt(selectedRow, 2).toString();
             String currentSupplierId = jTable1.getValueAt(selectedRow, 5).toString();
             String currentSupplierName = jTable1.getValueAt(selectedRow, 6).toString();
 
-            
-             // Clear and repopulate supplier combo box
             supplierList.removeAllItems();
             Set<String> oriSuppliers = new HashSet<>();
 
-            // Read inventory.txt
             List<String> lines = TextFile.readFile(inventorydatamanager.getinventoryfilepath());
+            boolean foundSupplier = false;
 
             for (String line : lines) {
-                String[] parts = line.split(",", 11); 
-                if (parts.length < 11) continue;
+                String[] parts = line.split(",", 11);
+                if (parts.length < 10) {
+                    System.out.println("Skipping invalid line: " + line);
+                    continue;
+            }
 
                 String invItemName = parts[1].trim();
                 String invSupplierId = parts[3].trim();
-                boolean isDeleted = Boolean.parseBoolean(parts[10].trim());
+                boolean isDeleted = Boolean.parseBoolean(parts[9].trim());
 
                 if (invItemName.equalsIgnoreCase(itemName) && !isDeleted && !oriSuppliers.contains(invSupplierId)) {
                     String supplierName = PurchaseOrderManager.findSupplierNameById(invSupplierId);
-                    supplierList.addItem(invSupplierId + " - " + supplierName);
-                    oriSuppliers.add(invSupplierId); // prevent duplicates
+                    if (supplierName == null) supplierName = "Unknown Supplier";
+
+                    String comboItem = invSupplierId + " - " + supplierName;
+                    supplierList.addItem(comboItem);
+                    oriSuppliers.add(invSupplierId);
+
+                    System.out.println("Added to combo box: " + comboItem);
+
+                    if (invSupplierId.equals(currentSupplierId)) {
+                        foundSupplier = true;
+                    }
                 }
             }
 
+           String selected = currentSupplierId + " - " + currentSupplierName;
+           String matchedItem = null;
 
-    
-        String selected = currentSupplierId + " - " + currentSupplierName;
-        supplierList.setSelectedItem(selected);
+            for (int i = 0; i < supplierList.getItemCount(); i++) {
+                String item = (String) supplierList.getItemAt(i);
+                if (item.startsWith(currentSupplierId + " -")) {
+                    matchedItem = item; 
+                    break;
+                }
+            }
 
-        // Set quantity
-        txtQuantity.setText(quantity);}
-    }//GEN-LAST:event_jTable1MouseClicked
+            if (matchedItem == null) {
+                // Not found, add current supplier anyway
+                supplierList.addItem(selected);
+                matchedItem = selected;
+            }
+
+            supplierList.setSelectedItem(matchedItem);
+            txtQuantity.setText(quantity);
+            
+        }
+}
 
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
         // Save Me
@@ -699,6 +723,7 @@ public class PM_Edit_Purchase_Order extends javax.swing.JFrame {
 
     private void btnDoneActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDoneActionPerformed
         //Done button
+       
         int selectedRow = jTable1.getSelectedRow();
         if (selectedRow == -1) {
             JOptionPane.showMessageDialog(null, "Please select a row to update.");
@@ -706,14 +731,16 @@ public class PM_Edit_Purchase_Order extends javax.swing.JFrame {
         }
 
         String selectedSupplier = (String) supplierList.getSelectedItem();
-
         if (selectedSupplier == null || !selectedSupplier.contains(" - ")) {
             JOptionPane.showMessageDialog(null, "Please select a valid supplier.");
             return;
         }
-        // used to search for suppliers for same items in PO text file 
-        String supplierId = selectedSupplier.split(" - ")[0];
-        String itemName = jTable1.getValueAt(selectedRow, 1).toString(); 
+
+        // Get the supplier ID from the selected item in combo box
+        String supplierId = selectedSupplier.split(" - ")[0].trim();
+        String itemName = jTable1.getValueAt(selectedRow, 1).toString();
+
+        System.out.println("Searching for item: " + itemName + " with supplier: " + supplierId);
 
         // Search inventory for matching itemId and unitPrice
         String newItemId = "";
@@ -721,69 +748,83 @@ public class PM_Edit_Purchase_Order extends javax.swing.JFrame {
         List<String> inventoryLines = TextFile.readFile(inventorydatamanager.getinventoryfilepath());
 
         for (String line : inventoryLines) {
-            String[] parts = line.split(",", 11);
-            if (parts.length < 11) continue;
+            String[] parts = line.split(",", 10);
+            if (parts.length < 9) {
+                System.out.println("Skipping invalid line: " + line);
+                continue;
+            }
 
             String invItemId = parts[0].trim();
             String invItemName = parts[1].trim();
             String invSupplierId = parts[3].trim();
-            boolean isDeleted = Boolean.parseBoolean(parts[10].trim());
+            String invUnitPrice = parts[4].trim();
+            boolean isDeleted = Boolean.parseBoolean(parts[9].trim());
+
+            System.out.println("Checking inventory item: " + invItemName + " with supplier: " + invSupplierId);
 
             if (invItemName.equalsIgnoreCase(itemName) && invSupplierId.equals(supplierId) && !isDeleted) {
                 newItemId = invItemId;
-                unitPrice = Double.parseDouble(parts[4].trim()); // Column 5 = unit price
-                break;
+                try {
+                    unitPrice = Double.parseDouble(invUnitPrice);
+                    System.out.println("Found matching item! ID: " + newItemId + ", Price: " + unitPrice);
+                    break;
+                } catch (NumberFormatException e) {
+                    System.out.println("Error parsing unit price: " + invUnitPrice);
+                }
             }
         }
 
         if (newItemId.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Matching item with selected supplier not found.");
+            JOptionPane.showMessageDialog(null, "Matching item with selected supplier not found in inventory.");
             return;
         }
-        //get supplier name for jCombo box to update the column 6
-        String supplierName = "";
-        for (int i = 0; i < supplierList.getItemCount(); i++) {
-            String option = supplierList.getItemAt(i); // e.g., "SUP001 - Nestle"
-            if (option.startsWith(supplierId + " - ")) {
-                supplierName = option.split(" - ")[1]; // "Nestle"
-                break;
-            }
-        }
-        // Calculate total again (need make sure quantity is integer)
+
+        // Get supplier name
+        String supplierName = selectedSupplier.split(" - ")[1].trim();
+
+        // Validate and get quantity
         int quantity;
         try {
             quantity = Integer.parseInt(txtQuantity.getText().trim());
+            if (quantity <= 0) {
+                JOptionPane.showMessageDialog(null, "Please enter a valid quantity greater than 0.");
+                return;
+            }
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(null, "Invalid quantity entered.");
+            JOptionPane.showMessageDialog(null, "Please enter a valid numeric quantity.");
             return;
         }
+
+        // Calculate total
         double total = quantity * unitPrice;
 
-        // Update table only (don't touch file yet)
-        jTable1.setValueAt(newItemId, selectedRow, 0); // column 0 = item ID
-        jTable1.setValueAt(quantity, selectedRow, 2);  // column 2 = quantity
-        jTable1.setValueAt(unitPrice, selectedRow, 3); // column 3 = unit price
-        jTable1.setValueAt(total, selectedRow,4);
-        jTable1.setValueAt(supplierId, selectedRow, 5); // column 4 = supplier
-        jTable1.setValueAt(supplierName, selectedRow, 6); // e.g., column 5
-        JOptionPane.showMessageDialog(null, "Item updated in table. Click 'Save Changes' update the Purchase Order Text File.");
-        
+        // Update table
+        jTable1.setValueAt(newItemId, selectedRow, 0);      // Item ID
+        jTable1.setValueAt(itemName, selectedRow, 1);       // Item Name
+        jTable1.setValueAt(quantity, selectedRow, 2);       // Quantity
+        jTable1.setValueAt(unitPrice, selectedRow, 3);      // Unit Price
+        jTable1.setValueAt(total, selectedRow, 4);          // Total
+        jTable1.setValueAt(supplierId, selectedRow, 5);     // Supplier ID
+        jTable1.setValueAt(supplierName, selectedRow, 6);   // Supplier Name
+
         // Recalculate subtotal
         double newSubtotal = 0.0;
         for (int i = 0; i < jTable1.getRowCount(); i++) {
-            Object totalValue = jTable1.getValueAt(i, 4); // Column 4 = total
+            Object totalValue = jTable1.getValueAt(i, 4);
             if (totalValue != null) {
                 try {
                     newSubtotal += Double.parseDouble(totalValue.toString());
                 } catch (NumberFormatException e) {
-                    // Ignore invalid row total
+                    // Skip invalid values
                 }
             }
         }
 
         // Update the subtotal label
-        subtotal.setText(String.format("Subtotal: %.2f", newSubtotal));
-
+        subtotal.setText(String.format("Subtotal: RM%.2f", newSubtotal));
+        
+        JOptionPane.showMessageDialog(null, "Item updated successfully. Click 'Save Me' to update the Purchase Order.");
+    
 
     
     }//GEN-LAST:event_btnDoneActionPerformed

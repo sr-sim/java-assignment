@@ -1,2 +1,3 @@
-SUP001,Labubu,019-237-3733,bubu@gmail.com,johor,want to supplier labubu,true,false
-SUP002,Mcd,019-356-7245,mcd@gmail.com,johor,this supplier want supply burger,true,false
+SUP001,Lili,019-237-3733,bubu@gmail.com,johor,want to supplier labubu,true,false
+SUP002,Damn,019-356-7245,mcd@gmail.com,johor,this supplier want supply burger,true,false
+SUP003,Uncle Soon,019-356-7245,mcd@gmail.com,johor,this supplier want supply burger,true,false
