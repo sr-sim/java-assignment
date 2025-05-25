@@ -25,31 +25,19 @@ public class PurchaseOrderManager extends DataManager {
     public PurchaseOrderManager() {
         this.polist = new ArrayList<>();
         this.textfile = new TextFile();
-        initializeFile();//this one macy remove le
         loadAllpofromtxtfile();
     }
-    private void initializeFile() {
-        try {
-            File file = new File(pofilepath);
-            if (!file.exists()) {
-                file.getParentFile().mkdirs();
-                file.createNewFile();
-                System.out.println("Created PurchaseOrder.txt at: " + file.getAbsolutePath());
-                
-            }
-        } catch (IOException e) {
-            System.err.println("Error creating PurchaseOrder.txt: " + e.getMessage()); //this function macy dh
-        }
-    }
-   
+      
+      
     public void loadAllpofromtxtfile() {
         polist.clear();
         
             List<String> lines = textfile.readFile(pofilepath);
            
             for (String line : lines) {
-                String[] parts = line.split(",", 15);
-                if (parts.length == 15) {
+                
+                String[] parts = line.split(",", 14);
+                if (parts.length == 14) {
                     try {
                             List<String> itemids = Arrays.asList(parts[4].trim().split("\\|"));
                             List<String> unitPrices = Arrays.asList(parts[5].trim().split("\\|"));
@@ -69,16 +57,17 @@ public class PurchaseOrderManager extends DataManager {
                                     parts[10].trim(),
                                     parts[11].trim(),
                                     parts[12].trim(),
-                                    parts[13].trim(),
-                                    parts[14].trim()
-
-
+                                    parts[13].trim()
+                                    
                             ));
                             System.out.println("Added PO: " + parts[0].trim());
                         }catch (NumberFormatException e) {
                         System.err.println("Error parsing amount in line: " + line + " - " + e.getMessage());
                     }
+                }else{
+                    System.err.println("Invalid line format: " + line);
                 }
+            
                 
         
             }
@@ -167,20 +156,16 @@ public class PurchaseOrderManager extends DataManager {
         return today.format(formatter);
     }
      
-     public void updateReceiveStatus(String orderId, String status, boolean checkNotReceived) {
+     public void updateReceiveStatus(String orderId, String status) {
         PurchaseOrder po = findpoid(orderId);
-        if (po == null) {
-            System.out.println("Purchase Order not found for ID: " + orderId);
-            return;
+        if (po != null) {
+            po.setVerifyStatus(status);
+           
+
+            updatePurchaseOrderInFile(po);
+        } else {
+            System.out.println("Failed to update ReceiveStatus: PO " + orderId + " not found");
         }
-        if (checkNotReceived && !po.getReceiveStatus().equals("not received")) {
-            System.out.println("Status already set to " + po.getReceiveStatus());
-            return;
-        }
-        po.setReceiveStatus(status);
-        po.setVerifyStatus("verified");
-        updatePurchaseOrderInFile(po);
-        System.out.println((status.equals("received") ? "Remaining quantities received" : "Receive status updated to " + status) + " for PO: " + orderId);
     }
     
     public static String getNextOrderId() {
@@ -208,6 +193,12 @@ public class PurchaseOrderManager extends DataManager {
 
         return String.format("PO%03d", maxId + 1);
     }
+        
+        
+    
+    
+    
+    
      
      
 

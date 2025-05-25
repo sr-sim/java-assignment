@@ -4,6 +4,7 @@
  */
 package java_assignment2025;
 
+import java.awt.Component;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -12,7 +13,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 
 /**
  *
@@ -35,7 +39,6 @@ public class SM_DailySalesEntry extends javax.swing.JFrame {
         jTextField1.setText(generatedID);
         jTextField1.setEditable(false);
         jTextField1.setFocusable(false);
-        
         Date today = new Date();
         jDateChooser1.setDate(today);
         jDateChooser1.setMinSelectableDate(today);

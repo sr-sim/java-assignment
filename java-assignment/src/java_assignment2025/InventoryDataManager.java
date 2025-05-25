@@ -34,9 +34,9 @@ public class InventoryDataManager extends DataManager{
         itemlist.clear();
         List<String> lines = textfile.readFile(inventoryfilepath);
         for(String line : lines){
-            String[] parts = line.split(",", 11);
-            if(parts.length == 11){
-                boolean isdeleted = Boolean.parseBoolean(parts[10].trim());
+            String[] parts = line.split(",", 10);
+            if(parts.length == 10){
+                boolean isdeleted = Boolean.parseBoolean(parts[9].trim());
                     itemlist.add(new Item( // one by one add to list
                         parts[0].trim(),
                         parts[1].trim(),
@@ -47,7 +47,6 @@ public class InventoryDataManager extends DataManager{
                         Integer.parseInt(parts[6].trim()),
                         parts[7].trim(),
                         parts[8].trim(),
-                        parts[9].trim(),
                         isdeleted
                 ));
             }
@@ -90,7 +89,7 @@ public class InventoryDataManager extends DataManager{
                 System.out.println("item not found");
             } 
     }
-    public void updateItem(String itemid, String itemname, String itemdesc, String supplierid, double unitprice, double retailprice,int instockquantity,String reorderlevel,String reorderstatus,String lastmodifieddate,boolean deleted) {
+    public void updateItem(String itemid, String itemname, String itemdesc, String supplierid, double unitprice, double retailprice,int instockquantity,String reorderlevel,String lastmodifieddate,boolean deleted) {
         Item existingitem = finditemid(itemid);
         if (existingitem != null) {
             existingitem.setItemid(itemid);
@@ -101,7 +100,6 @@ public class InventoryDataManager extends DataManager{
             existingitem.setInstockquantity(instockquantity);
             existingitem.setRetailprice(retailprice);
             existingitem.setReorderlevel(reorderlevel);
-            existingitem.setReorderstatus(reorderstatus);
             existingitem.setLastmodifieddate(lastmodifieddate);
             existingitem.setDeleted(deleted);
             textfile.rewriteFile(inventoryfilepath, itemlist);
