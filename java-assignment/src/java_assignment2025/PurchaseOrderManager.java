@@ -115,18 +115,18 @@ public class PurchaseOrderManager extends DataManager {
     }
 
 
-    public void deletepo(String poid){
-        PurchaseOrder po = findpoid(poid);
-            if (po != null){
-                System.out.println("here"+ po);
-                polist.remove(po);
-                textfile.deleteLine(pofilepath, po.toString());
-                System.out.println("delete successful");
-                return;
-            }else{
-                System.out.println("pr not found");
-            } 
-    } 
+    public void deletepo(String poid) {
+    PurchaseOrder po = findpoid(poid);
+    if (po != null) {
+        System.out.println("Found PO: " + poid);
+        polist.remove(po);
+        textfile.deleteLineByPOID(pofilepath, poid);
+        System.out.println("Delete successful");
+    } else {
+        System.out.println("PO not found");
+    }
+}
+
 
     public PurchaseOrder findpoid(String orderId) {
     for (PurchaseOrder po : polist) {

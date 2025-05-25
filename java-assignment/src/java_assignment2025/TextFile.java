@@ -196,7 +196,26 @@ public class TextFile {
         e.printStackTrace();
     }
 }
-    
+    public static void deleteLineByPOID(String fileName, String targetPOID) {
+    List<String> list = readFile(fileName);
+    try (FileWriter writer = new FileWriter(fileName)) {
+        for (int i = 0; i < list.size(); i++) {
+            String line = list.get(i);
+            String[] parts = line.split(",", -1);
+            if (parts.length > 0 && !parts[0].trim().equals(targetPOID)) {
+                writer.write(line);
+                if (i < list.size() - 1) {
+                    writer.write(System.lineSeparator());
+                }
+            } else if (parts[0].trim().equals(targetPOID)) {
+                System.out.println("Deleted line with POID: " + parts[0]);
+            }
+        }
+    } catch (IOException e) {
+        System.out.println("Error writing to file: " + e.getMessage());
+    }
+    }
+
 }
 
 

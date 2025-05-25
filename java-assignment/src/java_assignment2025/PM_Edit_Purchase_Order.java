@@ -570,8 +570,8 @@ public class PM_Edit_Purchase_Order extends javax.swing.JFrame {
         
     
     
-    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
-        // in selected po item table, select a row
+    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {
+        
         int selectedRow = jTable1.getSelectedRow();
         if (selectedRow != -1) {
             String itemName = jTable1.getValueAt(selectedRow, 1).toString();
@@ -724,6 +724,7 @@ public class PM_Edit_Purchase_Order extends javax.swing.JFrame {
 
     private void btnDoneActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDoneActionPerformed
         //Done button
+       
         int selectedRow = jTable1.getSelectedRow();
         if (selectedRow == -1) {
             JOptionPane.showMessageDialog(null, "Please select a row to update.");
@@ -822,10 +823,8 @@ public class PM_Edit_Purchase_Order extends javax.swing.JFrame {
 
         // Update the subtotal label
         subtotal.setText(String.format("Subtotal: RM%.2f", newSubtotal));
-        
+      
         JOptionPane.showMessageDialog(null, "Item updated successfully. Click 'Save Me' to update the Purchase Order.");
-
-
 
     
     }//GEN-LAST:event_btnDoneActionPerformed

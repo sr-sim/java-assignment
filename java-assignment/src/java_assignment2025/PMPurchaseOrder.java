@@ -377,21 +377,22 @@ public class PMPurchaseOrder extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton9ActionPerformed
 
     private void donDeleteMeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_donDeleteMeActionPerformed
-
+                                         
         int selectedrow = jTable1.getSelectedRow();
         if (selectedrow != -1){
             String poid = jTable1.getValueAt(selectedrow, 0).toString();
             System.out.println("here"+ poid);
-            int YesOrNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this purchase ?" + poid , "Confirm Delete", JOptionPane.YES_NO_OPTION);
+            int YesOrNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this purchase order?" + poid , "Confirm Delete", JOptionPane.YES_NO_OPTION);
             
             if (YesOrNo == JOptionPane.YES_OPTION){
                 pomanager.deletepo(poid);
                 loadAllpofromtxtfile();
-                JOptionPane.showMessageDialog(null, "This purchase o deleted successfully");
+                JOptionPane.showMessageDialog(null, "This purchase order deleted successfully");
             }
         }else{
-                JOptionPane.showMessageDialog(null, "Please select a purchase o from the table");
+                JOptionPane.showMessageDialog(null, "Please select a purchase order from the table");
             } 
+    
     }//GEN-LAST:event_donDeleteMeActionPerformed
 
     private void jTextField1KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField1KeyReleased
