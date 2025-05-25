@@ -15,7 +15,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Macy Khoo
  */
-public class PM_Edit_Purchase_Order extends javax.swing.JFrame {
+public class FM_Edit_Purchase_Order extends javax.swing.JFrame {
     private PurchaseOrder selectedPO;
     private PurchaseOrderManager pomanager;
     private InventoryDataManager inventorydatamanager;
@@ -24,7 +24,7 @@ public class PM_Edit_Purchase_Order extends javax.swing.JFrame {
     /**
      * Creates new form PM_Edit_Purchase_Order
      */
-    public PM_Edit_Purchase_Order(PurchaseOrder selectedPO, PurchaseOrderManager pomanager, InventoryDataManager inventorydatamanager, boolean isEditMode) {
+    public FM_Edit_Purchase_Order(PurchaseOrder selectedPO, PurchaseOrderManager pomanager, InventoryDataManager inventorydatamanager, boolean isEditMode) {
         initComponents();
         this.selectedPO = selectedPO;
         this.pomanager = pomanager;
@@ -88,7 +88,6 @@ public class PM_Edit_Purchase_Order extends javax.swing.JFrame {
         jButton6 = new javax.swing.JButton();
         jButton7 = new javax.swing.JButton();
         jButton8 = new javax.swing.JButton();
-        jButton10 = new javax.swing.JButton();
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
         btnDone = new javax.swing.JButton();
@@ -264,7 +263,6 @@ public class PM_Edit_Purchase_Order extends javax.swing.JFrame {
                 .addComponent(jLabel5)
                 .addGap(34, 34, 34)
                 .addComponent(jLabel10)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel7Layout.createSequentialGroup()
                         .addGap(0, 44, Short.MAX_VALUE)
@@ -315,31 +313,24 @@ public class PM_Edit_Purchase_Order extends javax.swing.JFrame {
         jLabel2.setFont(new java.awt.Font("Times New Roman", 1, 16)); // NOI18N
         jLabel2.setText("  Omega Wholesale Sdn Bhd ");
 
-        jButton6.setText("Item List");
+        jButton6.setText("Payment List");
         jButton6.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton6ActionPerformed(evt);
             }
         });
 
-        jButton7.setText("Supplier List");
+        jButton7.setText("Purchase Order");
         jButton7.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton7ActionPerformed(evt);
             }
         });
 
-        jButton8.setText("Purchase Requisition");
+        jButton8.setText("Sales Report");
         jButton8.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton8ActionPerformed(evt);
-            }
-        });
-
-        jButton10.setText("Purchase Order");
-        jButton10.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton10ActionPerformed(evt);
             }
         });
 
@@ -361,11 +352,10 @@ public class PM_Edit_Purchase_Order extends javax.swing.JFrame {
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGap(20, 20, 20)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jButton7, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton8, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton10, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton6, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jButton8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jButton7, javax.swing.GroupLayout.DEFAULT_SIZE, 145, Short.MAX_VALUE)))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGap(79, 79, 79)
                         .addComponent(jLabel9)))
@@ -380,14 +370,12 @@ public class PM_Edit_Purchase_Order extends javax.swing.JFrame {
                 .addComponent(jLabel9)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel8)
-                .addGap(65, 65, 65)
+                .addGap(71, 71, 71)
+                .addComponent(jButton7)
+                .addGap(29, 29, 29)
                 .addComponent(jButton6)
                 .addGap(26, 26, 26)
-                .addComponent(jButton7)
-                .addGap(27, 27, 27)
                 .addComponent(jButton8)
-                .addGap(30, 30, 30)
-                .addComponent(jButton10)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -470,7 +458,7 @@ public class PM_Edit_Purchase_Order extends javax.swing.JFrame {
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addGap(18, 18, 18)
                         .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
                 .addComponent(btnSave)
                 .addGap(23, 23, 23))
             .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -564,11 +552,17 @@ public class PM_Edit_Purchase_Order extends javax.swing.JFrame {
             
         }
         
-        
+//    fillComboBoxFromitemList(); 
    }
-
-        
     
+//    private void fillComboBoxFromitemList() {
+//        for (Item item : inventorydatamanager.getinventorylist()) {
+//            if(!item.isDeleted()){
+//                String comboBoxItem = item.getItemid() + " - " + item.getItemname();
+//                supplierList.addItem(comboBoxItem);
+//            }
+//        }
+//    }
     
     private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
         // in selected po item table, select a row
@@ -632,7 +626,6 @@ public class PM_Edit_Purchase_Order extends javax.swing.JFrame {
             supplierList.setSelectedItem(matchedItem);
             txtQuantity.setText(quantity);
         }
-
 
     }//GEN-LAST:event_jTable1MouseClicked
 
@@ -703,24 +696,19 @@ public class PM_Edit_Purchase_Order extends javax.swing.JFrame {
     }//GEN-LAST:event_txtQuantityActionPerformed
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-       new PM_ViewItem().setVisible(true);
+        new FMCreatePayment().setVisible(true);
         this.dispose();
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-         new PM_ViewSupplier().setVisible(true);
-         this.dispose();
+        new FMPurchaseOrder().setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-         new PM_PurchaseRequisition().setVisible(true);
-         this.dispose();
-    }//GEN-LAST:event_jButton8ActionPerformed
-
-    private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
-        new PMPurchaseOrder().setVisible(true);
+        new FinanceDailySum().setVisible(true);
         this.dispose();
-    }//GEN-LAST:event_jButton10ActionPerformed
+    }//GEN-LAST:event_jButton8ActionPerformed
 
     private void btnDoneActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDoneActionPerformed
         //Done button
@@ -849,7 +837,6 @@ public class PM_Edit_Purchase_Order extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnDone;
     private javax.swing.JButton btnSave;
-    private javax.swing.JButton jButton10;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
