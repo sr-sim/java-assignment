@@ -60,10 +60,7 @@ public class PurchaseRequisition {
     public PurchaseRequisition() {
         this.itemids = new ArrayList<>();
     }
-    public void addItemid(String itemid){
-        this.getItemids().add(itemid);
-    }
-
+    
     public String getPrid() {
         return prid;
     }
