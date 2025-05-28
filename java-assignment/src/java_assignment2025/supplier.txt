@@ -1,3 +1,4 @@
-SUP001,Lili,019-237-3733,bubu@gmail.com,johor,want to supplier labubu,true,false
-SUP002,Damn,019-356-7245,mcd@gmail.com,johor,this supplier want supply burger,true,false
-SUP003,Uncle Soon,019-356-7245,mcd@gmail.com,johor,this supplier want supply burger,true,false
+SUP001,K-Long Sdn Bhd,019-237-3733,klong@gmail.com,Kuala Lumpur,This supplier want to supplies apple,true,false
+SUP002,MBG Sdn Bhd,019-356-7245,mbg@gmail.com,Selangor,This suplier want to supplies apple and pear,true,false
+SUP003,PJ Grocer Sdn Bhd,017-708-1504,pjgrocer@hotmail.com,Selangor,This supplier want to supplies milk,true,false
+SUP004,T&T Sdn Bhd,012-783-9999,tnt@gmail.com,Johor,This supplier supplies rice10kg package with unit price RM 58,false,false

@@ -33,9 +33,6 @@ public class SM_PurchaseRequisition extends javax.swing.JFrame {
     public SM_PurchaseRequisition(PurchaseRequisitionManager prmanager, InventoryDataManager inventorydatamanager) {
         initComponents();
         this.salesmanager = (SalesManager)Session.getCurrentUser();
-        jScrollPane1.setHorizontalScrollBarPolicy(
-        javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        jScrollPane1.setViewportView(jTable1);
         this.prmanager = prmanager;
         this.inventorydatamanager = inventorydatamanager;
         fillTableFromTxtFile();
@@ -90,7 +87,6 @@ public class SM_PurchaseRequisition extends javax.swing.JFrame {
             });
             }
         }
-        resizeColumnWidths(jTable1);
     }
     private PurchaseRequisition getselectedPR(){
         int selectedRow = jTable1.getSelectedRow();
@@ -102,27 +98,6 @@ public class SM_PurchaseRequisition extends javax.swing.JFrame {
         return prmanager.findprid(prid);
     }
     
-        private void resizeColumnWidths(JTable table) {
-    for (int column = 0; column < table.getColumnCount(); column++) {
-        TableColumn tableColumn = table.getColumnModel().getColumn(column);
-        int preferredWidth = 75;
-        int maxWidth = 300;
-    
-        TableCellRenderer headerRenderer = table.getTableHeader().getDefaultRenderer();
-        Component headerComp = headerRenderer.getTableCellRendererComponent(table, tableColumn.getHeaderValue(), false, false, 0, column);
-        preferredWidth = Math.max(preferredWidth, headerComp.getPreferredSize().width);
-
-        for (int row = 0; row < table.getRowCount(); row++) {
-            TableCellRenderer cellRenderer = table.getCellRenderer(row, column);
-            Component c = table.prepareRenderer(cellRenderer, row, column);
-            int width = c.getPreferredSize().width + table.getIntercellSpacing().width;
-            preferredWidth = Math.max(preferredWidth, width);
-        }
-
-        preferredWidth = Math.min(preferredWidth, maxWidth);
-        tableColumn.setPreferredWidth(preferredWidth);
-    }
-}
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -287,7 +262,7 @@ public class SM_PurchaseRequisition extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        jTable1.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+        jTable1.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS);
         jScrollPane1.setViewportView(jTable1);
 
         jLabel1.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N
