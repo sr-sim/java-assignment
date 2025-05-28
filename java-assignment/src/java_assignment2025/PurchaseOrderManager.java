@@ -59,16 +59,15 @@ public class PurchaseOrderManager extends DataManager {
                                     parts[12].trim(),
                                     parts[13].trim()
                                     
-                                  
-                                    
-
-
                             ));
                             System.out.println("Added PO: " + parts[0].trim());
                         }catch (NumberFormatException e) {
                         System.err.println("Error parsing amount in line: " + line + " - " + e.getMessage());
                     }
+                }else{
+                    System.err.println("Invalid line format: " + line);
                 }
+            
                 
         
             }
@@ -116,18 +115,18 @@ public class PurchaseOrderManager extends DataManager {
     }
 
 
-    public void deletepo(String poid){
-        PurchaseOrder po = findpoid(poid);
-            if (po != null){
-                System.out.println("here"+ po);
-                polist.remove(po);
-                textfile.deleteLine(pofilepath, po.toString());
-                System.out.println("delete successful");
-                return;
-            }else{
-                System.out.println("pr not found");
-            } 
-    } 
+    public void deletepo(String poid) {
+    PurchaseOrder po = findpoid(poid);
+    if (po != null) {
+        System.out.println("Found PO: " + poid);
+        polist.remove(po);
+        textfile.deleteLineByPOID(pofilepath, poid);
+        System.out.println("Delete successful");
+    } else {
+        System.out.println("PO not found");
+    }
+}
+
 
     public PurchaseOrder findpoid(String orderId) {
     for (PurchaseOrder po : polist) {
@@ -162,7 +161,7 @@ public class PurchaseOrderManager extends DataManager {
         if (po != null) {
             po.setVerifyStatus(status);
            
-            System.out.println("Updated PO " + orderId + " ReceiveStatus to: " + status);
+
             updatePurchaseOrderInFile(po);
         } else {
             System.out.println("Failed to update ReceiveStatus: PO " + orderId + " not found");

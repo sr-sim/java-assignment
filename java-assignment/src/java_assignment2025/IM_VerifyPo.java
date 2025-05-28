@@ -11,6 +11,7 @@ import java.awt.*;
 import java.util.List;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.stream.Collectors;
 import javax.swing.table.TableColumn;
 /**
@@ -57,6 +58,7 @@ public class IM_VerifyPo extends javax.swing.JFrame {
                 return column == 5; // Only Action column is editable
             }
         };
+        
         jTable1.setModel(model);
         jTable1.setRowHeight(30); // Adjust for single-line height
         jTable1.setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS); // Allow last column to expand
@@ -85,6 +87,7 @@ public class IM_VerifyPo extends javax.swing.JFrame {
                 return column == 5;
             }
         };
+      
         jTable2.setModel(model2);
         jTable2.setRowHeight(30);
         jTable2.setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
@@ -127,14 +130,29 @@ public class IM_VerifyPo extends javax.swing.JFrame {
             tableColumn.setPreferredWidth(Math.min(preferredWidth, maxWidth));
         }
     }
-    public void fillTable1FromTxtFile( JTable jTable1,InventoryDataManager inventorydatamanager) {
+    public void fillTable1FromTxtFile(JTable jTable1, InventoryDataManager inventorydatamanager) {
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        // Verify column count
+        if (model.getColumnCount() != 6) {
+            System.err.println("Warning: jTable1 model has " + model.getColumnCount() + " columns, resetting to correct model");
+            model = new DefaultTableModel(
+                    new Object[][]{},
+                    new String[]{"Order Id", "Supplier Id", "Item Id", "Item Name", "Quantity", "Action"}
+            ) {
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                    return column == 5;
+                }
+            };
+            jTable1.setModel(model);
+        }
         model.setRowCount(0);
+        
         try {
             List<PurchaseOrder> poList = pomanager.getpolist();
             if (poList == null || poList.isEmpty()) {
-                JOptionPane.showMessageDialog(this, 
-                    "No purchase orders found in " + pomanager.getpofilepath()+" (File does not exist or is empty)", 
+                JOptionPane.showMessageDialog(null, 
+                    "No purchase orders found in " + pomanager.getpofilepath() + " (File does not exist or is empty)", 
                     "Warning", 
                     JOptionPane.WARNING_MESSAGE);
                 return;
@@ -148,33 +166,30 @@ public class IM_VerifyPo extends javax.swing.JFrame {
                     List<String> itemNames = new ArrayList<>();
                     for (String itemId : itemIds) {
                         Item item = inventorydatamanager.finditemid(itemId);
-                        itemNames.add(item != null ? item.getItemname() : "Unknown Item (" + itemId +")");
+                        itemNames.add(item != null ? item.getItemname() : "Unknown Item (" + itemId + ")");
                     }
-                    
-                   // Ensure consistent list sizes with the loadAllpofromtxtfile method in pomanager
                     int maxSize = Math.min(itemIds.size(), Math.min(quantities.size(), Math.min(supplierIds.size(), itemNames.size())));
-                    // Add rows for each item, with Action only in the last row
                     for (int i = 0; i < itemIds.size(); i++) {
-                        Object actionValue = (i == itemIds.size() - 1) ? "" : null; // Explicitly set action value
+                        Object actionValue = (i == itemIds.size() - 1) ? "" : null;
                         Object[] row = {
-                            i == 0 ? po.getOrderId() : "", // Order Id only in                                                                                                           first sub-row
+                            i == 0 ? po.getOrderId() : "",
                             i < supplierIds.size() ? supplierIds.get(i) : "",
                             i < itemIds.size() ? itemIds.get(i) : "",
                             i < itemNames.size() ? itemNames.get(i) : "",
                             i < quantities.size() ? quantities.get(i) : "",
                             actionValue
                         };
-                        
                         model.addRow(row);
+                       
                     }
-                    
-
                 }
             }
-            model.fireTableDataChanged(); // Added: Notify table of data change
-         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error loading purchase orders from " + pomanager.getpofilepath() + ": " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            model.fireTableDataChanged();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error loading purchase orders from " + pomanager.getpofilepath() + ": " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
+        jTable1.revalidate();
+        jTable1.repaint();
     }
     
     private void fillTable2FromPartialReceiveds(JTable table, InventoryDataManager inventoryDataManager) {
@@ -285,24 +300,29 @@ public class IM_VerifyPo extends javax.swing.JFrame {
             }
 
             receivedButton.addActionListener(e -> {
-                int row = table.getSelectedRow();
-                if (row >= 0 && row < table.getRowCount()) { // Validate row index
-                    orderId = (String) table.getModel().getValueAt(row, 5);
-                    if (orderId == null || orderId.isEmpty()) {
-                        JOptionPane.showMessageDialog(null, "Cannot determine Order ID for this row", "Error", JOptionPane.ERROR_MESSAGE);
-                        return;
+                    int row = table.getSelectedRow();
+                    if (row >= 0 && row < table.getRowCount()) {
+                        
+                        if (isMainTable) {
+                            orderId = getOrderIdForRow(row); // Use getOrderIdForRow for jTable1
+                        } else {
+                            orderId = (String) table.getModel().getValueAt(row, 5); // Use column 5 for jTable2
+                        }
+                        if (orderId == null || orderId.isEmpty()) {
+                            JOptionPane.showMessageDialog(null, "Cannot determine Order ID for this row", "Error", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                        if (isMainTable) {
+                            updateReceiveStatus("order received");
+                        } else {
+                            
+                            completePartialReceived();
+                        }
+                        fireEditingCanceled();
+                        table.clearSelection();
+                        table.revalidate();
+                        table.repaint();
                     }
-                    if (isMainTable) {
-                        updateReceiveStatus("order received");
-                    } else {
-                        stopCellEditing();
-                        completePartialReceived();
-                    }
-                    table.clearSelection(); // Clear selection to prevent stale indices
-                    table.revalidate();
-                    table.repaint();
-                    
-                }
             });
             if (isMainTable && partialReceivedButton != null) {
             partialReceivedButton.addActionListener(e -> {
@@ -313,8 +333,9 @@ public class IM_VerifyPo extends javax.swing.JFrame {
                         JOptionPane.showMessageDialog(null, "Cannot determine Order ID for this row", "Error", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
-                    stopCellEditing();
+                    
                     showPartialReceivedPanel();
+                    fireEditingCanceled();
                     table.clearSelection();
                     table.revalidate();
                     table.repaint();
@@ -380,6 +401,7 @@ public class IM_VerifyPo extends javax.swing.JFrame {
                             return editorPanel;
                 }
                 currentValue = value;
+               
                 if (isMainTable) {
                     if (value instanceof String && ((String) value).equals("")) {
                         editorPanel.add(receivedButton);
@@ -612,15 +634,16 @@ public class IM_VerifyPo extends javax.swing.JFrame {
         jPanel3 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jButton6 = new javax.swing.JButton();
-        jButton7 = new javax.swing.JButton();
         jButton8 = new javax.swing.JButton();
-        jButton10 = new javax.swing.JButton();
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
+        jButton11 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable2 = new javax.swing.JTable();
+        jLabel11 = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -636,24 +659,10 @@ public class IM_VerifyPo extends javax.swing.JFrame {
             }
         });
 
-        jButton7.setText("Purchase order verification");
-        jButton7.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton7ActionPerformed(evt);
-            }
-        });
-
         jButton8.setText("Generate stock report");
         jButton8.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton8ActionPerformed(evt);
-            }
-        });
-
-        jButton10.setText("Purchase Order");
-        jButton10.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton10ActionPerformed(evt);
             }
         });
 
@@ -662,6 +671,13 @@ public class IM_VerifyPo extends javax.swing.JFrame {
 
         jLabel9.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
         jLabel9.setText("(OWSB)");
+
+        jButton11.setText("Home");
+        jButton11.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton11ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -679,12 +695,13 @@ public class IM_VerifyPo extends javax.swing.JFrame {
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
                                 .addGap(4, 4, 4)
                                 .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addComponent(jButton7, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton8, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton10, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                            .addComponent(jButton8, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGap(79, 79, 79)
-                        .addComponent(jLabel9)))
+                        .addComponent(jLabel9))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(65, 65, 65)
+                        .addComponent(jButton11)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
@@ -699,12 +716,10 @@ public class IM_VerifyPo extends javax.swing.JFrame {
                 .addGap(52, 52, 52)
                 .addComponent(jButton6)
                 .addGap(18, 18, 18)
-                .addComponent(jButton7)
-                .addGap(18, 18, 18)
                 .addComponent(jButton8)
-                .addGap(18, 18, 18)
-                .addComponent(jButton10)
-                .addContainerGap(261, Short.MAX_VALUE))
+                .addGap(155, 155, 155)
+                .addComponent(jButton11)
+                .addContainerGap(165, Short.MAX_VALUE))
         );
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
@@ -723,50 +738,64 @@ public class IM_VerifyPo extends javax.swing.JFrame {
         ));
         jScrollPane2.setViewportView(jTable2);
 
+        jLabel11.setFont(new java.awt.Font("Algerian", 0, 24)); // NOI18N
+        jLabel11.setText("partial received table");
+
+        jLabel12.setFont(new java.awt.Font("Algerian", 0, 24)); // NOI18N
+        jLabel12.setText("Verify Purchase order");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(71, 71, 71)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 720, Short.MAX_VALUE)
-                    .addComponent(jScrollPane2))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(71, 71, 71)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 720, Short.MAX_VALUE)
+                            .addComponent(jScrollPane2)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(262, 262, 262)
+                        .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 323, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(275, 275, 275)
+                        .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 323, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(1441, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
-                .addGap(29, 29, 29)
+                .addGap(7, 7, 7)
+                .addComponent(jLabel12)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 259, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(69, 69, 69))
+                .addComponent(jLabel11)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        //        new SM_ItemEntry(salesmanager,inventorydatamanager,supplierdatamanager).setVisible(true);
-        //        this.dispose();
+        new IM_inventory(inventorymanager,inventorydatamanager,supplierdatamanager).setVisible(true);
+        this.dispose();    
     }//GEN-LAST:event_jButton6ActionPerformed
 
-    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-        //        new SM_SupplierEntry(salesmanager,supplierdatamanager).setVisible(true);
-        //        this.dispose();
-    }//GEN-LAST:event_jButton7ActionPerformed
-
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-
+        new IM_StockReport(inventorymanager,inventorydatamanager,supplierdatamanager,pomanager).setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_jButton8ActionPerformed
 
-    private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
-        //        new SM_PurchaseOrder(salesmanager).setVisible(true);
-        //        this.dispose();
-    }//GEN-LAST:event_jButton10ActionPerformed
+    private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
+        new IM_MainPage().setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_jButton11ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -804,10 +833,11 @@ public class IM_VerifyPo extends javax.swing.JFrame {
 //    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton10;
+    private javax.swing.JButton jButton11;
     private javax.swing.JButton jButton6;
-    private javax.swing.JButton jButton7;
     private javax.swing.JButton jButton8;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
