@@ -4,13 +4,17 @@
  */
 package java_assignment2025;
 
+import java.awt.Component;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 
 /**
  *
@@ -29,6 +33,11 @@ public class SM_ItemEntry extends javax.swing.JFrame {
     public SM_ItemEntry(InventoryDataManager inventorydatamanager, SupplierDataManager supplierdatamanager) {
         initComponents();
         this.salesmanager = (SalesManager)Session.getCurrentUser();
+        jScrollPane1.setHorizontalScrollBarPolicy(
+        javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        jTable1.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        jScrollPane1.setViewportView(jTable1);
+
         this.inventorydatamanager = inventorydatamanager;
         this.supplierdatamanager = supplierdatamanager;
         String generateItemId= inventorydatamanager.generateItemId();
@@ -82,6 +91,7 @@ public class SM_ItemEntry extends javax.swing.JFrame {
             }
 
         }
+        resizeColumnWidths(jTable1);
     }
 
     public void filterTable2FromSupplierList(boolean readstatus) {
@@ -121,7 +131,27 @@ public class SM_ItemEntry extends javax.swing.JFrame {
         jTextArea2.setText("");
     }
 
+    private void resizeColumnWidths(JTable table) {
+    for (int column = 0; column < table.getColumnCount(); column++) {
+        TableColumn tableColumn = table.getColumnModel().getColumn(column);
+        int preferredWidth = 75;
+        int maxWidth = 300;
+    
+        TableCellRenderer headerRenderer = table.getTableHeader().getDefaultRenderer();
+        Component headerComp = headerRenderer.getTableCellRendererComponent(table, tableColumn.getHeaderValue(), false, false, 0, column);
+        preferredWidth = Math.max(preferredWidth, headerComp.getPreferredSize().width);
 
+        for (int row = 0; row < table.getRowCount(); row++) {
+            TableCellRenderer cellRenderer = table.getCellRenderer(row, column);
+            Component c = table.prepareRenderer(cellRenderer, row, column);
+            int width = c.getPreferredSize().width + table.getIntercellSpacing().width;
+            preferredWidth = Math.max(preferredWidth, width);
+        }
+
+        preferredWidth = Math.min(preferredWidth, maxWidth);
+        tableColumn.setPreferredWidth(preferredWidth);
+    }
+}
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -186,6 +216,7 @@ public class SM_ItemEntry extends javax.swing.JFrame {
                 "Item Id", "Item Name", "Description", "Supplier Id", "Supplier Name", "Quanity", "Unit Price", "Retail Price", "Last Modified Date"
             }
         ));
+        jTable1.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
         jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jTable1MouseClicked(evt);
@@ -811,9 +842,8 @@ public class SM_ItemEntry extends javax.swing.JFrame {
             int instockquantity = olditem.getInstockquantity();
             String lastmodifieddate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             String reorderlevel = olditem.getReorderlevel();
-            String reorderstatus = olditem.getReorderstatus();
             boolean deleted = olditem.isDeleted();
-            inventorydatamanager.updateItem(itemid, itemname, itemdesc, supplierid,unitprice,retailprice, instockquantity, reorderlevel, reorderstatus, lastmodifieddate, deleted);
+            inventorydatamanager.updateItem(itemid, itemname, itemdesc, supplierid,unitprice,retailprice, instockquantity, reorderlevel, lastmodifieddate, deleted);
             fillTable1FromTxtFile();
             clearTextField();
             JOptionPane.showMessageDialog(this, "Update Successfully!");
@@ -880,7 +910,7 @@ public class SM_ItemEntry extends javax.swing.JFrame {
         }
 
         try {
-            Item item = new Item(itemid, itemname, itemdesc, supplierid,unitprice,retailprice,instockquantity, reorderlevel, reorderstatus, lastmodifieddate,deleted);
+            Item item = new Item(itemid, itemname, itemdesc, supplierid,unitprice,retailprice,instockquantity, reorderlevel, lastmodifieddate,deleted);
             inventorydatamanager.addItem(item);
 
             JOptionPane.showMessageDialog(null, "Success","Information", JOptionPane.INFORMATION_MESSAGE);

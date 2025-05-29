@@ -23,7 +23,7 @@ import javax.swing.JOptionPane;
  *
  * @author User
  */
-public class Login extends javax.swing.JFrame {
+public class Login extends javax.swing.JFrame { 
      private static final String FILE_PATH = "src/java_assignment2025/user.txt";
 
     /**
@@ -206,10 +206,10 @@ public void openHomePage(User user) {
             new SM_MainPage().setVisible(true);
             break;
         case FINANCE_MANAGER:
-            new FMPurchaseOrder().setVisible(true);
+            new FinanceManagerHome().setVisible(true);
             break;
         case INVENTORY_MANAGER:
-            new InventoryManagerHome().setVisible(true);
+            new IM_MainPage().setVisible(true);
             break;
         case PURCHASE_MANAGER:
              new PM_MainPage().setVisible(true);

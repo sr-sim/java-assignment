@@ -4,12 +4,16 @@
  */
 package java_assignment2025;
 
+import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import java_assignment2025.PRformMode;
+import javax.swing.JTable;
 import javax.swing.RowFilter;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableRowSorter;
 
 /**
@@ -93,6 +97,7 @@ public class SM_PurchaseRequisition extends javax.swing.JFrame {
         String prid = (String)jTable1.getValueAt(selectedRow, 0);
         return prmanager.findprid(prid);
     }
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -257,6 +262,7 @@ public class SM_PurchaseRequisition extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        jTable1.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS);
         jScrollPane1.setViewportView(jTable1);
 
         jLabel1.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N

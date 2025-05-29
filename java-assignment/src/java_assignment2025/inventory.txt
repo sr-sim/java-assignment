@@ -1,6 +1,5 @@
-I001,Labubu,No description,SUP001,2.00,3.00,0,0,null,2025-05-22 03:48:29,false
-I002,Mcd,No description,SUP001,5.00,7.00,30,0,null,2025-05-20 17:10:48,true
-I003,ERWW,No description,SUP001,5.00,10.00,14,0,null,2025-05-22 03:50:14,false
-I004,ZCC,No description,SUP001,4.00,6.00,0,0,null,2025-05-22 02:26:48,true
-I005,FGD,No description,SUP001,8.68,9.50,0,0,null,2025-05-22 02:27:27,false
-I006,DS,GF,SUP001,3.00,5.00,0,0,null,2025-05-22 02:41:07,false
+I001,Apple,No description,SUP001,4.00,5.00,33,20,2025-05-28 01:55:52,false
+I002,Apple,No description,SUP002,2.50,3.50,30,0,2025-05-28 00:14:23,false
+I003,Pear,No description,SUP002,2.00,3.00,25,10,2025-05-28 01:41:01,false
+I004,Milk,No description,SUP003,4.00,6.00,31,0,2025-05-28 02:00:01,false
+I005,Rice 10kg,No description,SUP004,58.00,65.00,0,0,2025-05-28 00:04:26,false

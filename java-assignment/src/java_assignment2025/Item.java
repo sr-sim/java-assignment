@@ -17,20 +17,18 @@ public class Item {
     private int instockquantity;
     private double retailprice;
     private String reorderlevel;
-    private String reorderstatus;
     private String lastmodifieddate;
     private boolean deleted;
    
-    public Item(String itemid, String itemname, String itemdesc, String supplierid, double unitprice, double retailprice, int instockquantity, String reorderlevel, String reorderstatus, String lastmodifieddate,boolean deleted){
+    public Item(String itemid, String itemname, String itemdesc, String supplierid, double unitprice, double retailprice, int instockquantity, String reorderlevel, String lastmodifieddate,boolean deleted){
         this.itemid = itemid;
         this.itemname = itemname;
         this.itemdesc = itemdesc;
         this.supplierid = supplierid;
         this.unitprice = unitprice;
-        this.instockquantity = instockquantity;
         this.retailprice = retailprice;
-        this.reorderlevel = reorderlevel;
-        this.reorderstatus = reorderstatus;
+        this.instockquantity = instockquantity;
+        this.reorderlevel = reorderlevel;      
         this.lastmodifieddate = lastmodifieddate;
         this.deleted = deleted;
     }
@@ -116,14 +114,6 @@ public class Item {
         this.reorderlevel = reorderlevel;
     }
 
-
-    public String getReorderstatus() {
-        return reorderstatus;
-    }
-
-    public void setReorderstatus(String reorderstatus) {
-        this.reorderstatus = reorderstatus;
-    }
     
     public String getLastmodifieddate() {
         return lastmodifieddate;
@@ -140,7 +130,7 @@ public class Item {
     }
     @Override
     public String toString(){
-        return itemid + "," + itemname + "," + itemdesc + "," + supplierid + "," +  String.format("%.2f", unitprice)+ "," +  String.format("%.2f", retailprice)+ "," + instockquantity +","+ reorderlevel+ "," + reorderstatus + "," + lastmodifieddate +","+ isDeleted();
+        return itemid + "," + itemname + "," + itemdesc + "," + supplierid + "," +  String.format("%.2f", unitprice)+ "," +  String.format("%.2f", retailprice)+ "," + instockquantity +","+ reorderlevel+ ","  + lastmodifieddate +","+ isDeleted();
     }
 
     /**

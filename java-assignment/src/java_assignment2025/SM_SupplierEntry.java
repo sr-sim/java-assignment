@@ -5,11 +5,15 @@
 
 package java_assignment2025;
 
+import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 
 
 /**
@@ -26,6 +30,10 @@ public class SM_SupplierEntry extends javax.swing.JFrame {
     
     public SM_SupplierEntry(SupplierDataManager supplierdatamanager) {
         initComponents();
+        jScrollPane1.setHorizontalScrollBarPolicy(
+        javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        jTable1.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        jScrollPane1.setViewportView(jTable1);
         this.salesmanager = (SalesManager)Session.getCurrentUser();
         this.supplierdatamanager = supplierdatamanager;
         String generatedID = supplierdatamanager.generateSupplierId();
@@ -54,6 +62,7 @@ public class SM_SupplierEntry extends javax.swing.JFrame {
             }
 
         }
+        resizeColumnWidths(jTable1);
     }
     private void clearTextField(){
         String generatedID = supplierdatamanager.generateSupplierId();
@@ -65,6 +74,28 @@ public class SM_SupplierEntry extends javax.swing.JFrame {
         jTextArea1.setText("");
         jTable1.clearSelection();
     }
+    
+        private void resizeColumnWidths(JTable table) {
+    for (int column = 0; column < table.getColumnCount(); column++) {
+        TableColumn tableColumn = table.getColumnModel().getColumn(column);
+        int preferredWidth = 75;
+        int maxWidth = 300;
+    
+        TableCellRenderer headerRenderer = table.getTableHeader().getDefaultRenderer();
+        Component headerComp = headerRenderer.getTableCellRendererComponent(table, tableColumn.getHeaderValue(), false, false, 0, column);
+        preferredWidth = Math.max(preferredWidth, headerComp.getPreferredSize().width);
+
+        for (int row = 0; row < table.getRowCount(); row++) {
+            TableCellRenderer cellRenderer = table.getCellRenderer(row, column);
+            Component c = table.prepareRenderer(cellRenderer, row, column);
+            int width = c.getPreferredSize().width + table.getIntercellSpacing().width;
+            preferredWidth = Math.max(preferredWidth, width);
+        }
+
+        preferredWidth = Math.min(preferredWidth, maxWidth);
+        tableColumn.setPreferredWidth(preferredWidth);
+    }
+}
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -656,7 +687,7 @@ if (selectedrow != -1) {
         return;
     }
 
-    int YesOrNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this supplier? \n\nThe items of this suppliers also will be delete." + supplierid, "Confirm Delete", JOptionPane.YES_NO_OPTION);
+    int YesOrNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this supplier? \n\nThe items of this suppliers also will be delete.", "Confirm Delete", JOptionPane.YES_NO_OPTION);
     if (YesOrNo == JOptionPane.YES_OPTION) {
         supplierdatamanager.marksupplierasDeleted(supplierid,inventorydatamanager);
         fillTable1FromTxtFile();
