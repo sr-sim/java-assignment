@@ -687,7 +687,7 @@ if (selectedrow != -1) {
         return;
     }
 
-    int YesOrNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this supplier? \n\nThe items of this suppliers also will be delete." + supplierid, "Confirm Delete", JOptionPane.YES_NO_OPTION);
+    int YesOrNo = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this supplier? \n\nThe items of this suppliers also will be delete.", "Confirm Delete", JOptionPane.YES_NO_OPTION);
     if (YesOrNo == JOptionPane.YES_OPTION) {
         supplierdatamanager.marksupplierasDeleted(supplierid,inventorydatamanager);
         fillTable1FromTxtFile();
